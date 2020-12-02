@@ -1,0 +1,15 @@
+
+version: '3.4'
+services:
+  mariadb:
+    image: mariadb:10
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadba
+      MY_SQL_USER: mariauser
+      MYSQL_PASSWORD: mariauser
+      MYSQL_DATABASE: defaultdb      
+    ports:
+      - '3306:3306'
+    volumes:
+      - d:\docker\data\mariadb_data:/var/lib/mysql   
