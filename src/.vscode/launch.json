@@ -5,13 +5,33 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (web)",
+            "name": ".NET Core Launch (schedule-api)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "build-schedule-api",
             "program": "${workspaceFolder}/Server/ScheduleEngine/bin/Debug/net5.0/ScheduleEngine.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Server/ScheduleEngine",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": ".NET Core Launch (slot-input-api)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-slot-input-api",
+            "program": "${workspaceFolder}/Server/InputSlotApi/bin/Debug/net5.0/InputSlotApi.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Server/InputSlotApi",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

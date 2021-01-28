@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StartDust.Blazor.CasparCGClient.Core
+namespace Crosscutting
 {
     public class Class1
     {
