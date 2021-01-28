@@ -1,15 +1,46 @@
 
 version: '3.4'
+
+networks:
+  dockerapi-dev:
+    driver: bridge 
+
 services:
-  mariadb:
-    image: mariadb:10
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: mariadba
-      MY_SQL_USER: mariauser
-      MYSQL_PASSWORD: mariauser
-      MYSQL_DATABASE: defaultdb      
+  stardust-schedule-engine:
+    container_name: stardust-schedule-engine
+    image: stardust/schedule-engine:latest
+    depends_on:
+      - "postgres_image"
+    build:
+      context: ./Server/ScheduleEngine
+      dockerfile: Dockerfile
     ports:
-      - '3306:3306'
-    volumes:
-      - d:\docker\data\mariadb_data:/var/lib/mysql   
+      - "5000:80"
+      - "5001:443"     
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+80
+      - ASPNETCORE_HTTPS_PORT=44311
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=madison
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/dev_cert.pfx
+    networks:
+      - dockerapi-dev  
+  
+  postgres_image:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:    
+      - ./dbscripts/seed.sql :/docker-entrypoint-initdb.d/seed.sql
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "stardust_user"
+      POSTGRES_PASSWORD: "stardust_user"
+      POSTGRES_DB: "stardDustdb"    
+    networks:
+      - dockerapi-dev  
+volumes:
+  pgdata:
+     external: true
