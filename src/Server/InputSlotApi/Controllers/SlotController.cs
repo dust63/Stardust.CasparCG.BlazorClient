@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using Arch.EntityFrameworkCore.UnitOfWork;
 using Arch.EntityFrameworkCore.UnitOfWork.Collections;
 using AutoMapper;
-using Crosscutting.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Stardust.Flux.Contract;
+using Stardust.Flux.InputSlotApi.Factory;
 using Stardust.Flux.InputSlotApi.Models.Entity;
 
-namespace InputSlotApi.Controllers
+namespace Stardust.Flux.InputSlotApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -33,7 +33,7 @@ namespace InputSlotApi.Controllers
         }
 
         [HttpGet]
-        [Route("/all")]
+        [Route("all")]
         public Task<IPagedList<SlotDto>> Get(CancellationToken cancellationToken, int pageIndex = 0, int pageSize = 100)
         {
             var slotRepo = unitOfWork.GetRepository<Slot>();
@@ -90,8 +90,6 @@ namespace InputSlotApi.Controllers
                 throw new ArgumentNullException(nameof(slot));
             }
 
-
-
             var slotRepo = unitOfWork.GetRepository<Slot>();
             var entity = slotRepo.GetFirstOrDefault(
                     predicate: x => x.SlotId == slot.SlotId,
@@ -101,14 +99,10 @@ namespace InputSlotApi.Controllers
             if (entity == null)
                 return NotFound();
 
-            var addtionalsData = slot?.AdditionalsData ?? new Dictionary<string, string>();
-            entity.AdditionalsData.MergeChildren(
-                addtionalsData, (src, dst) => string.Equals(src.Key, dst.Key, StringComparison.OrdinalIgnoreCase),
-                (src) => new AdditionalSlotData { Key = src.Key, Value = src.Value },
-                (src, dst) => dst.Value = src.Value);
-
+            entity.UpdateValueFrom(slot);
             slotRepo.Update(entity);
             unitOfWork.SaveChanges();
+
             return entity != null ? Ok(mapper.Map<SlotDto>(entity)) : NotFound();
         }
 

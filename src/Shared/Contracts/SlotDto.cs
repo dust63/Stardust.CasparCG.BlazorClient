@@ -28,5 +28,10 @@ namespace Stardust.Flux.Contract
 
         [DataMember]
         public Dictionary<string, string> AdditionalsData { get; set; }
+
+        public override string ToString()
+        {
+            return string.Join("-", SlotId, Name, Type);
+        }
     }
 }

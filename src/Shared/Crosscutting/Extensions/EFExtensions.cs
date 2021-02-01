@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Crosscutting.Extensions
+namespace Stardust.Flux.Crosscutting.Extensions
 {
     public static class EFExtensions
     {

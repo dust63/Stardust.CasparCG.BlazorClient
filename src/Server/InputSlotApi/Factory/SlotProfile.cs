@@ -3,7 +3,7 @@ using AutoMapper;
 using Stardust.Flux.Contract;
 using Stardust.Flux.InputSlotApi.Models.Entity;
 
-namespace InputSlotApi.Factory
+namespace Stardust.Flux.InputSlotApi.Factory
 {
     public class SlotProfile : Profile
     {
