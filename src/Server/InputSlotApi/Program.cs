@@ -17,7 +17,7 @@ namespace Stardust.Flux.InputSlotApi
         {
             CreateHostBuilder(args)
              .Build()
-             .MigrateDatabase<DefaultDbContext>()
+             .MigrateDatabase<DataContext>()
              .Run();
         }
 

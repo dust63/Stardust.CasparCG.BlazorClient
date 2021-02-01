@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Arch.EntityFrameworkCore.UnitOfWork;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Stardust.Flux.InputSlotApi.Models;
+using AutoMapper;
 
 namespace Stardust.Flux.InputSlotApi
 {
@@ -34,11 +36,15 @@ namespace Stardust.Flux.InputSlotApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "InputSlotApi", Version = "v1" });
             });
-            services.AddEntityFrameworkNpgsql().AddDbContext<DefaultDbContext>(
+            services
+            .AddEntityFrameworkNpgsql()
+            .AddDbContext<DataContext>(
               options =>
               {
                   options.UseNpgsql(Configuration.GetConnectionString("Stardust"));
-              });
+              })
+              .AddUnitOfWork<DataContext>()
+              .AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,11 +58,8 @@ namespace Stardust.Flux.InputSlotApi
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
