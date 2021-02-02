@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Stardust.Flux.InputSlotApi.Models;
 
-namespace InputSlotApi.Migrations
+namespace Stardust.Flux.InputSlotApi.Migrations
 {
     [DbContext(typeof(DataContext))]
     [Migration("20210201215745_InitialCreate")]

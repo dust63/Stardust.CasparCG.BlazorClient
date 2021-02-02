@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace ScheduleEngine.Services
+namespace Stardust.Flux.ScheduleEngine.Services
 {
     public interface IRecordService
     {

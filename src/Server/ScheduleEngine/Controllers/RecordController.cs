@@ -9,10 +9,10 @@ using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ScheduleEngine.Models;
-using ScheduleEngine.Services;
+using Stardust.Flux.ScheduleEngine.Models;
+using Stardust.Flux.ScheduleEngine.Services;
 
-namespace ScheduleEngine.Controllers
+namespace Stardust.Flux.ScheduleEngine.Controllers
 {
     [ApiController]
     [Route("[controller]")]

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using ScheduleEngine.Models;
+using Stardust.Flux.ScheduleEngine.Models;
 
-namespace ScheduleEngine.Migrations
+namespace Stardust.Flux.ScheduleEngine.Migrations
 {
     [DbContext(typeof(DefaultDbContext))]
     partial class DefaultDbContextModelSnapshot : ModelSnapshot

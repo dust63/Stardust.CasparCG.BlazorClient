@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using Stardust.Flux.InputSlotApi.Models.Entity;
 
-namespace InputSlotApi.Factory
+namespace Stardust.Flux.InputSlotApi.Factory
 {
     public class AdditionalDataProfile : Profile
     {

@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 using System;
-namespace ScheduleEngine.Models
+namespace Stardust.Flux.ScheduleEngine.Models
 {
     [DataContract]
     [Serializable]

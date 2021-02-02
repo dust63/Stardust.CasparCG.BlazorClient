@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace InputSlotApi.Migrations
+namespace Stardust.Flux.InputSlotApi.Migrations
 {
     public partial class InitialCreate : Migration
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace ScheduleEngine
+namespace Stardust.Flux.ScheduleEngine
 {
     public class HangfireActivator : Hangfire.JobActivator
     {

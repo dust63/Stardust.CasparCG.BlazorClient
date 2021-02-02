@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ScheduleEngine.Migrations
+namespace Stardust.Flux.ScheduleEngine.Migrations
 {
     public partial class InitContext : Migration
     {

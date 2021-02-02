@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Stardust.Crosscutting;
 using Stardust.Flux.InputSlotApi.Models;
+using Stardust.Flux.Crosscutting;
 
 namespace Stardust.Flux.InputSlotApi
 {

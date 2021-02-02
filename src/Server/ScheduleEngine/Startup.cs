@@ -14,10 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using ScheduleEngine.Models;
-using ScheduleEngine.Services;
+using Stardust.Flux.ScheduleEngine.Models;
+using Stardust.Flux.ScheduleEngine.Services;
 
-namespace ScheduleEngine
+namespace Stardust.Flux.ScheduleEngine
 {
     public class Startup
     {

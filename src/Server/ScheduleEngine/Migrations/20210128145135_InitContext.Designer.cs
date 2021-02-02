@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using ScheduleEngine.Models;
+using Stardust.Flux.ScheduleEngine.Models;
 
-namespace ScheduleEngine.Migrations
+namespace Stardust.Flux.ScheduleEngine.Migrations
 {
     [DbContext(typeof(DefaultDbContext))]
     [Migration("20210128145135_InitContext")]

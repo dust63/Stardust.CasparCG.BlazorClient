@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Server/ScheduleEngine/ScheduleEngine.csproj",
+                "${workspaceFolder}/Server/ScheduleEngine/Stardust.Flux.ScheduleEngine.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Server/ScheduleEngine/ScheduleEngine.csproj",
+                "${workspaceFolder}/Server/ScheduleEngine/Stardust.Flux.ScheduleEngine.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/Server/ScheduleEngine/ScheduleEngine.csproj",
+                "${workspaceFolder}/Server/ScheduleEngine/Stardust.Flux.ScheduleEngine.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -44,7 +44,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Server/InputSlotApi/InputSlotApi.csproj",
+                "${workspaceFolder}/Server/InputSlotApi/Stardust.Flux.InputSlotApi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

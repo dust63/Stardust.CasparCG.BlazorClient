@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ScheduleEngine.Models;
-using Stardust.Crosscutting;
+using Stardust.Flux.ScheduleEngine.Models;
+using Stardust.Flux.Crosscutting;
 
-namespace ScheduleEngine
+
+namespace Stardust.Flux.ScheduleEngine
 {
     public class Program
     {

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Crosscutting\Crosscutting.csproj" />
+    <ProjectReference Include="..\..\Shared\Crosscutting\Stardust.Flux.Crosscutting.csproj" />
     <ProjectReference Include="..\..\Shared\Contracts\Stardust.Flux.Contract.csproj" />
     <ProjectReference Include="..\..\Shared\Core\Stardust.Flux.Core.csproj" />
   </ItemGroup>

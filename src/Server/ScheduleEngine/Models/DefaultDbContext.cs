@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace ScheduleEngine.Models
+namespace Stardust.Flux.ScheduleEngine.Models
 {
     public class DefaultDbContext : DbContext
     {
