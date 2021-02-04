@@ -8,5 +8,6 @@ namespace Stardust.Flux.PublishApi
         public string ClientId { get; set; }
 
         public string ClientSecrets { get; set; }
+        public string RedirectUrl { get; set; }
     }
 }

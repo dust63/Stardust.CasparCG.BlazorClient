@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stardust.Flux.PublishApi.Youtube;
-using Google.Apis.Auth.OAuth2.Responses;
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Google.Apis.YouTube.v3;
-
+using System.Net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Google.Apis.YouTube.v3.Data;
 
 namespace Stardust.Flux.PublishApi.Controllers
 {
@@ -17,16 +20,16 @@ namespace Stardust.Flux.PublishApi.Controllers
     [Route("[controller]")]
     public class YoutubeController : ControllerBase
     {
-
         private readonly ILogger<YoutubeController> _logger;
         private readonly YoutubeAppService youtubeService;
-
         private readonly YoutubeApiOptions _apiOptions;
+        private readonly AuthenticateService authService;
 
-        public YoutubeController(ILogger<YoutubeController> logger, IOptions<YoutubeApiOptions> apiOptions, YoutubeAppService youtubeService)
+        public YoutubeController(ILogger<YoutubeController> logger, AuthenticateService authService, YoutubeAppService youtubeService)
         {
+            this.authService = authService;
             _logger = logger;
-            _apiOptions = apiOptions.Value;
+
             this.youtubeService = youtubeService;
         }
 
@@ -38,25 +41,65 @@ namespace Stardust.Flux.PublishApi.Controllers
             return youtubeService.GetAccountInfo(pageIndex, pageSize, cancellationToken);
         }
 
-        [HttpPost]
-        [Route("Account")]
-        public Task<string> AddAccount(string name, CancellationToken cancellationToken)
+        [HttpGet]
+        [Route("AddAccount")]
+        public async Task<IActionResult> AddChannelAccess(string name, string channelId)
         {
-            return youtubeService.AddChannelAccount(name, cancellationToken);
+            var url = await authService.GetAuthorizationUrl(HttpContext, channelId ?? Guid.NewGuid().ToString(), name, YouTubeService.Scope.Youtube);
+            return Redirect(url.AbsoluteUri.ToString());
         }
 
         [HttpPost]
-        public Task Upload([FromQuery] string filePath, string accountId, CancellationToken cancellationToken)
+        [Route("RevokeAccount")]
+        public Task RevokeChannelAccess(string channelId)
         {
-            if (string.IsNullOrWhiteSpace(filePath))
+            if (channelId is null)
             {
-                throw new ArgumentException($"'{nameof(filePath)}' need to be defined.", nameof(filePath));
+                throw new ArgumentNullException(nameof(channelId));
+            }
+            return authService.RevokeToken(channelId, YouTubeService.Scope.Youtube);
+        }
+
+        [HttpGet]
+        [Route("Authorized")]
+        public Task<string> Authorized(string code)
+        {
+            return authService.GetYoutubeAuthenticationToken(this, code);
+        }
+
+        [HttpPost]
+        [Route("Upload")]
+        public Task Upload(UploadRequest uploadRequest, CancellationToken cancellationToken)
+        {
+            if (uploadRequest is null)
+            {
+                throw new ArgumentNullException(nameof(uploadRequest));
             }
 
-            return youtubeService.UploadFile(filePath, accountId, cancellationToken);
+            if (uploadRequest.ChannelId is null)
+            {
+                throw new ArgumentNullException(nameof(uploadRequest.ChannelId));
+            }
+
+            if (string.IsNullOrWhiteSpace(uploadRequest.FilePath))
+            {
+                throw new ArgumentException($"'{nameof(uploadRequest.FilePath)}' need to be defined.");
+            }
+
+            return youtubeService.UploadFile(uploadRequest, cancellationToken);
         }
 
+        [HttpGet]
+        [Route("Categories")]
+        public Task<IList<VideoCategory>> GetCategories(CancellationToken cancellationToken, string channelId, string regionCode = "US")
+        {
+            if (channelId is null)
+            {
+                throw new ArgumentNullException(nameof(channelId));
+            }
 
+            return youtubeService.GetCategories(regionCode, channelId, cancellationToken);
+        }
 
 
     }

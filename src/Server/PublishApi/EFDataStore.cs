@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Stardust.Flux.PublishApi.Models;
 
-namespace PublishApi
+namespace Stardust.Flux.PublishApi
 {
     public class EFDataStore : IDataStore
     {
@@ -16,20 +16,18 @@ namespace PublishApi
 
         public string AccountId
         {
-            get; set;
+            get; private set;
         }
         public string Name { get; }
 
         public EFDataStore(PublishContext context, string name) : this(context)
         {
-            this.context = context;
             Name = name;
         }
 
         public EFDataStore(PublishContext context)
         {
             this.context = context;
-            AccountId = Guid.NewGuid().ToString();
         }
 
         public async Task ClearAsync()
@@ -81,7 +79,7 @@ namespace PublishApi
 
             string json = JsonConvert.SerializeObject(value);
 
-            var item = await context.YoutubeAccounts.SingleOrDefaultAsync(x => x.Key == AccountId);
+            var item = await context.YoutubeAccounts.SingleOrDefaultAsync(x => x.Key == key);
 
             if (item == null)
             {

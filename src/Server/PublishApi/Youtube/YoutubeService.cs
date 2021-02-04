@@ -17,7 +17,6 @@ using Google.Apis.YouTube.v3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PublishApi;
 using Stardust.Flux.PublishApi.Models;
 
 namespace Stardust.Flux.PublishApi.Youtube
@@ -100,32 +99,34 @@ namespace Stardust.Flux.PublishApi.Youtube
         }
 
 
-        public async Task<IList<VideoCategory>> GetCategories(string regionCode, string accountId)
+        public async Task<IList<VideoCategory>> GetCategories(string regionCode, string accountId, CancellationToken cancellationToken)
         {
             var service = await GetService(accountId);
             var categories = service.VideoCategories.List("snippet");
             if (!string.IsNullOrEmpty(regionCode))
                 categories.RegionCode = regionCode;
-            var response = await categories.ExecuteAsync();
+            var response = await categories.ExecuteAsync(cancellationToken);
             return response.Items;
         }
 
 
-        public async Task UploadFile(string filePath, string accountId, CancellationToken cancellationToken)
+
+
+        public async Task UploadFile(UploadRequest uploadRequest, CancellationToken cancellationToken)
         {
             var video = new Video();
             video.Snippet = new VideoSnippet();
-            video.Snippet.Title = "Default Video Title";
-            video.Snippet.Description = "Default Video Description";
-            video.Snippet.Tags = new string[] { "tag1", "tag2" };
-            video.Snippet.CategoryId = "22"; // See https://developers.google.com/youtube/v3/docs/videoCategories/list
+            video.Snippet.Title = uploadRequest.Title;
+            video.Snippet.Description = uploadRequest.Description;
+            video.Snippet.Tags = uploadRequest.Tags;
+            video.Snippet.CategoryId = uploadRequest.CategoryId;
             video.Status = new VideoStatus();
-            video.Status.PrivacyStatus = "unlisted"; // or "private" or "public"
+            video.Status.PrivacyStatus = uploadRequest.PrivacyStatus;
 
 
-            using (var fileStream = new FileStream(filePath, FileMode.Open))
+            using (var fileStream = new FileStream(uploadRequest.FilePath, FileMode.Open))
             {
-                var service = await GetService(accountId);
+                var service = await GetService(uploadRequest.ChannelId);
                 var videosInsertRequest = service.Videos.Insert(video, "snippet,status", fileStream, "video/*");
                 videosInsertRequest.ProgressChanged += videosInsertRequest_ProgressChanged;
                 videosInsertRequest.ResponseReceived += videosInsertRequest_ResponseReceived;
@@ -150,7 +151,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         void videosInsertRequest_ResponseReceived(Video video)
         {
-
+            Logger.LogInformation("Video:{0} published on youtube.", video.Id);
         }
     }
 }

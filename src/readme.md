@@ -15,5 +15,6 @@ GRANT ALL ON SCHEMA public TO public;
 
 
 to use Publish Api you need to set
-dotnet user-secrets set "YoutubeApi:ClientSecrets" "<your client secrets>
+
 dotnet user-secrets set "YoutubeApi:ClientId" "<your client id>
+dotnet user-secrets set "YoutubeApi:ClientSecrets" "<your client secrets>
