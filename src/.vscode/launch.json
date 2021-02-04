@@ -25,13 +25,33 @@
             }
         },
         {
-            "name": ".NET Core Launch (slot-input-api)",
+            "name": ".NET Core Launch (slot-core-api)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-slot-input-api",
-            "program": "${workspaceFolder}/Server/InputSlotApi/bin/Debug/net5.0/Stardust.Flux.InputSlotApi.dll",
+            "preLaunchTask": "build-slot-core-api",
+            "program": "${workspaceFolder}/Server/CoreApi/bin/Debug/net5.0/Stardust.Flux.CoreApi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Server/InputSlotApi",
+            "cwd": "${workspaceFolder}/Server/CoreApi",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": ".NET Core Launch (publish-api)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-publish-api",
+            "program": "${workspaceFolder}/Server/PublishApi/bin/Debug/net5.0/Stardust.Flux.PublishApi.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Server/PublishApi",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
@@ -50,5 +70,7 @@
             "request": "attach",
             "processId": "${command:pickProcess}"
         }
+
+       
     ]
 }

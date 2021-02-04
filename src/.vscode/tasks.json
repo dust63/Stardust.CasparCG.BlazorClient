@@ -39,12 +39,24 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-slot-input-api",
+            "label": "build-slot-core-api",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Server/InputSlotApi/Stardust.Flux.InputSlotApi.csproj",
+                "${workspaceFolder}/Server/CoreApi/Stardust.Flux.CoreApi.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-publish-api",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Server/PublishApi/Stardust.Flux.PublishApi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

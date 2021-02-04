@@ -1,11 +1,10 @@
-
-version: '3.4'
+version: "3.4"
 
 networks:
   dockerapi-dev:
-    driver: bridge 
+    driver: bridge
 
-services: 
+services:
   postgres_image:
     container_name: postgres
     image: postgres:latest
@@ -13,7 +12,7 @@ services:
       - "5432:5432"
     restart: always
     volumes:
-      - db_volume:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
       - ./dbscripts/seed.sql :/docker-entrypoint-initdb.d/seed.sql
     environment:
       POSTGRES_USER: "stardust_user"
@@ -22,8 +21,7 @@ services:
       PGDATA: /tmp
     networks:
       - dockerapi-dev
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-volumes: 
+
+volumes:
   pgdata:
     external: true
