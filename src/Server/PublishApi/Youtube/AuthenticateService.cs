@@ -14,6 +14,7 @@ using Google.Apis.Auth.OAuth2.Responses;
 using static Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp;
 using Google.Apis.YouTube.v3;
 using System.Linq;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Stardust.Flux.PublishApi.Youtube
 {
@@ -37,13 +38,19 @@ namespace Stardust.Flux.PublishApi.Youtube
             }
         }
 
-        public Task<UserCredential> GetCredential(string description, string accountId, string[] scopes, CancellationToken cancellationToken)
+        public async Task<UserCredential> GetCredential(string description, string accountId, string[] scopes, CancellationToken cancellationToken)
         {
 
-            return GoogleWebAuthorizationBroker.AuthorizeAsync(
+            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                new ClientSecrets { ClientId = apiOptions.ClientId, ClientSecret = apiOptions.ClientSecrets },
                scopes,
                 accountId ?? Guid.NewGuid().ToString(), cancellationToken, new EFDataStore(publishContext));
+            if (credential.Token.IsExpired(Google.Apis.Util.SystemClock.Default))
+            {
+                var refreshResult = credential.RefreshTokenAsync(CancellationToken.None).Result;
+            }
+
+            return credential;
         }
 
         public async Task<AuthResult> AuthorizeAsync(HttpContext httpContext, string userId, CancellationToken taskCancellationToken, params string[] scopes)
@@ -57,10 +64,17 @@ namespace Stardust.Flux.PublishApi.Youtube
             {
 
                 var redirectUrl = await GetAuthorizationUrl(httpContext, userId, null, scopes);
-                return new AuthResult { RedirectUri = redirectUrl.AbsoluteUri.ToString() };
+                return new AuthResult { RedirectUri = redirectUrl };
             }
 
-            return new AuthResult { Credential = new UserCredential(flow, userId, token) };
+            var credential = new UserCredential(flow, userId, token);
+
+            if (credential.Token.IsExpired(Google.Apis.Util.SystemClock.Default))
+            {
+                var refreshResult = credential.RefreshTokenAsync(CancellationToken.None).Result;
+            }
+
+            return new AuthResult { Credential = credential };
         }
 
 
@@ -70,7 +84,6 @@ namespace Stardust.Flux.PublishApi.Youtube
         /// </summary>
         public static bool ShouldRequestAuthorizationCode(TokenResponse token, IAuthorizationCodeFlow flow)
         {
-            // TODO: This code should be shared between this class and AuthorizationCodeInstalledApp.
             // If the flow includes a parameter that requires a new token, if the stored token is null or it doesn't
             // have a refresh token and the access token is expired we need to retrieve a new authorization code.
             return flow.ShouldForceTokenRetrieval() || token == null || (token.RefreshToken == null
@@ -84,13 +97,13 @@ namespace Stardust.Flux.PublishApi.Youtube
 
             var clientSecrets = new ClientSecrets { ClientId = apiOptions.ClientId, ClientSecret = apiOptions.ClientSecrets };
             var initializer = new GoogleAuthorizationCodeFlow.Initializer { ClientSecrets = clientSecrets, Scopes = scopes, DataStore = new EFDataStore(publishContext, description) };
-            var googleAuthorizationCodeFlow = new GoogleAuthorizationCodeFlow(initializer);
 
+            var googleAuthorizationCodeFlow = new GoogleAuthorizationCodeFlow(initializer);
             return googleAuthorizationCodeFlow;
         }
 
         // HttpContext context, string userId, 
-        public async Task<Uri> GetAuthorizationUrl(HttpContext context, string id, string description, params string[] scopes)
+        public async Task<string> GetAuthorizationUrl(HttpContext context, string id, string description, params string[] scopes)
         {
             // Now, let's grab the AuthorizationCodeFlow that will generate a unique authorization URL to redirect our user to
             var googleAuthorizationCodeFlow = this.GetGoogleAuthorizationCodeFlow(description, scopes);
@@ -102,9 +115,8 @@ namespace Stardust.Flux.PublishApi.Youtube
             var authorizationUrl = codeRequestUrl.Build();
             context.Session.Set("user_id", Encoding.UTF8.GetBytes(id));
             context.Session.Set("scopes", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(scopes)));
-
             // Give it back to our caller for the redirect
-            return authorizationUrl;
+            return authorizationUrl.AbsoluteUri;
         }
 
         public async Task RevokeToken(string accountId, params string[] scopes)
@@ -119,6 +131,25 @@ namespace Stardust.Flux.PublishApi.Youtube
             try
             {
                 await googleAuthorizationCodeFlow.RevokeTokenAsync(accountId, tokenResponse.AccessToken, CancellationToken.None);
+            }
+            finally
+            {
+                account.Value = null;
+                publishContext.SaveChanges();
+            }
+        }
+
+        public async Task DeleteToken(string accountId, params string[] scopes)
+        {
+            CheckForAccount(accountId);
+            // Now, let's grab the AuthorizationCodeFlow that will generate a unique authorization URL to redirect our user to
+            var googleAuthorizationCodeFlow = this.GetGoogleAuthorizationCodeFlow(null, scopes);
+            var account = await publishContext.YoutubeAccounts.FirstOrDefaultAsync(x => x.Key == accountId);
+            if (account == null)
+                throw new InvalidOperationException("Account not found for this id");
+            try
+            {
+                await googleAuthorizationCodeFlow.DeleteTokenAsync(accountId, CancellationToken.None);
             }
             finally
             {

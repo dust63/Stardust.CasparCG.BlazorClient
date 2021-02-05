@@ -22,7 +22,16 @@ using Stardust.Flux.PublishApi.Models;
 
 namespace Stardust.Flux.PublishApi.Youtube
 {
-    public class YoutubeAppService
+    public interface IYoutubeAppService
+    {
+        Task<string> AddChannelAccount(string name, CancellationToken cancellationToken);
+        Task<IDictionary<string, string>> GetAccountsInfo(int pageIndex, int pageSize, CancellationToken cancellationToken);
+        Task<IList<VideoCategory>> GetCategories(HttpContext context, string regionCode, string accountId, CancellationToken cancellationToken);
+        Task<IList<Channel>> GetChannelInfo(HttpContext context, string accountId, CancellationToken cancellationToken);
+        Task UploadFile(HttpContext context, UploadRequest uploadRequest, CancellationToken cancellationToken);
+    }
+
+    public class YoutubeAppService : IYoutubeAppService
     {
         public ILogger<YoutubeAppService> Logger { get; }
 
@@ -49,15 +58,15 @@ namespace Stardust.Flux.PublishApi.Youtube
         private async Task<YouTubeService> GetService(HttpContext httpContext, string accountId, CancellationToken cancellationToken, params string[] scopes)
         {
             authenticateService.CheckForAccount(accountId);
-            var result = await authenticateService.GetCredential(null, accountId, scopes, cancellationToken);
+            var result = await authenticateService.AuthorizeAsync(httpContext, accountId, cancellationToken, scopes);
             return new YouTubeService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = result,
+                HttpClientInitializer = result.Credential,
                 ApplicationName = Assembly.GetExecutingAssembly().GetName().Name
             });
         }
 
-        public async Task<IDictionary<string, string>> GetAccountInfo(int pageIndex, int pageSize, CancellationToken cancellationToken)
+        public async Task<IDictionary<string, string>> GetAccountsInfo(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
             var results = await publishContext.YoutubeAccounts
             .OrderBy(x => x.Name)
@@ -83,12 +92,48 @@ namespace Stardust.Flux.PublishApi.Youtube
             return dataStore.AccountId;
         }
 
+        public async Task<LiveBroadcast> InsertBroadcast(HttpContext context, BroadcastRequestDto broadcastRequest, CancellationToken cancellationToken)
+        {
+            var service = await GetService(context, broadcastRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var broadcast = new LiveBroadcast();
+            broadcast.Status = new LiveBroadcastStatus
+            {
+                PrivacyStatus = broadcastRequest.PrivacyStatus.ToString().ToLower(),
+                SelfDeclaredMadeForKids = broadcastRequest.SelfDeclaredMadeForKids
+            };
+            broadcast.ContentDetails = new LiveBroadcastContentDetails
+            {
+                MonitorStream = new MonitorStreamInfo()
+            };
+            broadcast.ContentDetails.MonitorStream.EnableMonitorStream = broadcastRequest.EnableMonitorStream;
+            broadcast.ContentDetails.MonitorStream.BroadcastStreamDelayMs = broadcastRequest.BroadcastStreamDelayMs;
+            broadcast.ContentDetails.EnableAutoStart = broadcastRequest.EnableAutoStart;
+            broadcast.ContentDetails.EnableAutoStop = broadcastRequest.EnableAutoStop;
+            broadcast.ContentDetails.EnableClosedCaptions = broadcastRequest.EnableClosedCaptions;
+            broadcast.ContentDetails.EnableContentEncryption = broadcastRequest.EnableContentEncryption;
+            broadcast.ContentDetails.EnableDvr = broadcastRequest.EnableDvr;
+            broadcast.ContentDetails.EnableEmbed = broadcastRequest.EnableEmbed;
+            broadcast.ContentDetails.RecordFromStart = broadcastRequest.RecordFromStart;
 
+            broadcast.Snippet = new LiveBroadcastSnippet
+            {
+                ScheduledStartTime = broadcastRequest.ScheduleStartDate,
+                ScheduledEndTime = broadcastRequest.ScheduleEndDate,
+                Title = broadcastRequest.Title,
+                Description = broadcastRequest.Description,
+                Thumbnails = broadcastRequest.ThumbnailDetails
+            };
+            var request = service.LiveBroadcasts.Insert(broadcast, "id,snippet,contentDetails,status");
+            var resource = await request.ExecuteAsync(cancellationToken);
+            return resource;
+        }
 
         public async Task<IList<Channel>> GetChannelInfo(HttpContext context, string accountId, CancellationToken cancellationToken)
         {
-            var service = await GetService(context, accountId, cancellationToken);
-            var channelsRequest = service.Channels.List("snippet");
+            var service = await GetService(context, accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeReadonly });
+            var channelsRequest = service.Channels.List("id,snippet,statistics");
+            channelsRequest.Mine = true;
+            channelsRequest.Fields = "items";
             var response = await channelsRequest.ExecuteAsync();
             return response.Items;
         }
@@ -104,9 +149,6 @@ namespace Stardust.Flux.PublishApi.Youtube
             return response.Items;
         }
 
-
-
-
         public async Task UploadFile(HttpContext context, UploadRequest uploadRequest, CancellationToken cancellationToken)
         {
             var service = await GetService(context, uploadRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
@@ -117,8 +159,8 @@ namespace Stardust.Flux.PublishApi.Youtube
             video.Snippet.Description = uploadRequest.Description;
             video.Snippet.Tags = uploadRequest.Tags;
             video.Snippet.CategoryId = uploadRequest.CategoryId;
-            video.Status = new VideoStatus();
-            video.Status.PrivacyStatus = uploadRequest.PrivacyStatus;
+            video.Status = new VideoStatus { PrivacyStatus = uploadRequest.PrivacyStatus.ToString().ToLower() };
+
 
             var youtubeUploadState = new YoutubeUpload { YoutubeAccountId = uploadRequest.AccountId, FilePath = uploadRequest.FilePath };
             publishContext.YoutubeUploads.Add(youtubeUploadState);

@@ -26,7 +26,7 @@ namespace Stardust.Flux.PublishApi.Youtube
         [DataMember]
         public string CategoryId { get; set; }
         [DataMember]
-        public string PrivacyStatus { get; set; }
+        public PrivacyStatus PrivacyStatus { get; set; }
         [DataMember]
         public string FilePath { get; set; }
         [DataMember]
