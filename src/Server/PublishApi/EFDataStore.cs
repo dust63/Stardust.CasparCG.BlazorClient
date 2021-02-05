@@ -63,7 +63,7 @@ namespace Stardust.Flux.PublishApi
 
 
             var item = context.YoutubeAccounts.FirstOrDefault(x => x.Key == key);
-            T value = item == null ? default(T) : JsonConvert.DeserializeObject<T>(item.Value);
+            T value = item?.Value == null ? default(T) : JsonConvert.DeserializeObject<T>(item.Value);
             return Task.FromResult<T>(value);
 
         }
@@ -89,6 +89,7 @@ namespace Stardust.Flux.PublishApi
             else
             {
                 item.Value = json;
+                item.ModifiedOn = DateTime.UtcNow;
             }
             await context.SaveChangesAsync();
             AccountId = item.Key;

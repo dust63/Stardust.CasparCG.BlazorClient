@@ -11,6 +11,9 @@ using Stardust.Flux.PublishApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Google.Apis.Auth.OAuth2.Responses;
+using static Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp;
+using Google.Apis.YouTube.v3;
+using System.Linq;
 
 namespace Stardust.Flux.PublishApi.Youtube
 {
@@ -26,8 +29,57 @@ namespace Stardust.Flux.PublishApi.Youtube
             this.publishContext = publishContext;
         }
 
+        public void CheckForAccount(string accountId)
+        {
+            if (!publishContext.YoutubeAccounts.Any(x => x.Key == accountId))
+            {
+                throw new NoAccountFoundException(accountId);
+            }
+        }
+
+        public Task<UserCredential> GetCredential(string description, string accountId, string[] scopes, CancellationToken cancellationToken)
+        {
+
+            return GoogleWebAuthorizationBroker.AuthorizeAsync(
+               new ClientSecrets { ClientId = apiOptions.ClientId, ClientSecret = apiOptions.ClientSecrets },
+               scopes,
+                accountId ?? Guid.NewGuid().ToString(), cancellationToken, new EFDataStore(publishContext));
+        }
+
+        public async Task<AuthResult> AuthorizeAsync(HttpContext httpContext, string userId, CancellationToken taskCancellationToken, params string[] scopes)
+        {
+            var flow = GetGoogleAuthorizationCodeFlow(null, scopes);
+            // Try to load a token from the data store.
+            var token = await flow.LoadTokenAsync(userId, taskCancellationToken).ConfigureAwait(false);
+
+            // Check if a new authorization code is needed.
+            if (ShouldRequestAuthorizationCode(token, flow))
+            {
+
+                var redirectUrl = await GetAuthorizationUrl(httpContext, userId, null, scopes);
+                return new AuthResult { RedirectUri = redirectUrl.AbsoluteUri.ToString() };
+            }
+
+            return new AuthResult { Credential = new UserCredential(flow, userId, token) };
+        }
+
+
+        /// <summary>
+        /// Determines the need for retrieval of a new authorization code, based on the given token and the 
+        /// authorization code flow.
+        /// </summary>
+        public static bool ShouldRequestAuthorizationCode(TokenResponse token, IAuthorizationCodeFlow flow)
+        {
+            // TODO: This code should be shared between this class and AuthorizationCodeInstalledApp.
+            // If the flow includes a parameter that requires a new token, if the stored token is null or it doesn't
+            // have a refresh token and the access token is expired we need to retrieve a new authorization code.
+            return flow.ShouldForceTokenRetrieval() || token == null || (token.RefreshToken == null
+                && token.IsExpired(flow.Clock));
+        }
+
+
         // This is a method we'll use to obtain the authorization code flow
-        private AuthorizationCodeFlow GetGoogleAuthorizationCodeFlow(string description, params string[] scopes)
+        public AuthorizationCodeFlow GetGoogleAuthorizationCodeFlow(string description, params string[] scopes)
         {
 
             var clientSecrets = new ClientSecrets { ClientId = apiOptions.ClientId, ClientSecret = apiOptions.ClientSecrets };
@@ -55,25 +107,24 @@ namespace Stardust.Flux.PublishApi.Youtube
             return authorizationUrl;
         }
 
-        public async Task RevokeToken(string id, params string[] scopes)
+        public async Task RevokeToken(string accountId, params string[] scopes)
         {
+            CheckForAccount(accountId);
             // Now, let's grab the AuthorizationCodeFlow that will generate a unique authorization URL to redirect our user to
             var googleAuthorizationCodeFlow = this.GetGoogleAuthorizationCodeFlow(null, scopes);
-            var account = await publishContext.YoutubeAccounts.FirstOrDefaultAsync(x => x.Key == id);
+            var account = await publishContext.YoutubeAccounts.FirstOrDefaultAsync(x => x.Key == accountId);
             if (account == null)
                 throw new InvalidOperationException("Account not found for this id");
             TokenResponse tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(account.Value);
             try
             {
-                await googleAuthorizationCodeFlow.RevokeTokenAsync(id, tokenResponse.AccessToken, CancellationToken.None);
+                await googleAuthorizationCodeFlow.RevokeTokenAsync(accountId, tokenResponse.AccessToken, CancellationToken.None);
             }
             finally
             {
                 account.Value = null;
                 publishContext.SaveChanges();
             }
-
-
         }
 
 

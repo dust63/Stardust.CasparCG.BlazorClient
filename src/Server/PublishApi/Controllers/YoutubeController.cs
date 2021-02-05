@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stardust.Flux.PublishApi.Youtube;
-
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Options;
 using Google.Apis.YouTube.v3;
-using System.Net;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Google.Apis.YouTube.v3.Data;
 
 namespace Stardust.Flux.PublishApi.Controllers
 {
@@ -21,16 +15,16 @@ namespace Stardust.Flux.PublishApi.Controllers
     public class YoutubeController : ControllerBase
     {
         private readonly ILogger<YoutubeController> _logger;
-        private readonly YoutubeAppService youtubeService;
-        private readonly YoutubeApiOptions _apiOptions;
-        private readonly AuthenticateService authService;
+        private readonly YoutubeAppService _youtubeService;
+        private readonly AuthenticateService _authService;
 
-        public YoutubeController(ILogger<YoutubeController> logger, AuthenticateService authService, YoutubeAppService youtubeService)
+        public YoutubeController(ILogger<YoutubeController> logger,
+        AuthenticateService authService,
+        YoutubeAppService youtubeService)
         {
-            this.authService = authService;
+            _authService = authService;
             _logger = logger;
-
-            this.youtubeService = youtubeService;
+            _youtubeService = youtubeService;
         }
 
 
@@ -38,47 +32,71 @@ namespace Stardust.Flux.PublishApi.Controllers
         [Route("Account")]
         public Task<IDictionary<string, string>> GetAccount(CancellationToken cancellationToken, int pageIndex = 0, int pageSize = 100)
         {
-            return youtubeService.GetAccountInfo(pageIndex, pageSize, cancellationToken);
+            return _youtubeService.GetAccountInfo(pageIndex, pageSize, cancellationToken);
         }
 
-        [HttpGet]
-        [Route("AddAccount")]
-        public async Task<IActionResult> AddChannelAccess(string name, string channelId)
+        /// <summary>
+        /// Ask user to grant acces to his channel. The grants information are stored in db
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Account/Grant")]
+        public async Task<IActionResult> AddChannelAccess(string name, string accountId)
         {
-            var url = await authService.GetAuthorizationUrl(HttpContext, channelId ?? Guid.NewGuid().ToString(), name, YouTubeService.Scope.Youtube);
+            var url = await _authService.GetAuthorizationUrl(HttpContext, accountId ?? Guid.NewGuid().ToString(), name, YouTubeService.Scope.Youtube);
             return Redirect(url.AbsoluteUri.ToString());
         }
 
+        /// <summary>
+        /// Remove the grants information stored in db for a given accountId
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("RevokeAccount")]
-        public Task RevokeChannelAccess(string channelId)
+        [Route("Account/Revoke")]
+        public async Task<IActionResult> RevokeChannelAccess(string accountId)
         {
-            if (channelId is null)
+            if (accountId is null)
             {
-                throw new ArgumentNullException(nameof(channelId));
+                throw new ArgumentNullException(nameof(accountId));
             }
-            return authService.RevokeToken(channelId, YouTubeService.Scope.Youtube);
+            try
+            {
+                await _authService.RevokeToken(accountId, YouTubeService.Scope.Youtube);
+                return Ok();
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
+        /// <summary>
+        /// Used for oauth return token
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("Authorized")]
         public Task<string> Authorized(string code)
         {
-            return authService.GetYoutubeAuthenticationToken(this, code);
+            return _authService.GetYoutubeAuthenticationToken(this, code);
         }
 
         [HttpPost]
         [Route("Upload")]
-        public Task Upload(UploadRequest uploadRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Upload(UploadRequest uploadRequest, CancellationToken cancellationToken)
         {
             if (uploadRequest is null)
             {
                 throw new ArgumentNullException(nameof(uploadRequest));
             }
 
-            if (uploadRequest.ChannelId is null)
+            if (uploadRequest.AccountId is null)
             {
-                throw new ArgumentNullException(nameof(uploadRequest.ChannelId));
+                throw new ArgumentNullException(nameof(uploadRequest.AccountId));
             }
 
             if (string.IsNullOrWhiteSpace(uploadRequest.FilePath))
@@ -86,19 +104,35 @@ namespace Stardust.Flux.PublishApi.Controllers
                 throw new ArgumentException($"'{nameof(uploadRequest.FilePath)}' need to be defined.");
             }
 
-            return youtubeService.UploadFile(uploadRequest, cancellationToken);
+            try
+            {
+                await _youtubeService.UploadFile(HttpContext, uploadRequest, cancellationToken);
+                return Ok();
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet]
         [Route("Categories")]
-        public Task<IList<VideoCategory>> GetCategories(CancellationToken cancellationToken, string channelId, string regionCode = "US")
+        public async Task<IActionResult> GetCategories(CancellationToken cancellationToken, string accountId, string regionCode = "US")
         {
-            if (channelId is null)
+            if (accountId is null)
             {
-                throw new ArgumentNullException(nameof(channelId));
+                throw new ArgumentNullException(nameof(accountId));
             }
 
-            return youtubeService.GetCategories(regionCode, channelId, cancellationToken);
+            try
+            {
+                var categories = await _youtubeService.GetCategories(HttpContext, regionCode, accountId, cancellationToken);
+                return Ok(categories);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
 

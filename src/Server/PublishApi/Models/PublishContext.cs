@@ -13,6 +13,6 @@ namespace Stardust.Flux.PublishApi.Models
         {
         }
         public DbSet<YoutubeAccount> YoutubeAccounts { get; set; }
-
+        public DbSet<YoutubeUpload> YoutubeUploads { get; internal set; }
     }
 }
