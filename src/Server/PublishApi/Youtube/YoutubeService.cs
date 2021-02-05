@@ -127,6 +127,7 @@ namespace Stardust.Flux.PublishApi.Youtube
             {
 
                 var videosInsertRequest = service.Videos.Insert(video, "snippet,status", fileStream, "video/*");
+                videosInsertRequest.NotifySubscribers = UploadRequest.NotifySubscribers;
                 videosInsertRequest.ProgressChanged += (e) => videosInsertRequest_ProgressChanged(e, youtubeUploadState.YoutubeUploadId);
                 videosInsertRequest.ResponseReceived += (e) => videosInsertRequest_ResponseReceived(e, youtubeUploadState.YoutubeUploadId);
                 await videosInsertRequest.UploadAsync();
