@@ -5,11 +5,11 @@ namespace Stardust.Flux.PublishApi.Youtube
     [DataContract]
     public enum PrivacyStatus
     {
-        [EnumMember]
+        [EnumMember(Value = "private")]
         Private = 0,
-        [EnumMember]
+        [EnumMember(Value = "public")]
         Public = 1,
-        [EnumMember]
+        [EnumMember(Value = "unlisted")]
         Unlisted = 2
 
     }

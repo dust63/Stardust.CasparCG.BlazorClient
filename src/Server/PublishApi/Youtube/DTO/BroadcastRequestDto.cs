@@ -7,6 +7,23 @@ using Newtonsoft.Json.Converters;
 
 namespace Stardust.Flux.PublishApi.Youtube
 {
+
+    public class YoutubeListItemsDto<T>
+    {
+        public string PreviousPageToken { get; set; }
+
+        public string NextPageToken { get; set; }
+
+        public int TotalItems { get; set; }
+
+        public int PageSize { get; set; }
+        public T[] Items { get; set; }
+
+    }
+
+    /// <summary>
+    /// Use this contract to create a broadcast
+    /// </summary>
     [DataContract]
     public class BroadcastRequestDto
     {
@@ -15,6 +32,10 @@ namespace Stardust.Flux.PublishApi.Youtube
         /// </summary>
         [DataMember]
         public string AccountId { get; set; }
+
+        [DataMember]
+        public string BroadcastId { get; set; }
+
         /// <summary>
         /// The broadcast's title. Note that the broadcast represents exactly one YouTube video. You can set this field by modifying the broadcast resource or by setting the title field of the corresponding video resource.
         /// </summary>

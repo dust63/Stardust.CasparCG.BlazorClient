@@ -24,7 +24,19 @@ namespace Stardust.Flux.PublishApi.Migrations
                     b.Property<string>("Key")
                         .HasColumnType("text");
 
+                    b.Property<string>("AccessToken")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long?>("ExpiresInSeconds")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("IdToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("IssuedUtc")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("ModifiedOn")
@@ -33,7 +45,13 @@ namespace Stardust.Flux.PublishApi.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Scope")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenType")
                         .HasColumnType("text");
 
                     b.HasKey("Key");

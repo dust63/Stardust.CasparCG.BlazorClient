@@ -13,9 +13,15 @@ namespace Stardust.Flux.PublishApi.Migrations
                 {
                     Key = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    Value = table.Column<string>(type: "text", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IssuedUtc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
+                    ExpiresInSeconds = table.Column<long>(type: "bigint", nullable: true),
+                    IdToken = table.Column<string>(type: "text", nullable: true),
+                    Scope = table.Column<string>(type: "text", nullable: true),
+                    TokenType = table.Column<string>(type: "text", nullable: true),
+                    AccessToken = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

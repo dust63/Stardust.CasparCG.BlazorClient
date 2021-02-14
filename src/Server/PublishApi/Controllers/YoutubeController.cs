@@ -30,7 +30,9 @@ namespace Stardust.Flux.PublishApi.Controllers
 
         [HttpGet]
         [Route("Account")]
-        public Task<IDictionary<string, string>> GetAccount(CancellationToken cancellationToken, int pageIndex = 0, int pageSize = 100)
+        public Task<IDictionary<string, string>> GetAccount(CancellationToken cancellationToken,
+        [FromQuery] int pageIndex = 0,
+        [FromQuery] int pageSize = 100)
         {
             return _youtubeService.GetAccountsInfo(pageIndex, pageSize, cancellationToken);
         }
@@ -43,7 +45,7 @@ namespace Stardust.Flux.PublishApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Account/Grant")]
-        public async Task<IActionResult> AddChannelAccess(string name, string accountId)
+        public async Task<IActionResult> AddChannelAccess([FromQuery] string name, [FromQuery] string accountId)
         {
             var url = await _authService.GetAuthorizationUrl(HttpContext, accountId ?? Guid.NewGuid().ToString(), name, YouTubeService.Scope.Youtube);
             return Redirect(url);
@@ -56,7 +58,7 @@ namespace Stardust.Flux.PublishApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Account/Revoke")]
-        public async Task<IActionResult> RevokeChannelAccess(string accountId)
+        public async Task<IActionResult> RevokeChannelAccess([FromQuery] string accountId)
         {
             if (accountId is null)
             {
@@ -75,7 +77,7 @@ namespace Stardust.Flux.PublishApi.Controllers
 
         [HttpGet]
         [Route("Account/Delete")]
-        public async Task<IActionResult> DeleteChannelAccess(string accountId)
+        public async Task<IActionResult> DeleteChannelAccess([FromQuery] string accountId)
         {
             if (accountId is null)
             {
@@ -136,7 +138,9 @@ namespace Stardust.Flux.PublishApi.Controllers
 
         [HttpGet]
         [Route("Categories")]
-        public async Task<IActionResult> GetCategories(CancellationToken cancellationToken, string accountId, string regionCode = "US")
+        public async Task<IActionResult> GetCategories(CancellationToken cancellationToken,
+        [FromQuery] string accountId,
+        [FromQuery] string regionCode = "US")
         {
             if (accountId is null)
             {
@@ -156,7 +160,8 @@ namespace Stardust.Flux.PublishApi.Controllers
 
         [HttpGet]
         [Route("ChannelInfo")]
-        public async Task<IActionResult> GetChannelInfo(CancellationToken cancellationToken, string accountId)
+        public async Task<IActionResult> GetChannelInfo(CancellationToken cancellationToken,
+         [FromQuery] string accountId)
         {
             if (accountId is null)
             {
@@ -174,9 +179,37 @@ namespace Stardust.Flux.PublishApi.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("Broadcast/List")]
+        public async Task<IActionResult> GetBroadcasts(CancellationToken cancellationToken,
+          [FromQuery] string accountId,
+           [FromQuery] string pageToken,
+            [FromQuery] int pageSize = 100)
+        {
+            if (string.IsNullOrEmpty(accountId))
+            {
+                throw new ArgumentException($"« {nameof(accountId)} » ne peut pas être vide ou avoir la valeur Null.", nameof(accountId));
+            }
+
+            try
+            {
+                var broadcast = await _youtubeService.GetLiveBroadcasts(HttpContext, accountId, pageToken, pageSize, cancellationToken);
+                return Ok(broadcast);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        }
+
+
         [HttpPost]
-        [Route("Broadcast/Insert")]
-        public async Task<IActionResult> InsertBroadcast(CancellationToken cancellationToken, BroadcastRequestDto broadcastRequest)
+        [Route("Broadcast")]
+        public async Task<IActionResult> InsertBroadcast(
+            CancellationToken cancellationToken,
+            [FromBody] BroadcastRequestDto broadcastRequest)
         {
             if (broadcastRequest is null)
             {
@@ -198,8 +231,226 @@ namespace Stardust.Flux.PublishApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        //TODO ADD MEHTOD FOR INSERT LIVE STREAM
-        //TODO ADD MEHTOD TO REMOVE LIVE STREAM
+
+        [HttpDelete]
+        [Route("Broadcast")]
+        public async Task<IActionResult> DeleteBroadcast(CancellationToken cancellationToken,
+          [FromQuery] string accountId,
+          [FromQuery] string broadcastId
+        )
+        {
+            if (string.IsNullOrEmpty(accountId))
+            {
+                throw new ArgumentException($"« {nameof(accountId)} » ne peut pas être vide ou avoir la valeur Null.", nameof(accountId));
+            }
+
+            if (string.IsNullOrEmpty(broadcastId))
+            {
+                throw new ArgumentException($"« {nameof(broadcastId)} » ne peut pas être vide ou avoir la valeur Null.", nameof(broadcastId));
+            }
+
+            try
+            {
+                var broadcast = await _youtubeService.DeleteBroadcast(HttpContext, accountId, broadcastId, cancellationToken);
+                return Ok(broadcast);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Broadcast")]
+        public async Task<IActionResult> UpdateBroadcast(CancellationToken cancellationToken,     
+        [FromBody] BroadcastRequestDto broadcastRequest)
+        {
+            if (broadcastRequest is null)
+            {
+                throw new ArgumentNullException(nameof(broadcastRequest));
+            }
+
+            if (broadcastRequest.AccountId is null)
+            {
+                throw new ArgumentNullException(nameof(broadcastRequest.AccountId));
+            }
+
+            try
+            {
+                var broadcast = await _youtubeService.UpdateBroadcast(HttpContext, broadcastRequest, cancellationToken);
+                return Ok(broadcast);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Broadcast/Privacy")]
+        public async Task<IActionResult> UpdateBroadcastPrivacyStatus(CancellationToken cancellationToken,
+          [FromQuery] string accountId,
+          [FromQuery] string broadcastId,
+          [FromQuery] PrivacyStatus privacyStatus)
+        {
+            if (string.IsNullOrEmpty(accountId))
+            {
+                throw new ArgumentException($"« {nameof(accountId)} » ne peut pas être vide ou avoir la valeur Null.", nameof(accountId));
+            }
+
+            if (string.IsNullOrEmpty(broadcastId))
+            {
+                throw new ArgumentException($"« {nameof(broadcastId)} » ne peut pas être vide ou avoir la valeur Null.", nameof(broadcastId));
+            }
+
+            try
+            {
+                var broadcast = await _youtubeService.UpdateBroadcastStatus(HttpContext, accountId, broadcastId, privacyStatus, cancellationToken);
+                return Ok(broadcast);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("Broadcast/Bind")]
+        public async Task<IActionResult> InsertBroadcast(CancellationToken cancellationToken,
+        [FromQuery] string accountId,
+        [FromQuery] string broadcastId,
+        [FromQuery] string streamId)
+        {
+            if (accountId is null)
+            {
+                throw new ArgumentNullException(nameof(accountId));
+            }
+
+            if (broadcastId is null)
+            {
+                throw new ArgumentNullException(nameof(broadcastId));
+            }
+
+            if (streamId is null)
+            {
+                throw new ArgumentNullException(nameof(streamId));
+            }
+
+            try
+            {
+                var broadcast = await _youtubeService.BindLiveToBroadcast(HttpContext, accountId, broadcastId, streamId, cancellationToken);
+                return Ok(broadcast);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("LiveStream")]
+        public async Task<IActionResult> InsertLiveStream(CancellationToken cancellationToken, [FromBody] LiveStreamRequestDto request)
+        {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (request.AccountId is null)
+            {
+                throw new ArgumentNullException(nameof(request.AccountId));
+            }
+
+            try
+            {
+                var liveStream = await _youtubeService.InsertLiveStream(HttpContext, request, cancellationToken);
+                return Ok(liveStream);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("LiveStream")]
+        public async Task<IActionResult> GetLiveStream(CancellationToken cancellationToken,
+        [FromQuery] string accountId,
+        [FromQuery] string streamId)
+        {
+            if (accountId is null)
+            {
+                throw new ArgumentNullException(nameof(accountId));
+            }
+
+            if (streamId is null)
+            {
+                throw new ArgumentNullException(nameof(streamId));
+            }
+
+            try
+            {
+                var liveStream = await _youtubeService.GetLiveStream(HttpContext, accountId, streamId, cancellationToken);
+                return Ok(liveStream);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("LiveStream/List")]
+        public async Task<IActionResult> GetLiveStreams(CancellationToken cancellationToken,
+        [FromQuery] string accountId,
+        [FromQuery] string pageToken,
+        [FromQuery] int pageSize = 100)
+        {
+            if (accountId is null)
+            {
+                throw new ArgumentNullException(nameof(accountId));
+            }
+
+
+            try
+            {
+                var liveStream = await _youtubeService.GetLiveStreams(HttpContext, accountId, pageToken, pageSize, cancellationToken);
+                return Ok(liveStream);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+        [HttpDelete]
+        [Route("LiveStream")]
+        public async Task<IActionResult> DeleteLiveStreams(CancellationToken cancellationToken,
+        [FromQuery] string accountId,
+        [FromQuery] string liveStreamId)
+        {
+            if (accountId is null)
+            {
+                throw new ArgumentNullException(nameof(accountId));
+            }
+
+            try
+            {
+                var liveStream = await _youtubeService.DeleteLiveStream(HttpContext, accountId, liveStreamId, cancellationToken);
+                return Ok(liveStream);
+            }
+            catch (NoAccountFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+
+
+
 
 
     }

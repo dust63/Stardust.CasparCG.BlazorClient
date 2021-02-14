@@ -60,11 +60,20 @@ namespace Stardust.Flux.PublishApi
                 throw new ArgumentException("Key MUST have a value");
             }
 
-
             var item = context.YoutubeAccounts.FirstOrDefault(x => x.Key == key);
-            T value = item?.Value == null ? default(T) : JsonConvert.DeserializeObject<T>(item.Value);
-            return Task.FromResult<T>(value);
-
+            if (item == null)
+                Task.FromResult(default(T));
+            var token = new TokenResponse
+            {
+                IssuedUtc = item.IssuedUtc.Value,
+                ExpiresInSeconds = item.ExpiresInSeconds,
+                IdToken = item.IdToken,
+                Scope = item.Scope,
+                TokenType = item.TokenType,
+                RefreshToken = item.RefreshToken,
+                AccessToken = item.AccessToken
+            };
+            return Task.FromResult<T>(JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(token)));
         }
 
         public async Task StoreAsync<T>(string key, T value)
@@ -80,32 +89,26 @@ namespace Stardust.Flux.PublishApi
 
             if (item == null)
             {
-                item = new YoutubeAccount { Key = key, Value = JsonConvert.SerializeObject(newToken), Name = this.Name };
+                item = new YoutubeAccount { Key = key, Name = this.Name };
                 context.YoutubeAccounts.Add(item);
             }
-            else
-            {
-                TransitRefreshToken(newToken, item.Value);
-                item.Value = JsonConvert.SerializeObject(newToken);
-                item.ModifiedOn = DateTime.UtcNow;
-            }
+
+
+            item.IssuedUtc = newToken.IssuedUtc;
+            item.ExpiresInSeconds = newToken.ExpiresInSeconds;
+            item.IdToken = newToken.IdToken;
+            item.Scope = newToken.Scope;
+            item.TokenType = newToken.TokenType;
+            item.ModifiedOn = DateTime.UtcNow;
+            item.AccessToken = newToken.AccessToken;
+            if (newToken.RefreshToken != null)
+                item.RefreshToken = newToken.RefreshToken;
+            if (newToken.AccessToken != null)
+                item.AccessToken = newToken.AccessToken;
             await context.SaveChangesAsync();
             AccountId = item.Key;
         }
 
-        /// <summary>
-        /// Used to replace refresh token to be sure to allow process to refresh token
-        /// Refresh tolen is sent only once
-        /// </summary>
-        /// <param name="newResponse">new token response sent by google</param>
-        /// <param name="previousJsonResponse">the previous toke in JSON string</param>
-        public static void TransitRefreshToken(TokenResponse newResponse, string previousJsonResponse)
-        {
-            if (newResponse.RefreshToken != null || string.IsNullOrWhiteSpace(previousJsonResponse))
-                return;
 
-            var oldUserToken = JsonConvert.DeserializeObject<TokenResponse>(previousJsonResponse);
-            newResponse.RefreshToken = oldUserToken?.RefreshToken;
-        }
     }
 }

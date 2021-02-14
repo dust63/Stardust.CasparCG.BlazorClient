@@ -126,14 +126,19 @@ namespace Stardust.Flux.PublishApi.Youtube
             var account = await publishContext.YoutubeAccounts.FirstOrDefaultAsync(x => x.Key == accountId);
             if (account == null)
                 throw new InvalidOperationException("Account not found for this id");
-            TokenResponse tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(account.Value);
             try
             {
-                await googleAuthorizationCodeFlow.RevokeTokenAsync(accountId, tokenResponse.AccessToken, CancellationToken.None);
+                await googleAuthorizationCodeFlow.RevokeTokenAsync(accountId, account.AccessToken, CancellationToken.None);
             }
             finally
             {
-                account.Value = null;
+                account.IdToken = null;
+                account.AccessToken = null;
+                account.RefreshToken = null;
+                account.IssuedUtc = null;
+                account.ExpiresInSeconds = null;
+                account.Scope = null;
+                account.TokenType = null;
                 publishContext.SaveChanges();
             }
         }
@@ -152,7 +157,7 @@ namespace Stardust.Flux.PublishApi.Youtube
             }
             finally
             {
-                account.Value = null;
+                publishContext.Remove(account);
                 publishContext.SaveChanges();
             }
         }
