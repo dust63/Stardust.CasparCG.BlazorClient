@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Stardust.Flux.PublishApi.Models;
 
-namespace Stardust.Flux.PublishApi
+namespace Stardust.Flux.PublishApi.Youtube
 {
     public class EFDataStore : IDataStore
     {

@@ -1,4 +1,4 @@
-namespace Stardust.Flux.PublishApi
+namespace Stardust.Flux.PublishApi.Youtube
 {
     public class YoutubeApiOptions
     {
