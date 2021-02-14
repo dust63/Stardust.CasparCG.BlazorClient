@@ -49,7 +49,7 @@ namespace Stardust.Flux.PublishApi.Youtube
         /// The broadcast's privacy status. Note that the broadcast represents exactly one YouTube video, so the privacy settings are identical to those supported for videos. In addition, you can set this field by modifying the broadcast resource or by setting the privacyStatus field of the corresponding video resource.
         /// </summary>
         [DataMember]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public PrivacyStatus PrivacyStatus { get; set; }
 
         /// <summary>
