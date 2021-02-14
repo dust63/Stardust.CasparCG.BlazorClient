@@ -62,7 +62,7 @@ namespace Stardust.Flux.PublishApi.Youtube
             if (ShouldRequestAuthorizationCode(token, flow))
             {
 
-                var redirectUrl = await GetAuthorizationUrl(httpContext, userId, null, scopes);
+                var redirectUrl = GetAuthorizationUrl(httpContext, userId, null, scopes);
                 return new AuthResult { RedirectUri = redirectUrl };
             }
 
@@ -70,7 +70,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
             if (credential.Token.IsExpired(Google.Apis.Util.SystemClock.Default))
             {
-                var refreshResult = credential.RefreshTokenAsync(CancellationToken.None).Result;
+                var refreshResult = await credential.RefreshTokenAsync(CancellationToken.None);
             }
 
             return new AuthResult { Credential = credential };
@@ -102,7 +102,7 @@ namespace Stardust.Flux.PublishApi.Youtube
         }
 
         // HttpContext context, string userId, 
-        public async Task<string> GetAuthorizationUrl(HttpContext context, string id, string description, params string[] scopes)
+        public string GetAuthorizationUrl(HttpContext context, string id, string description, params string[] scopes)
         {
             // Now, let's grab the AuthorizationCodeFlow that will generate a unique authorization URL to redirect our user to
             var googleAuthorizationCodeFlow = this.GetGoogleAuthorizationCodeFlow(description, scopes);

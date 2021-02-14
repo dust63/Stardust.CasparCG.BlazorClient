@@ -45,9 +45,9 @@ namespace Stardust.Flux.PublishApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Account/Grant")]
-        public async Task<IActionResult> AddChannelAccess([FromQuery] string name, [FromQuery] string accountId)
+        public IActionResult AddChannelAccess([FromQuery] string name, [FromQuery] string accountId)
         {
-            var url = await _authService.GetAuthorizationUrl(HttpContext, accountId ?? Guid.NewGuid().ToString(), name, YouTubeService.Scope.Youtube);
+            var url = _authService.GetAuthorizationUrl(HttpContext, accountId ?? Guid.NewGuid().ToString(), name, YouTubeService.Scope.Youtube);
             return Redirect(url);
         }
 
@@ -262,7 +262,7 @@ namespace Stardust.Flux.PublishApi.Controllers
 
         [HttpPut]
         [Route("Broadcast")]
-        public async Task<IActionResult> UpdateBroadcast(CancellationToken cancellationToken,     
+        public async Task<IActionResult> UpdateBroadcast(CancellationToken cancellationToken,
         [FromBody] BroadcastRequestDto broadcastRequest)
         {
             if (broadcastRequest is null)
