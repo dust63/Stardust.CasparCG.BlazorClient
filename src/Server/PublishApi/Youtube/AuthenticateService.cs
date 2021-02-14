@@ -12,9 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Google.Apis.Auth.OAuth2.Responses;
 using static Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp;
-using Google.Apis.YouTube.v3;
 using System.Linq;
-using Microsoft.AspNetCore.WebUtilities;
+
 
 namespace Stardust.Flux.PublishApi.Youtube
 {

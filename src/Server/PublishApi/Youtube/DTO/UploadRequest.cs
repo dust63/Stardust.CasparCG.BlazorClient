@@ -1,5 +1,7 @@
 using System.Data;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace Stardust.Flux.PublishApi.Youtube
 {
@@ -25,7 +27,9 @@ namespace Stardust.Flux.PublishApi.Youtube
         public string[] Tags { get; set; }
         [DataMember]
         public string CategoryId { get; set; }
+        
         [DataMember]
+        [JsonConverter(typeof(StringEnumConverter))]
         public PrivacyStatus PrivacyStatus { get; set; }
         [DataMember]
         public string FilePath { get; set; }
