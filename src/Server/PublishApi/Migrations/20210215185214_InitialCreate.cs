@@ -33,12 +33,17 @@ namespace Stardust.Flux.PublishApi.Migrations
                 columns: table => new
                 {
                     YoutubeUploadId = table.Column<string>(type: "text", nullable: false),
-                    YoutubeAccountId = table.Column<string>(type: "text", nullable: true),
-                    VideoId = table.Column<string>(type: "text", nullable: true),
+                    YoutubeAccountId = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Tags = table.Column<string>(type: "text", nullable: true),
+                    CategoryId = table.Column<string>(type: "text", nullable: true),
+                    PrivacyStatus = table.Column<string>(type: "text", nullable: false),
+                    FilePath = table.Column<string>(type: "text", nullable: false),
+                    YoutubeVideoId = table.Column<string>(type: "text", nullable: true),
                     State = table.Column<string>(type: "text", nullable: true),
                     BytesSent = table.Column<long>(type: "bigint", nullable: false),
                     Error = table.Column<string>(type: "text", nullable: true),
-                    FilePath = table.Column<string>(type: "text", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -49,7 +54,7 @@ namespace Stardust.Flux.PublishApi.Migrations
                         column: x => x.YoutubeAccountId,
                         principalTable: "YoutubeAccounts",
                         principalColumn: "Key",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

@@ -11,8 +11,9 @@ using Stardust.Flux.PublishApi.Models;
 using Stardust.Flux.PublishApi.Youtube;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json.Converters;
-using System.Text.Json;
+using Microsoft.AspNetCore.SignalR;
+using Hangfire;
+using Hangfire.PostgreSql;
 
 namespace Stardust.Flux.PublishApi
 {
@@ -39,9 +40,15 @@ namespace Stardust.Flux.PublishApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PublishApi", Version = "v1" });
             });
 
+            services.AddSignalR();
             services.Configure<YoutubeApiOptions>(options => Configuration.GetSection(YoutubeApiOptions.SectionName).Bind(options));
             services.AddScoped<YoutubeAppService>();
             services.AddScoped<AuthenticateService>();
+            services.AddScoped<YoutubeUploader>();
+            services.AddTransient<YoutubeSignalRClient>();
+
+            services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("Stardust.Hangfire")));
+
             services
             .AddEntityFrameworkNpgsql()
             .AddDbContext<PublishContext>(
@@ -60,7 +67,7 @@ namespace Stardust.Flux.PublishApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -72,12 +79,21 @@ namespace Stardust.Flux.PublishApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
+            var options = new BackgroundJobServerOptions
+            {
+                ServerName = String.Format("{0}.{1}", Environment.MachineName, Guid.NewGuid().ToString())
+            };
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
             app.UseAuthorization();
             app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<YoutubeUploadHub>("/chathub");
+                endpoints.MapHangfireDashboard();
+
             });
         }
     }

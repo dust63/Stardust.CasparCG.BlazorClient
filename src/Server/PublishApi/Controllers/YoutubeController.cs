@@ -127,8 +127,8 @@ namespace Stardust.Flux.PublishApi.Controllers
 
             try
             {
-                await _youtubeService.UploadFile(HttpContext, uploadRequest, cancellationToken);
-                return Ok();
+                var jobId = await _youtubeService.UploadFile(HttpContext, uploadRequest, cancellationToken);
+                return Ok(jobId);
             }
             catch (NoAccountFoundException e)
             {

@@ -52,7 +52,7 @@ namespace Stardust.Flux.PublishApi.Youtube
             return credential;
         }
 
-        public async Task<AuthResult> AuthorizeAsync(HttpContext httpContext, string userId, CancellationToken taskCancellationToken, params string[] scopes)
+        public async Task<AuthResult> AuthorizeAsync(string userId, CancellationToken taskCancellationToken, params string[] scopes)
         {
             var flow = GetGoogleAuthorizationCodeFlow(null, scopes);
             // Try to load a token from the data store.
@@ -61,9 +61,7 @@ namespace Stardust.Flux.PublishApi.Youtube
             // Check if a new authorization code is needed.
             if (ShouldRequestAuthorizationCode(token, flow))
             {
-
-                var redirectUrl = GetAuthorizationUrl(httpContext, userId, null, scopes);
-                return new AuthResult { RedirectUri = redirectUrl };
+                throw new InvalidOperationException($"{userId} is not authorized for {string.Join(',', scopes)}");
             }
 
             var credential = new UserCredential(flow, userId, token);
@@ -75,7 +73,6 @@ namespace Stardust.Flux.PublishApi.Youtube
 
             return new AuthResult { Credential = credential };
         }
-
 
         /// <summary>
         /// Determines the need for retrieval of a new authorization code, based on the given token and the 

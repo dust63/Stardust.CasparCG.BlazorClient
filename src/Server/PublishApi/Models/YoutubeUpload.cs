@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Stardust.Flux.PublishApi.Youtube;
 
 namespace Stardust.Flux.PublishApi.Models
 {
@@ -15,16 +16,31 @@ namespace Stardust.Flux.PublishApi.Models
 
         public YoutubeAccount YoutubeAccount { get; set; }
 
+        [Required]
         public string YoutubeAccountId { get; set; }
 
-        public string VideoId { get; set; }
+        [Required]
+        public string Title { get; set; }
 
+        public string Description { get; set; }
+
+        public string Tags { get; set; }
+
+        public string CategoryId { get; set; }
+
+        [Required]
+        public string PrivacyStatus { get; set; }
+
+        [Required]
+        public string FilePath { get; set; }
+
+        public static bool? NotifySubscribers { get; set; }
+
+        public string YoutubeVideoId { get; set; }
         public string State { get; set; }
-
         public long BytesSent { get; set; }
         public string Error { get; set; }
 
-        public string FilePath { get; set; }
 
         /// <summary>
         /// Utc created date

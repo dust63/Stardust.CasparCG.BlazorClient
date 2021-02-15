@@ -21,33 +21,51 @@ using Microsoft.Extensions.Options;
 using Stardust.Flux.PublishApi.Models;
 using Stardust.Flux.Crosscutting;
 using Stardust.Flux.Crosscutting.Extensions;
+using Hangfire;
 
 namespace Stardust.Flux.PublishApi.Youtube
 {
-    public interface IYoutubeAppService
-    {
-        Task<string> AddChannelAccount(string name, CancellationToken cancellationToken);
-        Task<IDictionary<string, string>> GetAccountsInfo(int pageIndex, int pageSize, CancellationToken cancellationToken);
-        Task<IList<VideoCategory>> GetCategories(HttpContext context, string regionCode, string accountId, CancellationToken cancellationToken);
-        Task<IList<Channel>> GetChannelInfo(HttpContext context, string accountId, CancellationToken cancellationToken);
-        Task UploadFile(HttpContext context, UploadRequest uploadRequest, CancellationToken cancellationToken);
-    }
 
-    public class YoutubeAppService : IYoutubeAppService
+    public abstract class BaseYoutubeService
+    {
+        protected readonly AuthenticateService authenticateService;
+
+        public BaseYoutubeService(AuthenticateService authenticateService)
+        {
+            this.authenticateService = authenticateService;
+        }
+        protected async Task<YouTubeService> GetService(string accountId, CancellationToken cancellationToken, params string[] scopes)
+        {
+            authenticateService.CheckForAccount(accountId);
+            var result = await authenticateService.AuthorizeAsync(accountId, cancellationToken, scopes);
+            return new YouTubeService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = result.Credential,
+                ApplicationName = Assembly.GetExecutingAssembly().GetName().Name
+            });
+
+        }
+    }
+    public class YoutubeAppService : BaseYoutubeService
     {
         public ILogger<YoutubeAppService> Logger { get; }
 
-        private readonly AuthenticateService authenticateService;
+
+        private readonly IOptions<YoutubeApiOptions> apiOptions;
         private readonly PublishContext publishContext;
+        private readonly YoutubeUploader uploader;
+
         public YoutubeAppService(
             ILogger<YoutubeAppService> logger,
             AuthenticateService authenticateService,
             IOptions<YoutubeApiOptions> apiOptions,
-            PublishContext context)
+            PublishContext publishContext,
+            YoutubeUploader uploader) : base(authenticateService)
         {
-            this.publishContext = context;
+            this.publishContext = publishContext;
+            this.uploader = uploader;
             this.Logger = logger;
-            this.authenticateService = authenticateService;
+            this.apiOptions = apiOptions;
             ApiOptions = apiOptions.Value;
         }
 
@@ -55,16 +73,6 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         public YoutubeApiOptions ApiOptions { get; }
 
-        private async Task<YouTubeService> GetService(HttpContext httpContext, string accountId, CancellationToken cancellationToken, params string[] scopes)
-        {
-            authenticateService.CheckForAccount(accountId);
-            var result = await authenticateService.AuthorizeAsync(httpContext, accountId, cancellationToken, scopes);
-            return new YouTubeService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = result.Credential,
-                ApplicationName = Assembly.GetExecutingAssembly().GetName().Name
-            });
-        }
 
         public async Task<IDictionary<string, string>> GetAccountsInfo(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
@@ -95,7 +103,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         public async Task<IList<Channel>> GetChannelInfo(HttpContext context, string accountId, CancellationToken cancellationToken)
         {
-            var service = await GetService(context, accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeReadonly });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeReadonly });
             var channelsRequest = service.Channels.List("id,snippet,statistics");
             channelsRequest.Mine = true;
             channelsRequest.Fields = "items";
@@ -106,7 +114,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         public async Task<IList<VideoCategory>> GetCategories(HttpContext context, string regionCode, string accountId, CancellationToken cancellationToken)
         {
-            var service = await GetService(context, accountId, cancellationToken);
+            var service = await GetService(accountId, cancellationToken);
             var categories = service.VideoCategories.List("snippet");
             if (!string.IsNullOrEmpty(regionCode))
                 categories.RegionCode = regionCode;
@@ -121,7 +129,7 @@ namespace Stardust.Flux.PublishApi.Youtube
                 throw new ArgumentException($"« {nameof(accountId)} » ne peut pas être vide ou avoir la valeur Null.", nameof(accountId));
             }
 
-            var service = await GetService(context, accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
             var request = service.LiveBroadcasts.List("id,snippet,contentDetails,status");
             request.PageToken = pageToken;
             request.MaxResults = pageSize;
@@ -139,7 +147,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         public async Task<LiveBroadcast> InsertBroadcast(HttpContext context, BroadcastRequestDto broadcastRequest, CancellationToken cancellationToken)
         {
-            var service = await GetService(context, broadcastRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var service = await GetService(broadcastRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
             var broadcast = CreateYoutubeBroadcast(broadcastRequest);
             broadcast.Id = null;
             var request = service.LiveBroadcasts.Insert(broadcast, "id,snippet,contentDetails,status");
@@ -168,7 +176,7 @@ namespace Stardust.Flux.PublishApi.Youtube
                 throw new ArgumentException($"« {nameof(broadcastId)} » ne peut pas être vide ou avoir la valeur Null.", nameof(broadcastId));
             }
 
-            var service = await GetService(context, accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
             var broadcast = new LiveBroadcast
             {
                 Id = broadcastId,
@@ -190,7 +198,7 @@ namespace Stardust.Flux.PublishApi.Youtube
         /// <returns></returns>
         public async Task<LiveBroadcast> UpdateBroadcast(HttpContext context, BroadcastRequestDto broadcastRequest, CancellationToken cancellationToken)
         {
-            var service = await GetService(context, broadcastRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var service = await GetService(broadcastRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
             var broadcast = CreateYoutubeBroadcast(broadcastRequest);
             var request = service.LiveBroadcasts.Update(broadcast, "id,snippet,contentDetails,status");
             var resource = await request.ExecuteAsync(cancellationToken);
@@ -199,7 +207,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         public async Task<LiveBroadcast> BindLiveToBroadcast(HttpContext httpContext, string accountId, string broadcastId, string streamId, CancellationToken cancellationToken)
         {
-            var service = await GetService(httpContext, accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
             var request = service.LiveBroadcasts.Bind(broadcastId, "id,snippet,contentDetails,status");
             request.StreamId = streamId;
             var response = await request.ExecuteAsync(cancellationToken);
@@ -216,7 +224,7 @@ namespace Stardust.Flux.PublishApi.Youtube
         /// <returns></returns>
         public async Task<string> DeleteBroadcast(HttpContext httpContext, string accountId, string broadcastId, CancellationToken cancellationToken)
         {
-            var service = await GetService(httpContext, accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
             var request = service.LiveBroadcasts.Delete(broadcastId);
             var response = await request.ExecuteAsync(cancellationToken);
             return response;
@@ -224,59 +232,17 @@ namespace Stardust.Flux.PublishApi.Youtube
 
 
 
-        public async Task UploadFile(HttpContext context, UploadRequest uploadRequest, CancellationToken cancellationToken)
+        public async Task<string> UploadFile(HttpContext context, UploadRequest uploadRequest, CancellationToken cancellationToken)
         {
-            var service = await GetService(context, uploadRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
-
-            var video = new Video();
-            video.Snippet = new VideoSnippet();
-            video.Snippet.Title = uploadRequest.Title;
-            video.Snippet.Description = uploadRequest.Description;
-            video.Snippet.Tags = uploadRequest.Tags;
-            video.Snippet.CategoryId = uploadRequest.CategoryId;
-            video.Status = new VideoStatus { PrivacyStatus = uploadRequest.PrivacyStatus.ToString().ToLower() };
-
-
-            var youtubeUploadState = new YoutubeUpload { YoutubeAccountId = uploadRequest.AccountId, FilePath = uploadRequest.FilePath };
-            publishContext.YoutubeUploads.Add(youtubeUploadState);
-            publishContext.SaveChanges();
-            using (var fileStream = new FileStream(uploadRequest.FilePath, FileMode.Open))
-            {
-                var videosInsertRequest = service.Videos.Insert(video, "snippet,status", fileStream, "video/*");
-                videosInsertRequest.NotifySubscribers = UploadRequest.NotifySubscribers;
-                videosInsertRequest.ProgressChanged += (e) => videosInsertRequest_ProgressChanged(e, youtubeUploadState.YoutubeUploadId);
-                videosInsertRequest.ResponseReceived += (e) => videosInsertRequest_ResponseReceived(e, youtubeUploadState.YoutubeUploadId);
-                await videosInsertRequest.UploadAsync();
-            }
-        }
-
-        void videosInsertRequest_ProgressChanged(Google.Apis.Upload.IUploadProgress progress, string uploadStateId)
-        {
-            var uploadState = publishContext.YoutubeUploads.Single(x => x.YoutubeUploadId == uploadStateId);
-            uploadState.State = progress.Status.ToString();
-            switch (progress.Status)
-            {
-                case UploadStatus.Uploading:
-                    Logger.LogInformation("{0} bytes sent.", progress.BytesSent);
-                    uploadState.BytesSent = progress.BytesSent;
-                    break;
-                case UploadStatus.Failed:
-                    Logger.LogError("An error prevented the upload from completing.\n{0}", progress.Exception);
-                    uploadState.Error = progress.Exception.ToString();
-                    break;
-            }
-            publishContext.SaveChanges();
+            var service = await GetService(uploadRequest.AccountId, cancellationToken, new[] { YouTubeService.Scope.YoutubeUpload });
+            var jobId = uploader.StoreUploadData(uploadRequest);
+            BackgroundJob.Enqueue<YoutubeUploader>(uploader => uploader.UploadFile(CancellationToken.None, jobId));
+            return jobId;
         }
 
 
-        void videosInsertRequest_ResponseReceived(Video video, string uploadStateId)
 
-        {
-            Logger.LogInformation("Video:{0} published on youtube.", video.Id);
-            var uploadState = publishContext.YoutubeUploads.Single(x => x.YoutubeUploadId == uploadStateId);
-            uploadState.VideoId = video.Id;
-            publishContext.SaveChanges();
-        }
+
 
         /// <summary>
         /// Create a live stream
@@ -287,7 +253,7 @@ namespace Stardust.Flux.PublishApi.Youtube
         /// <returns></returns>
         public async Task<LiveStream> InsertLiveStream(HttpContext httpContext, LiveStreamRequestDto liveRequestData, CancellationToken cancellationToken)
         {
-            var service = await GetService(httpContext, liveRequestData.AccountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var service = await GetService(liveRequestData.AccountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
 
             var live = new LiveStream();
             live.Snippet = new LiveStreamSnippet
@@ -317,7 +283,7 @@ namespace Stardust.Flux.PublishApi.Youtube
                 throw new ArgumentNullException(nameof(streamId));
             }
 
-            var service = await GetService(httpContext, accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
             var request = service.LiveStreams.List("id,snippet,cdn,status");
             request.Id = streamId;
             request.MaxResults = 1;
@@ -328,7 +294,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         public async Task<LiveStreamListResponse> GetLiveStreams(HttpContext httpContext, string accountId, string pageToken, int pageSize, CancellationToken cancellationToken)
         {
-            var service = await GetService(httpContext, accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
             var request = service.LiveStreams.List("id,snippet,cdn,status");
             request.PageToken = pageToken;
             request.Mine = true;
@@ -341,7 +307,7 @@ namespace Stardust.Flux.PublishApi.Youtube
 
         public async Task<string> DeleteLiveStream(HttpContext httpContext, string accountId, string liveStreamId, CancellationToken cancellationToken)
         {
-            var service = await GetService(httpContext, accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
+            var service = await GetService(accountId, cancellationToken, new[] { YouTubeService.Scope.Youtube });
             var request = service.LiveStreams.Delete(liveStreamId);
             var response = await request.ExecuteAsync(cancellationToken);
             return response;

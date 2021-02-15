@@ -10,7 +10,7 @@ using Stardust.Flux.PublishApi.Models;
 namespace Stardust.Flux.PublishApi.Migrations
 {
     [DbContext(typeof(PublishContext))]
-    [Migration("20210214170313_InitialCreate")]
+    [Migration("20210215185214_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,22 +69,41 @@ namespace Stardust.Flux.PublishApi.Migrations
                     b.Property<long>("BytesSent")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<string>("Error")
                         .HasColumnType("text");
 
                     b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrivacyStatus")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("State")
                         .HasColumnType("text");
 
-                    b.Property<string>("VideoId")
+                    b.Property<string>("Tags")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("YoutubeAccountId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("YoutubeVideoId")
                         .HasColumnType("text");
 
                     b.HasKey("YoutubeUploadId");
@@ -98,7 +117,9 @@ namespace Stardust.Flux.PublishApi.Migrations
                 {
                     b.HasOne("Stardust.Flux.PublishApi.Models.YoutubeAccount", "YoutubeAccount")
                         .WithMany("YoutubeUploads")
-                        .HasForeignKey("YoutubeAccountId");
+                        .HasForeignKey("YoutubeAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("YoutubeAccount");
                 });
