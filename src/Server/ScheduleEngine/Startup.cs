@@ -37,13 +37,15 @@ namespace Stardust.Flux.ScheduleEngine
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ScheduleEngine", Version = "v1" });
             });
-            services.AddEntityFrameworkNpgsql().AddDbContext<DefaultDbContext>(
+            services.AddEntityFrameworkNpgsql().AddDbContext<ScheduleContext>(
                 options =>
                 {
                     options.UseNpgsql(Configuration.GetConnectionString("Stardust"));
                 });
+
             services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("Stardust")));
-            services.AddTransient<IRecordService, RecordService>();
+            services.AddTransient<IRecordSchedulerService, RecordSchedulerService>();
+            services.AddTransient<IRecordControler, DummyRecordController>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,13 +61,18 @@ namespace Stardust.Flux.ScheduleEngine
             //app.UseHttpsRedirection();
 
             app.UseRouting();
-
             app.UseAuthorization();
 
             GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
             //Will be available under http://localhost:5000/hangfire"
             app.UseHangfireDashboard();
-            app.UseHangfireServer();
+            var options = new BackgroundJobServerOptions
+            {
+                SchedulePollingInterval = TimeSpan.FromSeconds(1),
+                WorkerCount = 50
+            };
+            app.UseHangfireServer(options);
+            serviceProvider.GetService<IRecordSchedulerService>().StopAllMissedStop();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

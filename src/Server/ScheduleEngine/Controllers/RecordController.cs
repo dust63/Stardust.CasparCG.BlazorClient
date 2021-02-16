@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stardust.Flux.ScheduleEngine.Models;
 using Stardust.Flux.ScheduleEngine.Services;
+using Stardust.Flux.ScheduleEngine.DTO;
+using Stardust.Flux.ScheduleEngine.Factory;
 
 namespace Stardust.Flux.ScheduleEngine.Controllers
 {
@@ -19,100 +21,104 @@ namespace Stardust.Flux.ScheduleEngine.Controllers
     public class RecordController : ControllerBase
     {
 
-        private readonly ILogger<RecordController> _logger;
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IBackgroundJobClient _backgroundJobClient;
-
-        public RecordController(ILogger<RecordController> logger,
-        IBackgroundJobClient backgroundJobClient,
-        IRecurringJobManager recurringJobManager)
+        private readonly IRecordSchedulerService _recordService;
+        public RecordController(IRecordSchedulerService recordService)
         {
-            _backgroundJobClient = backgroundJobClient;
-            _recurringJobManager = recurringJobManager;
-            _logger = logger;
+            _recordService = recordService;
         }
 
-
-        [HttpPost]
-        [Route("/StartRecord")]
-        public string StartRecord(string duration, string fileName, int slotId)
+        [HttpGet]
+        [Route("/ManualRecord")]
+        public List<RecordResponseDto<ScheduleRecordJobDto>> GetManualRecords(int start, int limit = 100)
         {
-            var durationTimespan = TimeSpan.Parse(duration);
-            var id = _backgroundJobClient.Enqueue<IRecordService>(rec => rec.StartRecord(slotId, fileName));
-            return _backgroundJobClient.Schedule<IRecordService>(rec => rec.StopRecord(slotId), durationTimespan);
+            return _recordService
+            .GetRecordJob(RecordJobType.Manual, start, limit)
+            .Select(x => RecordJobFactory.CreateScheduleResponseDto(x))
+            .ToList();
         }
 
         [HttpPost]
-        [Route("/StopRecord")]
-        public string StopRecord(int slotId, string jobId)
+        [Route("/ManualRecord/Start")]
+        public string StartRecord(string fileName, int slotId)
         {
-            _backgroundJobClient.Delete(jobId);
-            return _backgroundJobClient.Enqueue<IRecordService>(rec => rec.StopRecord(slotId));
+            return _recordService.StartRecordNow(fileName, slotId);
+        }
+
+        [HttpPost]
+        [Route("/ManualRecord/Stop")]
+        public void StopRecord(string recordJobId)
+        {
+            _recordService.StopRecord(recordJobId);
         }
 
         [HttpGet]
         [Route("/Schedule")]
-        public List<ScheduleRecordJob> GetSchedule(int start = 0, int limit = 100)
+        public List<RecordResponseDto<ScheduleRecordJobDto>> GetSchedule(int start = 0, int limit = 100)
         {
-            var api = JobStorage.Current.GetMonitoringApi();
-            var scheduledJobs = api.ScheduledJobs(start, limit);
-            return scheduledJobs.Select(x => new ScheduleRecordJob { Id = x.Key, ScheduleAt = x.Value.ScheduledAt }).ToList();
+            return _recordService
+            .GetRecordJob(RecordJobType.Schedule, start, limit)
+            .Select(x => RecordJobFactory.CreateScheduleResponseDto(x))
+            .ToList();
         }
 
 
         [HttpPost]
         [Route("/Schedule")]
-        public string AddSchedule(DateTimeOffset startDate, string duration, string fileName, int slotId)
+        public RecordResponseDto<ScheduleRecordJobDto> AddSchedule(ScheduleRecordJobDto scheduleRecordRequest)
         {
-            return _backgroundJobClient
-            .Schedule<IRecordService>((rec) => rec.StartRecord(slotId, fileName), startDate);
+            RecordJob recordJob = _recordService.AddSchedule(scheduleRecordRequest);
+            return RecordJobFactory.CreateScheduleResponseDto(recordJob);
         }
+
+        [HttpPut]
+        [Route("/Schedule")]
+        public RecordResponseDto<ScheduleRecordJobDto> UpdateSchedule(ScheduleRecordJobDto scheduleRecordRequest)
+        {
+            RecordJob recordJob = _recordService.UpdateSchedule(scheduleRecordRequest);
+            return RecordJobFactory.CreateScheduleResponseDto(recordJob);
+        }
+
+
 
         [HttpDelete]
         [Route("/Schedule")]
-        public void RemoveSchedule(string jobId)
+        public void RemoveSchedule(string recordJobId)
         {
-            _backgroundJobClient.Delete(jobId);
-            _logger.LogInformation($"{jobId} unscheduled");
+            _recordService.RemoveRecordJob(recordJobId);
         }
 
 
         [HttpGet]
         [Route("/Recuring")]
-        public List<RecuringRecordJob> GetRecuring(int start = 0, int limit = 0)
+        public List<RecordResponseDto<RecuringRecordJobDto>> GetRecuring(int start = 0, int limit = 0)
         {
-            var connection = JobStorage.Current.GetConnection();
-            var api = limit > 0 ? connection.GetRecurringJobs().Skip(0 * limit).Take(limit) : connection.GetRecurringJobs();
-            return JobStorage.Current.GetConnection().GetRecurringJobs().Select(x => new RecuringRecordJob
-            {
-                Id = x.Id,
-                CronExpression = x.Cron,
-                LastExecution = x.LastExecution,
-                NextExecution = x.NextExecution,
-                LastError = x.Error
-            }).ToList();
+            return _recordService
+            .GetRecordJob(RecordJobType.Schedule, start, limit)
+            .Select(x => RecordJobFactory.CreateRecuringResponseDto(x))
+            .ToList();
         }
 
         [HttpPost]
         [Route("/Recuring")]
-        public string AddOrUpdateRecuring(string identifier, string cronExpression, string duration, string fileName, int slotId)
+        public RecordResponseDto<RecuringRecordJobDto> AddRecuring(RecuringRecordJobDto recordRequest)
         {
-            var id = identifier ?? Guid.NewGuid().ToString();
-            _recurringJobManager
-         .AddOrUpdate<IRecordService>(
-             id,
-            (rec) => rec.StartRecord(slotId, fileName),
-             cronExpression);
-            return id;
+            RecordJob job = _recordService.AddRecuring(recordRequest);
+            return RecordJobFactory.CreateRecuringResponseDto(job);
+        }
+
+        [HttpPut]
+        [Route("/Recuring")]
+        public RecordResponseDto<RecuringRecordJobDto> UpdateRecuring(RecuringRecordJobDto recordRequest)
+        {
+            RecordJob job = _recordService.UpdateRecuring(recordRequest);
+            return RecordJobFactory.CreateRecuringResponseDto(job);
         }
 
         [HttpDelete]
         [Route("/Recuring")]
         public void RemoveRecuring(string jobId)
         {
-            _recurringJobManager.RemoveIfExists(jobId);
-            _logger.LogInformation($"{jobId} unscheduled");
+            _recordService.RemoveRecordJob(jobId);
         }
-
     }
 }

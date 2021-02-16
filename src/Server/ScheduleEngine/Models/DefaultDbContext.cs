@@ -2,12 +2,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Stardust.Flux.ScheduleEngine.Models
 {
-    public class DefaultDbContext : DbContext
+    public class ScheduleContext : DbContext
     {
-        public DefaultDbContext(DbContextOptions<DefaultDbContext> options)
-            : base(options) {
 
-                
-             }
+
+        public DbSet<RecordJob> RecordJobs { get; set; }
+        public ScheduleContext(DbContextOptions<ScheduleContext> options)
+            : base(options)
+        {
+
+
+        }
     }
 }

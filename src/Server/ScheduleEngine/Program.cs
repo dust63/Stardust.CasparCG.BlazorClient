@@ -18,7 +18,7 @@ namespace Stardust.Flux.ScheduleEngine
         {
             CreateHostBuilder(args)
             .Build()
-            .MigrateDatabase<DefaultDbContext>()
+            .MigrateDatabase<ScheduleContext>()
             .Run();
         }
 

@@ -1,13 +1,11 @@
 using System.Runtime.Serialization;
 using System;
-namespace Stardust.Flux.ScheduleEngine.Models
+namespace Stardust.Flux.ScheduleEngine.DTO
 {
     [DataContract]
     [Serializable]
-    public class RecuringRecordJob
+    public class RecuringRecordJobDto : BaseRecordJobDto
     {
-        [DataMember]
-        public string Id { get; set; }
 
         [DataMember]
         public string CronExpression { get; set; }
@@ -18,6 +16,7 @@ namespace Stardust.Flux.ScheduleEngine.Models
         [DataMember]
         public DateTime? NextExecution { get; set; }
         public string LastError { get; internal set; }
+
     }
 
 }
