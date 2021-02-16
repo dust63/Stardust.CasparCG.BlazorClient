@@ -112,7 +112,10 @@ namespace Stardust.Flux.ScheduleEngine.Services
             RecordJobFactory.UpdateEntity(recordJob, recordRequest);
             if (needToRescheduleStart)
             {
-                logger.LogInformation($"Reschedule stop for {recordJob.RecordJobId}. Stop Job id: {recordJob.StartRecordJobId}");
+                if (recordRequest.ScheduleAt < DateTime.UtcNow)
+                    throw new ScheduleDateOutdatedException();
+
+                logger.LogInformation($"Reschedule start for {recordJob.RecordJobId}. Stop Job id: {recordJob.StartRecordJobId}");
                 BackgroundJob.Delete(recordJob.StartRecordJobId);
                 recordJob.StartRecordJobId = BackgroundJob.Schedule<IRecordSchedulerService>(x => x.StartRecord(recordJob.RecordJobId), recordJob.ScheduleAt.Value);
             }
