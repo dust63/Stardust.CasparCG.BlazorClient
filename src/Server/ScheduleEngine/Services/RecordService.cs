@@ -121,7 +121,10 @@ namespace Stardust.Flux.ScheduleEngine.Services
             {
                 logger.LogInformation($"Reschedule stop for {recordJob.RecordJobId}. Stop Job id: {recordJob.StopRecordJobId}");
                 BackgroundJob.Delete(recordJob.StopRecordJobId);
-                recordJob.StopRecordJobId = ScheduleStopRecord(recordJob);
+                if (recordJob.ScheduleAt.Value.Add(recordJob.Duration) < DateTime.UtcNow)
+                    recordJob.StopRecordJobId = BackgroundJob.Enqueue<IRecordSchedulerService>(x => x.StopRecord(recordJob.RecordJobId));
+                else
+                    recordJob.StopRecordJobId = ScheduleStopRecord(recordJob);
             }
 
             scheduleContext.Update(recordJob);
