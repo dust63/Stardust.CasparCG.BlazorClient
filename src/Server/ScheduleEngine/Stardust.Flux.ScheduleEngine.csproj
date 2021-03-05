@@ -8,6 +8,7 @@
     <PackageReference Include="HangFire" Version="1.7.19" />
     <PackageReference Include="HangFire.Core" Version="1.7.19" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.8.1" />
+    <PackageReference Include="MassTransit" Version="7.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
