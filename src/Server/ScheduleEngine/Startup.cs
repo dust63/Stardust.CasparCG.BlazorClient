@@ -50,7 +50,7 @@ namespace Stardust.Flux.ScheduleEngine
             services.AddTransient<IRecordSchedulerService, RecordSchedulerService>();
             services.AddTransient<IRecordControler, DummyRecordController>();
             services.Configure<RabbitMqHostConfiguration>(options => Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Bind(options));
-            services.AddScoped<IRecordBusService>();
+            services.AddScoped<IRecordBusService, RecordBusService>();
             services.AddMassTransit(x =>
             {
                 var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
