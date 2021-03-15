@@ -17,6 +17,8 @@ using Hangfire.PostgreSql;
 using MassTransit;
 using Stardust.Flux.Core;
 using Stardust.Flux.Core.Configuration;
+using Stardust.Flux.PublishApi.Consumer;
+using MassTransit.RabbitMqTransport;
 
 namespace Stardust.Flux.PublishApi
 {
@@ -60,19 +62,27 @@ namespace Stardust.Flux.PublishApi
                   options.UseNpgsql(Configuration.GetConnectionString("Stardust.Publish"));
               });
             services.AddMassTransit(x =>
-        {
-            var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
-            x.AddBus(context => Bus.Factory.CreateUsingRabbitMq(c =>
-            {
-                c.Host(configOption.Hostname, cfg =>
-                {
-                    cfg.Username(configOption.User);
-                    cfg.Password(configOption.Password);
-                });
-                c.MessageTopology.SetEntityNameFormatter(new RabbitExchangeNameFormater());
-                c.ConfigureEndpoints(context);
-            }));
-        });
+                    {
+                        var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
+                        x.AddConsumer<RecordStartConsumer>();
+                        x.AddBus(serviceProvider =>
+                        {
+                            return Bus.Factory.CreateUsingRabbitMq(cfgBus =>
+                            {
+
+                                cfgBus.MessageTopology.SetEntityNameFormatter(new RabbitExchangeNameFormater());
+                                cfgBus.Host(configOption.Hostname, cfg =>
+                                {
+                                    cfg.Username(configOption.User);
+                                    cfg.Password(configOption.Password);
+                                });
+                                cfgBus.ReceiveEndpoint("publish_service", cfgEndpoint =>
+                                        {
+                                            cfgEndpoint.ConfigureConsumer<RecordStartConsumer>(serviceProvider);
+                                        });
+                            });
+                        });
+                    });
             services.AddMassTransitHostedService();
 
 

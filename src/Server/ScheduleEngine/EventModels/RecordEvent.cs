@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-namespace Stardust.Flux.ScheduleEngine.EventModels
+namespace Stardust.Flux.EventModels
 {
     public abstract class RecordEvent
     {

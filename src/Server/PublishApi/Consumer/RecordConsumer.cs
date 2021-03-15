@@ -1,14 +1,23 @@
 using System.Threading.Tasks;
 using MassTransit;
-using Stardust.Flux.PublishApi.EventModels;
+using Microsoft.Extensions.Logging;
+using Stardust.Flux.EventModels;
 
-namespace PublishApi.Consumer
+namespace Stardust.Flux.PublishApi.Consumer
 {
-    public class RecordConsumer : IConsumer<RecordStartEvent>
+    public class RecordStartConsumer : IConsumer<RecordStartEvent>
     {
+        private readonly ILogger<RecordStartConsumer> logger;
+
+        public RecordStartConsumer(ILogger<RecordStartConsumer> logger)
+        {
+            this.logger = logger;
+        }
+
         public Task Consume(ConsumeContext<RecordStartEvent> context)
         {
-            throw new System.NotImplementedException();
+            logger.LogInformation(context.Message.JobId);
+            return Task.CompletedTask;
         }
     }
 }

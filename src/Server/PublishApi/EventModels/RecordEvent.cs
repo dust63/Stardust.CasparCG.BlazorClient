@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-namespace Stardust.Flux.PublishApi.EventModels
+namespace Stardust.Flux.EventModels
 {
 
 
-    public class RecordStartEvent
+    public interface RecordStartEvent
     {
-        public string JobId;
+        string JobId { get; set; }
 
-        public Dictionary<string, object> ExtrasParams { get; set; }
+        Dictionary<string, object> ExtrasParams { get; set; }
 
     }
 

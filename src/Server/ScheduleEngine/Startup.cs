@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.PostgreSql;
 using MassTransit;
+using MassTransit.RabbitMqTransport;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -52,20 +53,22 @@ namespace Stardust.Flux.ScheduleEngine
             services.Configure<RabbitMqHostConfiguration>(options => Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Bind(options));
             services.AddScoped<IRecordBusService, RecordBusService>();
             services.AddMassTransit(x =>
-            {
-                var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
-                x.AddBus(context => Bus.Factory.CreateUsingRabbitMq(c =>
-                {
-                    c.Host(configOption.Hostname, cfg =>
                     {
-                        cfg.Username(configOption.User);
-                        cfg.Password(configOption.Password);
+                        var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
+                        x.AddBus(serviceProvider =>
+                        {
+                            return Bus.Factory.CreateUsingRabbitMq(cfgBus =>
+                            {
+                                cfgBus.MessageTopology.SetEntityNameFormatter(new RabbitExchangeNameFormater());
+                                cfgBus.Host(configOption.Hostname, cfg =>
+                               {
+                                   cfg.Username(configOption.User);
+                                   cfg.Password(configOption.Password);
+                               });
+
+                            });
+                        });
                     });
-                    c.MessageTopology.SetEntityNameFormatter(new RabbitExchangeNameFormater());
-                    c.ConfigureEndpoints(context);
-                }));
-            });
-            services.AddMassTransitHostedService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

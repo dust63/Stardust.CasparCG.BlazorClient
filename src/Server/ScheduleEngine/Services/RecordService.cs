@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Stardust.Flux.ScheduleEngine.DTO;
 using Stardust.Flux.ScheduleEngine.Factory;
 using Stardust.Flux.ScheduleEngine.Models;
-using Stardust.Flux.ScheduleEngine.EventModels;
+
 
 namespace Stardust.Flux.ScheduleEngine.Services
 {

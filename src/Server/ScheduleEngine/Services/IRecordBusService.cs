@@ -1,6 +1,7 @@
 using System;
 using MassTransit;
-using Stardust.Flux.ScheduleEngine.EventModels;
+using Stardust.Flux.EventModels;
+
 
 namespace Stardust.Flux.ScheduleEngine.Services
 {
