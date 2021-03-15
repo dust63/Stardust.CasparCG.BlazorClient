@@ -14,6 +14,9 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
 using Hangfire;
 using Hangfire.PostgreSql;
+using MassTransit;
+using Stardust.Flux.Core;
+using Stardust.Flux.Core.Configuration;
 
 namespace Stardust.Flux.PublishApi
 {
@@ -51,11 +54,28 @@ namespace Stardust.Flux.PublishApi
 
             services
             .AddEntityFrameworkNpgsql()
-            .AddDbContext<PublishContext>(
+            .AddDbContext<Models.PublishContext>(
               options =>
               {
                   options.UseNpgsql(Configuration.GetConnectionString("Stardust.Publish"));
               });
+            services.AddMassTransit(x =>
+        {
+            var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
+            x.AddBus(context => Bus.Factory.CreateUsingRabbitMq(c =>
+            {
+                c.Host(configOption.Hostname, cfg =>
+                {
+                    cfg.Username(configOption.User);
+                    cfg.Password(configOption.Password);
+                });
+                c.MessageTopology.SetEntityNameFormatter(new RabbitExchangeNameFormater());
+                c.ConfigureEndpoints(context);
+            }));
+        });
+            services.AddMassTransitHostedService();
+
+
             services.AddDistributedMemoryCache();
             services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(1));
             services.Configure<CookiePolicyOptions>(options =>
