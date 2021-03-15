@@ -35,3 +35,5 @@ test for send youtube data
   "privacyStatus": "private",
   "filePath": "D:\\CasparDatas\\media\\AMB.mp4"
 }
+
+Access to rabbit mq management console http://localhost:15672/#/

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.PostgreSql;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,6 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Stardust.Flux.Core;
+using Stardust.Flux.Core.Configuration;
 using Stardust.Flux.ScheduleEngine.Models;
 using Stardust.Flux.ScheduleEngine.Services;
 
@@ -46,10 +49,27 @@ namespace Stardust.Flux.ScheduleEngine
             services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("Stardust")));
             services.AddTransient<IRecordSchedulerService, RecordSchedulerService>();
             services.AddTransient<IRecordControler, DummyRecordController>();
+            services.Configure<RabbitMqHostConfiguration>(options => Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Bind(options));
+            services.AddScoped<IRecordBusService>();
+            services.AddMassTransit(x =>
+            {
+                var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
+                x.AddBus(context => Bus.Factory.CreateUsingRabbitMq(c =>
+                {
+                    c.Host(configOption.Hostname, cfg =>
+                    {
+                        cfg.Username(configOption.User);
+                        cfg.Password(configOption.Password);
+                    });
+                    c.MessageTopology.SetEntityNameFormatter(new RabbitExchangeNameFormater());
+                    c.ConfigureEndpoints(context);
+                }));
+            });
+            services.AddMassTransitHostedService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, IHostApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -57,6 +77,8 @@ namespace Stardust.Flux.ScheduleEngine
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ScheduleEngine v1"));
             }
+
+
 
             //app.UseHttpsRedirection();
 

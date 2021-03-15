@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Hangfire;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Stardust.Flux.ScheduleEngine.DTO;
 using Stardust.Flux.ScheduleEngine.Factory;
 using Stardust.Flux.ScheduleEngine.Models;
+using Stardust.Flux.ScheduleEngine.EventModels;
 
 namespace Stardust.Flux.ScheduleEngine.Services
 {
@@ -30,12 +32,18 @@ namespace Stardust.Flux.ScheduleEngine.Services
     {
         private readonly ILogger<RecordSchedulerService> logger;
         private readonly IRecordControler recordControler;
+        private readonly IRecordBusService recordBusService;
         private readonly ScheduleContext scheduleContext;
 
-        public RecordSchedulerService(ILogger<RecordSchedulerService> logger, IRecordControler recordControler, ScheduleContext scheduleContext)
+        public RecordSchedulerService(
+            ILogger<RecordSchedulerService> logger,
+            IRecordControler recordControler,
+            IRecordBusService recordBusService,
+            ScheduleContext scheduleContext)
         {
             this.logger = logger;
             this.recordControler = recordControler;
+            this.recordBusService = recordBusService;
             this.scheduleContext = scheduleContext;
         }
 
@@ -98,6 +106,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
                 throw new ArgumentNullException(nameof(recordRequest.CronExpression));
             }
         }
+
 
         public RecordJob UpdateSchedule(ScheduleRecordJobDto recordRequest)
         {
@@ -198,6 +207,12 @@ namespace Stardust.Flux.ScheduleEngine.Services
                 recordControler.StartRecord(recordJob);
                 recordJob.StopRecordJobId = ScheduleStopRecord(recordJob);
                 recordJob.IsRecording = true;
+
+                recordBusService.NotifyForRecordStart(
+                    recordJob.RecordJobId,
+                    recordJob.Filename,
+                    recordJob.RecordSlotId);
+
             }
             catch (Exception e)
             {
@@ -249,6 +264,8 @@ namespace Stardust.Flux.ScheduleEngine.Services
         public void StopRecord(string recordJobId)
         {
             var recordJob = GetRecordJob(recordJobId);
+            if (recordJob == null)
+                throw new NoRecordJobFoundException(recordJobId);
             recordControler.StopRecord(recordJob);
             BackgroundJob.Delete(recordJob.StopRecordJobId);
 
@@ -256,6 +273,12 @@ namespace Stardust.Flux.ScheduleEngine.Services
             recordJob.StopRecordJobId = null;
             scheduleContext.Update(recordJob);
             scheduleContext.SaveChanges();
+
+            recordBusService.NotifiyForRecordStop(
+                recordJob.RecordJobId,
+                 recordJob.Filename,
+                  recordJob.RecordSlotId,
+                   recordJob.Duration);
         }
 
 
