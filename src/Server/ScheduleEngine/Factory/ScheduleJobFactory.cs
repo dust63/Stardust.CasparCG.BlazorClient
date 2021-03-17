@@ -4,41 +4,41 @@ using Stardust.Flux.ScheduleEngine.Models;
 
 namespace Stardust.Flux.ScheduleEngine.Factory
 {
-    public static class RecordJobFactory
+    public static class EventJobFactory
     {
 
-        public static RecordJob CreateEntity(BaseRecordJobDto request)
+        public static Event CreateEntity(BaseEventDto request)
         {
-            return new RecordJob
+            return new Event
             {
-                RecordJobId = Guid.NewGuid().ToString(),
+                EventId = Guid.NewGuid().ToString(),
                 Duration = TimeSpan.FromSeconds(request.DurationSeconds),
-                Filename = request.Filename,
+                ExtraParams = request.ExtraParams,
                 RecordSlotId = request.RecordSlotId,
                 Name = request.Name,
             };
         }
-        public static RecordJob CreateEntity(ScheduleRecordJobDto scheduleRecordRequest)
+        public static Event CreateEntity(ScheduleEventDto scheduleRecordRequest)
         {
-            var job = CreateEntity((BaseRecordJobDto)scheduleRecordRequest);
-            job.RecordType = RecordJobType.Schedule;
+            var job = CreateEntity((BaseEventDto)scheduleRecordRequest);
+            job.RecordType = EventType.Schedule;
             job.ScheduleAt = scheduleRecordRequest.ScheduleAt;
             return job;
         }
 
 
-        public static RecordJob CreateEntity(RecuringRecordJobDto scheduleRecordRequest)
+        public static Event CreateEntity(RecuringEventDto scheduleRecordRequest)
         {
-            var job = CreateEntity((BaseRecordJobDto)scheduleRecordRequest);
-            job.RecordType = RecordJobType.Recuring;
+            var job = CreateEntity((BaseEventDto)scheduleRecordRequest);
+            job.RecordType = EventType.Recuring;
             job.CronExpression = scheduleRecordRequest.CronExpression;
             job.StartRecordJobId = Guid.NewGuid().ToString();
             return job;
         }
 
-        public static void UpdateEntity(RecordJob recordJob, ScheduleRecordJobDto recordRequest)
+        public static void UpdateEntity(Event recordJob, ScheduleEventDto recordRequest)
         {
-            UpdateEntity(recordJob, (BaseRecordJobDto)recordRequest);
+            UpdateEntity(recordJob, (BaseEventDto)recordRequest);
             if (recordRequest.ScheduleAt > DateTime.UtcNow)
             {
                 recordJob.ScheduleAt = recordJob.ScheduleAt;
@@ -46,24 +46,27 @@ namespace Stardust.Flux.ScheduleEngine.Factory
         }
 
 
-        public static void UpdateEntity(RecordJob recordJob, BaseRecordJobDto recordRequest)
+        public static void UpdateEntity(Event recordJob, BaseEventDto recordRequest)
         {
             recordJob.Name = recordRequest.Name;
             recordJob.Duration = TimeSpan.FromSeconds(recordRequest.DurationSeconds);
-            recordJob.Filename = recordJob.Filename;
+            recordJob.ExtraParams = recordRequest.ExtraParams;
         }
 
-        public static RecordResponseDto<ScheduleRecordJobDto> CreateScheduleResponseDto(RecordJob recordJob)
+
+
+
+        public static EventResponseDto<ScheduleEventDto> CreateScheduleResponseDto(Event recordJob)
         {
-            return new RecordResponseDto<ScheduleRecordJobDto>
+            return new EventResponseDto<ScheduleEventDto>
             {
                 StartRecordJobId = recordJob.StartRecordJobId,
                 StopRecordJobId = recordJob.StopRecordJobId,
-                Record = new ScheduleRecordJobDto
+                Record = new ScheduleEventDto
                 {
-                    Id = recordJob.RecordJobId,
+                    Id = recordJob.EventId,
                     DurationSeconds = recordJob.Duration.TotalSeconds,
-                    Filename = recordJob.Filename,
+                    ExtraParams = recordJob.ExtraParams,
                     Name = recordJob.Name,
                     RecordSlotId = recordJob.RecordSlotId,
                     ScheduleAt = recordJob.ScheduleAt ?? DateTime.MinValue
@@ -71,23 +74,22 @@ namespace Stardust.Flux.ScheduleEngine.Factory
             };
         }
 
-        public static void UpdateEntity(RecordJob recordJob, RecuringRecordJobDto recordRequest)
+        public static void UpdateEntity(Event recordJob, RecuringEventDto recordRequest)
         {
-            UpdateEntity(recordJob, (BaseRecordJobDto)recordRequest);
+            UpdateEntity(recordJob, (BaseEventDto)recordRequest);
             recordJob.CronExpression = recordJob.CronExpression;
         }
 
-        public static RecordResponseDto<RecuringRecordJobDto> CreateRecuringResponseDto(RecordJob recordJob)
+        public static EventResponseDto<RecuringEventDto> CreateRecuringResponseDto(Event recordJob)
         {
-            return new RecordResponseDto<RecuringRecordJobDto>
+            return new EventResponseDto<RecuringEventDto>
             {
                 StartRecordJobId = recordJob.StartRecordJobId,
                 StopRecordJobId = recordJob.StopRecordJobId,
-                Record = new RecuringRecordJobDto
+                Record = new RecuringEventDto
                 {
-                    Id = recordJob.RecordJobId,
-                    DurationSeconds = recordJob.Duration.TotalSeconds,
-                    Filename = recordJob.Filename,
+                    Id = recordJob.EventId,
+                    DurationSeconds = recordJob.Duration.TotalSeconds,                   
                     Name = recordJob.Name,
                     RecordSlotId = recordJob.RecordSlotId,
                     CronExpression = recordJob.CronExpression

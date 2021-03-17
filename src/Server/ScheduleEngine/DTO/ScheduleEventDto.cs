@@ -4,7 +4,7 @@ namespace Stardust.Flux.ScheduleEngine.DTO
 {
     [DataContract]
     [Serializable]
-    public class ScheduleRecordJobDto : BaseRecordJobDto
+    public class ScheduleEventDto : BaseEventDto
     {
         [DataMember]
         public DateTime ScheduleAt { get; set; }

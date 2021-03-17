@@ -1,16 +1,16 @@
 namespace Stardust.Flux.ScheduleEngine.DTO
 {
-    public class RecordResponseDto<T> where T : BaseRecordJobDto
+    public class EventResponseDto<T> where T : BaseEventDto
     {
 
-        public RecordResponseDto(string startRecordJobId, string stopRecordJobId, T record)
+        public EventResponseDto(string startRecordJobId, string stopRecordJobId, T record)
         {
             StartRecordJobId = startRecordJobId;
             StopRecordJobId = stopRecordJobId;
             Record = record;
         }
 
-        public RecordResponseDto()
+        public EventResponseDto()
         {
 
         }

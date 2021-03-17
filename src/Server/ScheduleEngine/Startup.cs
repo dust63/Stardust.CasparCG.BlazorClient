@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Stardust.Flux.Core;
 using Stardust.Flux.Core.Configuration;
+using Stardust.Flux.ScheduleEngine.DTO;
 using Stardust.Flux.ScheduleEngine.Models;
 using Stardust.Flux.ScheduleEngine.Services;
 
@@ -48,10 +49,11 @@ namespace Stardust.Flux.ScheduleEngine
                 });
 
             services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("Stardust")));
-            services.AddTransient<IRecordSchedulerService, RecordSchedulerService>();
-            services.AddTransient<IRecordControler, DummyRecordController>();
+          
+            services.AddTransient(typeof(IEventSchedulerService<>), typeof(EventSchedulerService<>));
+            services.AddTransient(typeof(IEventConsumer<RecordParameters>), typeof(DummyRecordController));         
             services.Configure<RabbitMqHostConfiguration>(options => Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Bind(options));
-            services.AddScoped<IRecordBusService, RecordBusService>();
+            services.AddScoped<IEventBusService, EventBusService>();
             services.AddMassTransit(x =>
                     {
                         var configOption = Configuration.GetSection(typeof(RabbitMqHostConfiguration).Name).Get<RabbitMqHostConfiguration>();
@@ -97,7 +99,7 @@ namespace Stardust.Flux.ScheduleEngine
                 WorkerCount = 50
             };
             app.UseHangfireServer(options);
-            serviceProvider.GetService<IRecordSchedulerService>().StopAllMissedStop();
+            serviceProvider.GetService<IEventSchedulerService<RecordParameters>>().StopAllMissedStop();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

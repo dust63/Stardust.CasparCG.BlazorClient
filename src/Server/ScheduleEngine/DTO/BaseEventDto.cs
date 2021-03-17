@@ -3,7 +3,7 @@ using System;
 namespace Stardust.Flux.ScheduleEngine.DTO
 {
     [Serializable]
-    public abstract class BaseRecordJobDto
+    public abstract class BaseEventDto
     {
         [DataMember]
         public string Id { get; set; }
@@ -19,6 +19,9 @@ namespace Stardust.Flux.ScheduleEngine.DTO
 
         [DataMember]
         public int RecordSlotId { get; set; }
+
+        [DataMember]
+        public object ExtraParams { get; set; }
 
         public override string ToString()
         {

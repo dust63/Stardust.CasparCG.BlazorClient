@@ -4,7 +4,7 @@ namespace Stardust.Flux.ScheduleEngine.DTO
 {
     [DataContract]
     [Serializable]
-    public class RecuringRecordJobDto : BaseRecordJobDto
+    public class RecuringEventDto : BaseEventDto
     {
 
         [DataMember]

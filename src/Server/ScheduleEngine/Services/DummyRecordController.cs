@@ -1,10 +1,11 @@
 using System;
 using Microsoft.Extensions.Logging;
+using Stardust.Flux.ScheduleEngine.DTO;
 using Stardust.Flux.ScheduleEngine.Models;
 
 namespace Stardust.Flux.ScheduleEngine.Services
 {
-    public class DummyRecordController : IRecordControler
+    public class DummyRecordController : IEventConsumer<RecordParameters>
     {
         private readonly ILogger<DummyRecordController> logger;
 
@@ -13,14 +14,18 @@ namespace Stardust.Flux.ScheduleEngine.Services
             this.logger = logger;
         }
 
-        public void StartRecord(RecordJob recordJob)
+        public void Start(string eventId, TimeSpan duration, RecordParameters parameters)
         {
-            logger.LogInformation($"[{DateTime.Now}] Start recording {recordJob.RecordJobId}-{recordJob.RecordType}-{recordJob.Filename}");
+            logger.LogInformation($"[{DateTime.Now}] Start recording {eventId}-{parameters.filePath}");
         }
 
-        public void StopRecord(RecordJob recordJob)
+     
+
+        public void Stop(string eventId, RecordParameters parameters)
         {
-            logger.LogInformation($"[{DateTime.Now}] Stop recording {recordJob.RecordJobId}");
+            logger.LogInformation($"[{DateTime.Now}] Stop recording {eventId}");
         }
+
+       
     }
 }

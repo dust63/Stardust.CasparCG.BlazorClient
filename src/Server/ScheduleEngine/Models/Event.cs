@@ -6,15 +6,12 @@ namespace Stardust.Flux.ScheduleEngine.Models
 {
     [DataContract]
     [Serializable]
-    public class RecordJob
+    public class Event
     {
         [Key]
-        public string RecordJobId { get; set; }
+        public string EventId { get; set; }
 
         public string RecordType { get; set; }
-
-        [Required]
-        public string Filename { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -38,7 +35,9 @@ namespace Stardust.Flux.ScheduleEngine.Models
 
         public string StopRecordJobId { get; set; }
 
-        public bool IsRecording { get; set; }
+        public bool IsStarted { get; set; }
+
+        public object ExtraParams { get; set; }
 
     }
 
