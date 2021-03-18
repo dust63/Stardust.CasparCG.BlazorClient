@@ -338,7 +338,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
         {
             var eventJob = GetEvent(eventJobId);
             if (!eventJob.IsStarted)
-                throw new NotEventStartedException();
+                throw new EventNotStartedException();
 
             if (!string.IsNullOrEmpty(eventJob.StopRecordJobId))
                 BackgroundJob.Delete(eventJob.StopRecordJobId);
