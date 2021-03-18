@@ -8,12 +8,12 @@ namespace Stardust.Flux.ScheduleEngine.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "RecordJobs",
+                name: "Events",
                 columns: table => new
                 {
-                    RecordJobId = table.Column<string>(type: "text", nullable: false),
-                    RecordType = table.Column<string>(type: "text", nullable: true),
-                    Filename = table.Column<string>(type: "text", nullable: false),
+                    EventId = table.Column<string>(type: "text", nullable: false),
+                    EventType = table.Column<string>(type: "text", nullable: true),
+                    ParamType = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: false),
                     ScheduleAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Duration = table.Column<TimeSpan>(type: "interval", nullable: false),
@@ -21,21 +21,21 @@ namespace Stardust.Flux.ScheduleEngine.Migrations
                     LastExecution = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     NextExecution = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     LastError = table.Column<string>(type: "text", nullable: true),
-                    RecordSlotId = table.Column<int>(type: "integer", nullable: false),
                     StartRecordJobId = table.Column<string>(type: "text", nullable: true),
                     StopRecordJobId = table.Column<string>(type: "text", nullable: true),
-                    IsRecording = table.Column<bool>(type: "boolean", nullable: false)
+                    IsStarted = table.Column<bool>(type: "boolean", nullable: false),
+                    ExtraParams = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RecordJobs", x => x.RecordJobId);
+                    table.PrimaryKey("PK_Events", x => x.EventId);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "RecordJobs");
+                name: "Events");
         }
     }
 }

@@ -10,7 +10,7 @@ using Stardust.Flux.ScheduleEngine.Models;
 namespace Stardust.Flux.ScheduleEngine.Migrations
 {
     [DbContext(typeof(ScheduleContext))]
-    [Migration("20210216213723_InitialCreate")]
+    [Migration("20210318205446_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,9 +21,9 @@ namespace Stardust.Flux.ScheduleEngine.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
-            modelBuilder.Entity("Stardust.Flux.ScheduleEngine.Models.RecordJob", b =>
+            modelBuilder.Entity("Stardust.Flux.ScheduleEngine.Models.Event", b =>
                 {
-                    b.Property<string>("RecordJobId")
+                    b.Property<string>("EventId")
                         .HasColumnType("text");
 
                     b.Property<string>("CronExpression")
@@ -32,11 +32,13 @@ namespace Stardust.Flux.ScheduleEngine.Migrations
                     b.Property<TimeSpan>("Duration")
                         .HasColumnType("interval");
 
-                    b.Property<string>("Filename")
-                        .IsRequired()
+                    b.Property<string>("EventType")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsRecording")
+                    b.Property<string>("ExtraParams")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsStarted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("LastError")
@@ -52,10 +54,7 @@ namespace Stardust.Flux.ScheduleEngine.Migrations
                     b.Property<DateTime?>("NextExecution")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("RecordSlotId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("RecordType")
+                    b.Property<string>("ParamType")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("ScheduleAt")
@@ -67,9 +66,9 @@ namespace Stardust.Flux.ScheduleEngine.Migrations
                     b.Property<string>("StopRecordJobId")
                         .HasColumnType("text");
 
-                    b.HasKey("RecordJobId");
+                    b.HasKey("EventId");
 
-                    b.ToTable("RecordJobs");
+                    b.ToTable("Events");
                 });
 #pragma warning restore 612, 618
         }

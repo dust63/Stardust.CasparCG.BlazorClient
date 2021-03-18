@@ -42,14 +42,14 @@ namespace Stardust.Flux.ScheduleEngine.Services
         /// </summary>
         /// <param name="eventRequest"></param>
         /// <returns></returns>
-        Event AddRecuringEvent(RecuringEventDto eventRequest);
+        Event AddRecuringEvent(RecuringEventDto<T> eventRequest);
 
         /// <summary>
         /// Update a recuring event
         /// </summary>
         /// <param name="eventRequest"></param>
         /// <returns></returns>
-        Event UpdateRecuringEvent(RecuringEventDto eventRequest);
+        Event UpdateRecuringEvent(RecuringEventDto<T> eventRequest);
 
 
         /// <summary>
@@ -63,14 +63,14 @@ namespace Stardust.Flux.ScheduleEngine.Services
         /// </summary>
         /// <param name="eventRequest"></param>
         /// <returns></returns>
-        Event AddScheduleEvent(ScheduleEventDto eventRequest);
+        Event AddScheduleEvent(ScheduleEventDto<T> eventRequest);
 
         /// <summary>
         /// Update a schedule event
         /// </summary>
         /// <param name="eventRequest"></param>
         /// <returns></returns>
-        Event UpdateScheduleEvent(ScheduleEventDto eventRequest);
+        Event UpdateScheduleEvent(ScheduleEventDto<T> eventRequest);
 
         string StartEventNow(T parameters);
 
@@ -122,7 +122,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
             }
         }
 
-        public Event AddRecuringEvent(RecuringEventDto eventRequest)
+        public Event AddRecuringEvent(RecuringEventDto<T> eventRequest)
         {
             RecuringPrecheck(eventRequest);
             var eventJob = EventJobFactory.CreateEntity(eventRequest);
@@ -133,7 +133,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
             return eventJob;
         }
 
-        public Event UpdateRecuringEvent(RecuringEventDto eventRequest)
+        public Event UpdateRecuringEvent(RecuringEventDto<T> eventRequest)
         {
             RecuringPrecheck(eventRequest);
 
@@ -150,7 +150,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
             return eventJob;
         }
 
-        private static void RecuringPrecheck(RecuringEventDto eventRequest)
+        private static void RecuringPrecheck(RecuringEventDto<T> eventRequest)
         {
             if (eventRequest is null)
             {
@@ -164,7 +164,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
         }
 
 
-        public Event UpdateScheduleEvent(ScheduleEventDto eventRequest)
+        public Event UpdateScheduleEvent(ScheduleEventDto<T> eventRequest)
         {
             ShcedulePrecheck(eventRequest);
 
@@ -201,7 +201,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
         }
 
 
-        public Event AddScheduleEvent(ScheduleEventDto eventRequest)
+        public Event AddScheduleEvent(ScheduleEventDto<T> eventRequest)
         {
             ShcedulePrecheck(eventRequest);
             if (eventRequest.ScheduleAt < DateTime.UtcNow)
@@ -217,7 +217,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
             return eventJob;
         }
 
-        private static void ShcedulePrecheck(ScheduleEventDto eventRequest)
+        private static void ShcedulePrecheck(ScheduleEventDto<T> eventRequest)
         {
             if (eventRequest is null)
             {
@@ -288,7 +288,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
                 Name = $"Manual event @{DateTime.UtcNow}",                
                 ScheduleAt = DateTime.UtcNow,
                 Duration = TimeSpan.FromDays(1),
-                RecordType = EventType.Manual,
+                EventType = EventType.Manual,
                 ExtraParams = parameters
                 
             };
@@ -349,7 +349,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
         public List<Event> GetEvents(string type, int start, int limit)
         {
             return scheduleContext.Events
-            .Where(x => x.RecordType == type)
+            .Where(x => x.EventType == type)
             .Skip(start * 0).Take(limit)
             .ToList();
         }

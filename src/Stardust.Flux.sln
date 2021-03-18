@@ -1,23 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{9D4ED182-04A8-4C22-881C-7482CD81D61B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.CoreApi", "Server\CoreApi\Stardust.Flux.CoreApi.csproj", "{7F4ED85F-1C53-4559-8F80-20CD3741D09B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.CoreApi", "Server\CoreApi\Stardust.Flux.CoreApi.csproj", "{7F4ED85F-1C53-4559-8F80-20CD3741D09B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.ScheduleEngine", "Server\ScheduleEngine\Stardust.Flux.ScheduleEngine.csproj", "{075CFF89-35F5-4CA5-920A-6E257C2A5CAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.ScheduleEngine", "Server\ScheduleEngine\Stardust.Flux.ScheduleEngine.csproj", "{075CFF89-35F5-4CA5-920A-6E257C2A5CAC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{A38BF2AE-E29F-4B48-8169-ACA64A190BD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.Crosscutting", "Shared\Crosscutting\Stardust.Flux.Crosscutting.csproj", "{AA29BF22-EEA6-4FB5-878B-0F0529892EC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.Crosscutting", "Shared\Crosscutting\Stardust.Flux.Crosscutting.csproj", "{AA29BF22-EEA6-4FB5-878B-0F0529892EC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.Contract", "Shared\Contracts\Stardust.Flux.Contract.csproj", "{B020478E-CD0E-4171-9D03-1101FE85D51A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.Contract", "Shared\Contracts\Stardust.Flux.Contract.csproj", "{B020478E-CD0E-4171-9D03-1101FE85D51A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.Core", "Shared\Core\Stardust.Flux.Core.csproj", "{5576C627-5C6D-4C68-B12F-F8FFAEFC940F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.Core", "Shared\Core\Stardust.Flux.Core.csproj", "{5576C627-5C6D-4C68-B12F-F8FFAEFC940F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.PublishApi", "Server\PublishApi\Stardust.Flux.PublishApi.csproj", "{F20415E9-0568-4EC1-AA4E-FD2DC3197935}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.PublishApi", "Server\PublishApi\Stardust.Flux.PublishApi.csproj", "{F20415E9-0568-4EC1-AA4E-FD2DC3197935}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4A9FE0D-2480-4B8B-B527-A751E5DDF250}"
+	ProjectSection(SolutionItems) = preProject
+		project.json = project.json
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7F4ED85F-1C53-4559-8F80-20CD3741D09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -105,6 +108,9 @@ Global
 		{F20415E9-0568-4EC1-AA4E-FD2DC3197935}.Release|x86.ActiveCfg = Release|Any CPU
 		{F20415E9-0568-4EC1-AA4E-FD2DC3197935}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7F4ED85F-1C53-4559-8F80-20CD3741D09B} = {9D4ED182-04A8-4C22-881C-7482CD81D61B}
 		{075CFF89-35F5-4CA5-920A-6E257C2A5CAC} = {9D4ED182-04A8-4C22-881C-7482CD81D61B}
@@ -112,5 +118,8 @@ Global
 		{B020478E-CD0E-4171-9D03-1101FE85D51A} = {A38BF2AE-E29F-4B48-8169-ACA64A190BD7}
 		{5576C627-5C6D-4C68-B12F-F8FFAEFC940F} = {A38BF2AE-E29F-4B48-8169-ACA64A190BD7}
 		{F20415E9-0568-4EC1-AA4E-FD2DC3197935} = {9D4ED182-04A8-4C22-881C-7482CD81D61B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {89229574-1CE7-4D47-8586-3E3EC8059E6B}
 	EndGlobalSection
 EndGlobal

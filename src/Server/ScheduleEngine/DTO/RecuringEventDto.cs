@@ -4,7 +4,7 @@ namespace Stardust.Flux.ScheduleEngine.DTO
 {
     [DataContract]
     [Serializable]
-    public class RecuringEventDto : BaseEventDto
+    public class RecuringEventDto<TParam> : BaseEventDto
     {
 
         [DataMember]
@@ -17,6 +17,9 @@ namespace Stardust.Flux.ScheduleEngine.DTO
         public DateTime? NextExecution { get; set; }
         public string LastError { get; internal set; }
 
+        public new TParam ExtraParams { get; set; }
     }
+
+
 
 }

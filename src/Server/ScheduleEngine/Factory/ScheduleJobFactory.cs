@@ -7,92 +7,94 @@ namespace Stardust.Flux.ScheduleEngine.Factory
     public static class EventJobFactory
     {
 
-        public static Event CreateEntity(BaseEventDto request)
+        public static Event CreateEntity<TParam>(BaseEventDto request, TParam extraParams)
         {
             return new Event
             {
                 EventId = Guid.NewGuid().ToString(),
                 Duration = TimeSpan.FromSeconds(request.DurationSeconds),
-                ExtraParams = request.ExtraParams,
-                RecordSlotId = request.RecordSlotId,
-                Name = request.Name,
+                ExtraParams = extraParams,
+                ParamType = typeof(TParam).FullName,
+                Name = request.Name,                
             };
         }
-        public static Event CreateEntity(ScheduleEventDto scheduleRecordRequest)
+
+
+        public static Event CreateEntity<TParam>(ScheduleEventDto<TParam> scheduleeventRequest)
         {
-            var job = CreateEntity((BaseEventDto)scheduleRecordRequest);
-            job.RecordType = EventType.Schedule;
-            job.ScheduleAt = scheduleRecordRequest.ScheduleAt;
+            var job = CreateEntity(scheduleeventRequest, scheduleeventRequest.ExtraParams);
+            job.EventType = EventType.Schedule;
+            job.ScheduleAt = scheduleeventRequest.ScheduleAt;
             return job;
         }
 
 
-        public static Event CreateEntity(RecuringEventDto scheduleRecordRequest)
+        public static Event CreateEntity<TParam>(RecuringEventDto<TParam> scheduleeventRequest)
         {
-            var job = CreateEntity((BaseEventDto)scheduleRecordRequest);
-            job.RecordType = EventType.Recuring;
-            job.CronExpression = scheduleRecordRequest.CronExpression;
+            var job = CreateEntity(scheduleeventRequest, scheduleeventRequest.ExtraParams);
+            job.EventType = EventType.Recuring;
+            job.CronExpression = scheduleeventRequest.CronExpression;
             job.StartRecordJobId = Guid.NewGuid().ToString();
             return job;
         }
 
-        public static void UpdateEntity(Event recordJob, ScheduleEventDto recordRequest)
+        public static void UpdateEntity<TParam>(Event recordJob, ScheduleEventDto<TParam> eventRequest)
         {
-            UpdateEntity(recordJob, (BaseEventDto)recordRequest);
-            if (recordRequest.ScheduleAt > DateTime.UtcNow)
+            UpdateEntity(recordJob, (BaseEventDto)eventRequest, eventRequest.ExtraParams);
+            if (eventRequest.ScheduleAt > DateTime.UtcNow)
             {
                 recordJob.ScheduleAt = recordJob.ScheduleAt;
             }
         }
 
 
-        public static void UpdateEntity(Event recordJob, BaseEventDto recordRequest)
+        public static void UpdateEntity<TParam>(Event recordJob, BaseEventDto eventRequest, TParam extraParams)
         {
-            recordJob.Name = recordRequest.Name;
-            recordJob.Duration = TimeSpan.FromSeconds(recordRequest.DurationSeconds);
-            recordJob.ExtraParams = recordRequest.ExtraParams;
+            recordJob.Name = eventRequest.Name;
+            recordJob.Duration = TimeSpan.FromSeconds(eventRequest.DurationSeconds);
+            recordJob.ExtraParams = extraParams;
         }
 
 
 
 
-        public static EventResponseDto<ScheduleEventDto> CreateScheduleResponseDto(Event recordJob)
+        public static EventResponseDto<ScheduleEventDto<TParam>> CreateScheduleResponseDto<TParam>(Event recordJob)
         {
-            return new EventResponseDto<ScheduleEventDto>
+            return new EventResponseDto<ScheduleEventDto<TParam>>
             {
                 StartRecordJobId = recordJob.StartRecordJobId,
                 StopRecordJobId = recordJob.StopRecordJobId,
-                Record = new ScheduleEventDto
+                Record = new ScheduleEventDto<TParam>
                 {
                     Id = recordJob.EventId,
                     DurationSeconds = recordJob.Duration.TotalSeconds,
-                    ExtraParams = recordJob.ExtraParams,
-                    Name = recordJob.Name,
-                    RecordSlotId = recordJob.RecordSlotId,
+                    ExtraParams = (TParam)recordJob.ExtraParams,
+                    Name = recordJob.Name,                 
                     ScheduleAt = recordJob.ScheduleAt ?? DateTime.MinValue
                 }
             };
         }
 
-        public static void UpdateEntity(Event recordJob, RecuringEventDto recordRequest)
+        public static void UpdateEntity<TParam>(Event recordJob, RecuringEventDto<TParam> eventRequest)
         {
-            UpdateEntity(recordJob, (BaseEventDto)recordRequest);
+            UpdateEntity(recordJob, (BaseEventDto)eventRequest, eventRequest.ExtraParams);
             recordJob.CronExpression = recordJob.CronExpression;
         }
 
-        public static EventResponseDto<RecuringEventDto> CreateRecuringResponseDto(Event recordJob)
+        public static EventResponseDto<RecuringEventDto<TParam>> CreateRecuringResponseDto<TParam>(Event recordJob)
         {
-            return new EventResponseDto<RecuringEventDto>
+            return new EventResponseDto<RecuringEventDto<TParam>>
             {
                 StartRecordJobId = recordJob.StartRecordJobId,
                 StopRecordJobId = recordJob.StopRecordJobId,
-                Record = new RecuringEventDto
+                Record = new RecuringEventDto<TParam>
                 {
                     Id = recordJob.EventId,
-                    DurationSeconds = recordJob.Duration.TotalSeconds,                   
-                    Name = recordJob.Name,
-                    RecordSlotId = recordJob.RecordSlotId,
-                    CronExpression = recordJob.CronExpression
+                    DurationSeconds = recordJob.Duration.TotalSeconds,
+                    Name = recordJob.Name,                 
+                    CronExpression = recordJob.CronExpression,
+                    ExtraParams = (TParam)recordJob.ExtraParams
+                    
                 }
             };
         }

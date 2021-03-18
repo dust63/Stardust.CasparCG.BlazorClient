@@ -11,7 +11,9 @@ namespace Stardust.Flux.ScheduleEngine.Models
         [Key]
         public string EventId { get; set; }
 
-        public string RecordType { get; set; }
+        public string EventType { get; set; }
+
+        public string ParamType { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -29,7 +31,7 @@ namespace Stardust.Flux.ScheduleEngine.Models
 
         public string LastError { get; internal set; }
 
-        public int RecordSlotId { get; set; }
+     
 
         public string StartRecordJobId { get; set; }
 

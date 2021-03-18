@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Stardust.Flux.ScheduleEngine.DTO
 {
    
-        public record RecordParameters(string slotId, string filePath);       
+        public record RecordParameters(string slotId, string fileName);       
         
     
 }

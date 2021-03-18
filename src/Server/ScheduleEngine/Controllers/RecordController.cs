@@ -22,11 +22,11 @@ namespace Stardust.Flux.ScheduleEngine.Controllers
 
         [HttpGet]
         [Route("/ManualRecord")]
-        public List<EventResponseDto<ScheduleEventDto>> GetManualRecords(int start, int limit = 100)
+        public List<EventResponseDto<ScheduleEventDto<RecordParameters>>> GetManualRecords(int start, int limit = 100)
         {
             return _recordService
             .GetEvents(EventType.Manual, start, limit)
-            .Select(x => EventJobFactory.CreateScheduleResponseDto(x))
+            .Select(x => EventJobFactory.CreateScheduleResponseDto<RecordParameters>(x))
             .ToList();
         }
 
@@ -46,29 +46,29 @@ namespace Stardust.Flux.ScheduleEngine.Controllers
 
         [HttpGet]
         [Route("/Schedule")]
-        public List<EventResponseDto<ScheduleEventDto>> GetSchedule(int start = 0, int limit = 100)
+        public List<EventResponseDto<ScheduleEventDto<RecordParameters>>> GetSchedule(int start = 0, int limit = 100)
         {
             return _recordService
             .GetEvents(EventType.Schedule, start, limit)
-            .Select(x => EventJobFactory.CreateScheduleResponseDto(x))
+            .Select(x => EventJobFactory.CreateScheduleResponseDto<RecordParameters>(x))
             .ToList();
         }
 
 
         [HttpPost]
         [Route("/Schedule")]
-        public EventResponseDto<ScheduleEventDto> AddSchedule(ScheduleEventDto scheduleRecordRequest)
+        public EventResponseDto<ScheduleEventDto<RecordParameters>> AddSchedule(ScheduleEventDto<RecordParameters> scheduleRecordRequest)
         {
             Event recordJob = _recordService.AddScheduleEvent(scheduleRecordRequest);
-            return EventJobFactory.CreateScheduleResponseDto(recordJob);
+            return EventJobFactory.CreateScheduleResponseDto<RecordParameters>(recordJob);
         }
 
         [HttpPut]
         [Route("/Schedule")]
-        public EventResponseDto<ScheduleEventDto> UpdateSchedule(ScheduleEventDto scheduleRecordRequest)
+        public EventResponseDto<ScheduleEventDto<RecordParameters>> UpdateSchedule(ScheduleEventDto<RecordParameters> scheduleRecordRequest)
         {
             Event recordJob = _recordService.UpdateScheduleEvent(scheduleRecordRequest);
-            return EventJobFactory.CreateScheduleResponseDto(recordJob);
+            return EventJobFactory.CreateScheduleResponseDto<RecordParameters>(recordJob);
         }
 
 
@@ -83,28 +83,28 @@ namespace Stardust.Flux.ScheduleEngine.Controllers
 
         [HttpGet]
         [Route("/Recuring")]
-        public List<EventResponseDto<RecuringEventDto>> GetRecuring(int start = 0, int limit = 0)
+        public List<EventResponseDto<RecuringEventDto<RecordParameters>>> GetRecuring(int start = 0, int limit = 0)
         {
             return _recordService
             .GetEvents(EventType.Schedule, start, limit)
-            .Select(x => EventJobFactory.CreateRecuringResponseDto(x))
+            .Select(x => EventJobFactory.CreateRecuringResponseDto<RecordParameters>(x))
             .ToList();
         }
 
         [HttpPost]
         [Route("/Recuring")]
-        public EventResponseDto<RecuringEventDto> AddRecuring(RecuringEventDto recordRequest)
+        public EventResponseDto<RecuringEventDto<RecordParameters>> AddRecuring(RecuringEventDto<RecordParameters> recordRequest)
         {
             var job = _recordService.AddRecuringEvent(recordRequest);
-            return EventJobFactory.CreateRecuringResponseDto(job);
+            return EventJobFactory.CreateRecuringResponseDto<RecordParameters>(job);
         }
 
         [HttpPut]
         [Route("/Recuring")]
-        public EventResponseDto<RecuringEventDto> UpdateRecuring(RecuringEventDto recordRequest)
+        public EventResponseDto<RecuringEventDto<RecordParameters>> UpdateRecuring(RecuringEventDto<RecordParameters> recordRequest)
         {
             var job = _recordService.UpdateRecuringEvent(recordRequest);
-            return EventJobFactory.CreateRecuringResponseDto(job);
+            return EventJobFactory.CreateRecuringResponseDto<RecordParameters>(job);
         }
 
         [HttpDelete]

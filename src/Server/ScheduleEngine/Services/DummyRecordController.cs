@@ -16,7 +16,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
 
         public void Start(string eventId, TimeSpan duration, RecordParameters parameters)
         {
-            logger.LogInformation($"[{DateTime.Now}] Start recording {eventId}-{parameters.filePath}");
+            logger.LogInformation($"[{DateTime.Now}] Start recording {eventId}-{parameters.fileName}");
         }
 
      
