@@ -17,15 +17,15 @@ namespace Stardust.Flux.CoreApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SlotController : ControllerBase
+    public class LiveStreamSlotController : ControllerBase
     {
 
 
-        private readonly ILogger<SlotController> _logger;
+        private readonly ILogger<LiveStreamSlotController> _logger;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public SlotController(ILogger<SlotController> logger, IUnitOfWork unitOfWork, IMapper mapper)
+        public LiveStreamSlotController(ILogger<LiveStreamSlotController> logger, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _logger = logger;
             this.unitOfWork = unitOfWork;
@@ -34,66 +34,61 @@ namespace Stardust.Flux.CoreApi.Controllers
 
         [HttpGet]
         [Route("all")]
-        public Task<IPagedList<SlotDto>> Get(CancellationToken cancellationToken, int pageIndex = 0, int pageSize = 100)
+        public Task<IPagedList<LiveStreamSlotDto>> Get(CancellationToken cancellationToken, int pageIndex = 0, int pageSize = 100)
         {
-            var slotRepo = unitOfWork.GetRepository<Slot>();
+            var slotRepo = unitOfWork.GetRepository<LiveStreamSlot>();
             return slotRepo
               .GetPagedListAsync(
                   orderBy: x => x.OrderBy(s => s.SlotId),
-                  include: slot => slot.Include(x => x.AdditionalsData),
+                  include: slot => slot.Include(x => x.Server),
                   pageIndex: pageIndex,
                   pageSize: pageSize,
                   disableTracking: true,
                   cancellationToken: cancellationToken)
-              .ContinueWith(t => PagedList.From(t.Result, source => source.Select(x => mapper.Map<SlotDto>(x))), TaskContinuationOptions.OnlyOnRanToCompletion);
+              .ContinueWith(t => PagedList.From(t.Result, source => source.Select(x => mapper.Map<LiveStreamSlotDto>(x))), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         [HttpGet]
-        public ActionResult<SlotDto> Get(CancellationToken cancellationToken, int slotId)
+        public ActionResult<LiveStreamSlotDto> Get(CancellationToken cancellationToken, int slotId)
         {
-            var slotRepo = unitOfWork.GetRepository<Slot>();
+            var slotRepo = unitOfWork.GetRepository<LiveStreamSlot>();
             var slot = slotRepo
               .GetFirstOrDefault(
                   predicate: x => x.SlotId == slotId,
-                  include: source => source.Include(x => x.AdditionalsData),
+                  include: source => source.Include(x => x.Server),
                   disableTracking: true);
 
-            return slot != null ? Ok(mapper.Map<SlotDto>(slot)) : NotFound();
+            return slot != null ? Ok(mapper.Map<LiveStreamSlotDto>(slot)) : NotFound();
         }
 
 
         [HttpPost]
-        public ActionResult<SlotDto> Insert(CancellationToken cancellationToken, SlotDto slot)
+        public ActionResult<LiveStreamSlotDto> Insert(CancellationToken cancellationToken, LiveStreamSlotDto slot)
         {
             if (slot is null)
             {
                 throw new ArgumentNullException(nameof(slot));
             }
 
-            var slotRepo = unitOfWork.GetRepository<Slot>();
-            var entity = mapper.Map<Slot>(slot);
-            var addtionalsData = slot?.AdditionalsData.Select(x => mapper.Map<AdditionalSlotData>(x)) ?? Enumerable.Empty<AdditionalSlotData>();
-            foreach (var additional in addtionalsData)
-            {
-                entity.AdditionalsData.Add(additional);
-            }
+            var slotRepo = unitOfWork.GetRepository<LiveStreamSlot>();
+            var entity = mapper.Map<LiveStreamSlot>(slot);     
             slotRepo.InsertAsync(entity, cancellationToken);
             unitOfWork.SaveChanges();
-            return entity != null ? Ok(mapper.Map<SlotDto>(entity)) : NotFound();
+            return entity != null ? Ok(mapper.Map<LiveStreamSlotDto>(entity)) : NotFound();
         }
 
         [HttpPut]
-        public ActionResult<SlotDto> Update(CancellationToken cancellationToken, SlotDto slot)
+        public ActionResult<LiveStreamSlotDto> Update(CancellationToken cancellationToken, LiveStreamSlotDto slot)
         {
             if (slot is null)
             {
                 throw new ArgumentNullException(nameof(slot));
             }
 
-            var slotRepo = unitOfWork.GetRepository<Slot>();
+            var slotRepo = unitOfWork.GetRepository<LiveStreamSlot>();
             var entity = slotRepo.GetFirstOrDefault(
                     predicate: x => x.SlotId == slot.SlotId,
-                    include: source => source.Include(x => x.AdditionalsData),
+                    include: source => source.Include(x => x.Server),
                     disableTracking: false);
 
             if (entity == null)
@@ -103,7 +98,7 @@ namespace Stardust.Flux.CoreApi.Controllers
             slotRepo.Update(entity);
             unitOfWork.SaveChanges();
 
-            return entity != null ? Ok(mapper.Map<SlotDto>(entity)) : NotFound();
+            return entity != null ? Ok(mapper.Map<LiveStreamSlotDto>(entity)) : NotFound();
         }
 
     }

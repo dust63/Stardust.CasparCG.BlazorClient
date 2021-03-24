@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StarDust.CasparCg.net.Device" Version="2020.9.30.1-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Contracts\Stardust.Flux.Contract.csproj" />
+    <ProjectReference Include="..\..\Shared\Core\Stardust.Flux.Core.csproj" />
+  </ItemGroup>
+
+</Project>

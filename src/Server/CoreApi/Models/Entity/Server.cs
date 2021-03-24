@@ -7,7 +7,7 @@ namespace Stardust.Flux.CoreApi.Models.Entity
 
         public Server()
         {
-            Slots = new HashSet<Slot>();
+            Slots = new HashSet<OutputSlot>();
         }
 
         public int ServerId { get; set; }
@@ -20,6 +20,6 @@ namespace Stardust.Flux.CoreApi.Models.Entity
         public string Name { get; set; }
 
 
-        public ICollection<Slot> Slots { get; set; }
+        public ICollection<OutputSlot> Slots { get; set; }
     }
 }

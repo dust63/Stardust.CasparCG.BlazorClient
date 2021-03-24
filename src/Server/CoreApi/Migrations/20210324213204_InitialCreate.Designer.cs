@@ -9,7 +9,7 @@ using Stardust.Flux.CoreApi.Models;
 namespace Stardust.Flux.CoreApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210201215745_InitialCreate")]
+    [Migration("20210324213204_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,27 +20,51 @@ namespace Stardust.Flux.CoreApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
-            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.AdditionalSlotData", b =>
+            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.OutputSlot", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("SlotId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
-                    b.Property<string>("Key")
+                    b.Property<string>("AudioCodec")
                         .HasColumnType("text");
 
-                    b.Property<int>("SlotId")
+                    b.Property<string>("AudioEncodingOptions")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Channel")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<string>("EncodingOptions")
+                        .HasColumnType("text");
 
-                    b.HasIndex("SlotId");
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
-                    b.ToTable("AdditionalSlotData");
+                    b.Property<int>("ServerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SlotType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VideoCodec")
+                        .HasColumnType("text");
+
+                    b.Property<string>("VideoEncodingOptions")
+                        .HasColumnType("text");
+
+                    b.HasKey("SlotId");
+
+                    b.HasIndex("ServerId");
+
+                    b.ToTable("OutputSlot");
+
+                    b.HasDiscriminator<string>("SlotType").HasValue("OutputSlot");
                 });
 
             modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.Server", b =>
@@ -61,44 +85,33 @@ namespace Stardust.Flux.CoreApi.Migrations
 
                     b.HasKey("ServerId");
 
-                    b.ToTable("Server");
+                    b.ToTable("Servers");
                 });
 
-            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.Slot", b =>
+            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.LiveStreamSlot", b =>
                 {
-                    b.Property<int>("SlotId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
+                    b.HasBaseType("Stardust.Flux.CoreApi.Models.Entity.OutputSlot");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("DefaultUrl")
                         .HasColumnType("text");
 
-                    b.Property<int>("ServerId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Type")
+                    b.Property<string>("OutputFormat")
                         .HasColumnType("text");
 
-                    b.HasKey("SlotId");
-
-                    b.HasIndex("ServerId");
-
-                    b.ToTable("Slots");
+                    b.HasDiscriminator().HasValue("LiveStream");
                 });
 
-            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.AdditionalSlotData", b =>
+            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.RecordSlot", b =>
                 {
-                    b.HasOne("Stardust.Flux.CoreApi.Models.Entity.Slot", "Slot")
-                        .WithMany("AdditionalsData")
-                        .HasForeignKey("SlotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasBaseType("Stardust.Flux.CoreApi.Models.Entity.OutputSlot");
 
-                    b.Navigation("Slot");
+                    b.Property<string>("RecordParameters")
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("Record");
                 });
 
-            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.Slot", b =>
+            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.OutputSlot", b =>
                 {
                     b.HasOne("Stardust.Flux.CoreApi.Models.Entity.Server", "Server")
                         .WithMany("Slots")
@@ -112,11 +125,6 @@ namespace Stardust.Flux.CoreApi.Migrations
             modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.Server", b =>
                 {
                     b.Navigation("Slots");
-                });
-
-            modelBuilder.Entity("Stardust.Flux.CoreApi.Models.Entity.Slot", b =>
-                {
-                    b.Navigation("AdditionalsData");
                 });
 #pragma warning restore 612, 618
         }

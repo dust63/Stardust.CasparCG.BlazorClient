@@ -5,7 +5,7 @@ namespace Stardust.Flux.CoreApi.Models.Entity
         public int Id { get; set; }
 
         public int SlotId { get; set; }
-        public Slot Slot { get; set; }
+        public OutputSlot Slot { get; set; }
 
         public string Key { get; set; }
 

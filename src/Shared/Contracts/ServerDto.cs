@@ -21,7 +21,11 @@ namespace Stardust.Flux.Contract
 
         public override string ToString()
         {
-            return string.Join("-", ServerId, Name, Hostname, Port);
+            return string.Join(",",
+                $"{nameof(ServerId)}: {ServerId}",
+                $"{nameof(Name)}: {Name}",
+                $"{nameof(Hostname)}: {Hostname}", 
+                $"{nameof(Port)}: {Port}");
         }
     }
 }

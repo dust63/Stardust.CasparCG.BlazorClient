@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Stardust.Flux.Contract;
@@ -9,10 +10,15 @@ namespace Stardust.Flux.CoreApi.Factory
     {
         public SlotProfile()
         {
-            CreateMap<Slot, SlotDto>()
-            .ForMember(src => src.AdditionalsData, opt => opt.MapFrom(src => src.AdditionalsData.ToDictionary(x => x.Key, x => x.Value)))
-            .ReverseMap()
-            .ForMember(src => src.AdditionalsData, opt => opt.Ignore());
+            CreateMap<OutputSlot, OutputSlotDto>()
+            .ReverseMap();
+
+
+            CreateMap<RecordSlot, RecordSlotDto>()
+           .ReverseMap();
+
+            CreateMap<LiveStreamSlot, LiveStreamSlotDto>()
+           .ReverseMap();
         }
-    }
+    }   
 }

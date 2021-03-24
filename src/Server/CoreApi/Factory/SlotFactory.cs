@@ -8,16 +8,32 @@ namespace Stardust.Flux.CoreApi.Factory
 {
     public static class SlotFactory
     {
-        public static void UpdateValueFrom(this Slot slot, SlotDto slotDto)
+        public static void UpdateValueFrom(this RecordSlot slot, RecordSlotDto slotDto)
+        {
+            slot.Name = slotDto.Name;           
+            slot.VideoCodec = slotDto.VideoCodec;
+            slot.AudioCodec = slotDto.AudioCodec;
+            slot.VideoEncodingOptions = slotDto.VideoEncodingOptions;
+            slot.AudioEncodingOptions = slotDto.AudioEncodingOptions;
+            slot.Channel = slotDto.Channel;
+            slot.Description = slotDto.Description;
+            slot.EncodingOptions = slotDto.EncodingOptions;
+            slot.RecordParameters = slotDto.RecordParameters;
+        }
+
+        public static void UpdateValueFrom(this LiveStreamSlot slot, LiveStreamSlotDto slotDto)
         {
             slot.Name = slotDto.Name;
-            slot.Type = slotDto.Type;
-
-            var addtionalsData = slotDto?.AdditionalsData ?? new Dictionary<string, string>();
-            slot.AdditionalsData.MergeChildren(
-                addtionalsData, (src, dst) => string.Equals(src.Key, dst.Key, StringComparison.OrdinalIgnoreCase),
-                (src) => new AdditionalSlotData { Key = src.Key, Value = src.Value },
-                (src, dst) => dst.Value = src.Value);
+            slot.DefaultUrl = slotDto.DefaultUrl;
+            slot.VideoCodec = slotDto.VideoCodec;
+            slot.AudioCodec = slotDto.AudioCodec;
+            slot.VideoEncodingOptions = slotDto.VideoEncodingOptions;
+            slot.AudioEncodingOptions = slotDto.AudioEncodingOptions;
+            slot.Channel = slotDto.Channel;
+            slot.Description = slotDto.Description;
+            slot.EncodingOptions = slotDto.EncodingOptions;        
         }
+
+
     }
 }
