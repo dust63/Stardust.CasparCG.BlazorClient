@@ -25,7 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.CasparCGControler", "Server\Stardust.Flux.CasparCGControler\Stardust.Flux.CasparCGControler.csproj", "{324D68EF-D913-488D-BFB1-427AD6BE8D10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.CasparCGControler", "Server\Stardust.Flux.CasparCGControler\Stardust.Flux.CasparCGControler.csproj", "{324D68EF-D913-488D-BFB1-427AD6BE8D10}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{176D4504-D0A5-4297-BA80-B2EE567BCC06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.Client", "Client\Stardust.Flux.Client\Stardust.Flux.Client.csproj", "{403215B6-2EF0-4AEA-88B2-8D27C135D783}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +125,18 @@ Global
 		{324D68EF-D913-488D-BFB1-427AD6BE8D10}.Release|x64.Build.0 = Release|Any CPU
 		{324D68EF-D913-488D-BFB1-427AD6BE8D10}.Release|x86.ActiveCfg = Release|Any CPU
 		{324D68EF-D913-488D-BFB1-427AD6BE8D10}.Release|x86.Build.0 = Release|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Debug|x64.Build.0 = Debug|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Debug|x86.Build.0 = Debug|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Release|Any CPU.Build.0 = Release|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Release|x64.ActiveCfg = Release|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Release|x64.Build.0 = Release|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Release|x86.ActiveCfg = Release|Any CPU
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,6 +149,7 @@ Global
 		{5576C627-5C6D-4C68-B12F-F8FFAEFC940F} = {A38BF2AE-E29F-4B48-8169-ACA64A190BD7}
 		{F20415E9-0568-4EC1-AA4E-FD2DC3197935} = {9D4ED182-04A8-4C22-881C-7482CD81D61B}
 		{324D68EF-D913-488D-BFB1-427AD6BE8D10} = {9D4ED182-04A8-4C22-881C-7482CD81D61B}
+		{403215B6-2EF0-4AEA-88B2-8D27C135D783} = {176D4504-D0A5-4297-BA80-B2EE567BCC06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89229574-1CE7-4D47-8586-3E3EC8059E6B}

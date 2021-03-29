@@ -1,0 +1,99 @@
+﻿@inherits LayoutComponentBase
+
+
+
+
+
+<MudThemeProvider Theme="_currentTheme"/>
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudAppBarSpacer />
+        <MudDivider Vertical="true" FlexItem="true" DividerType="DividerType.Middle" Class="mx-4 my-3" />
+        <MudTooltip Text="Toggle light/dark theme">
+            <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => DarkMode())" />
+        </MudTooltip>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h5" Class="mt-1">Application</MudText>
+        </MudDrawerHeader>
+        <NavMenu/>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+        <MudScrollToTop TopOffset="400">
+            <MudFab Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" />
+        </MudScrollToTop>
+    </MudMainContent>
+</MudLayout>
+
+
+
+@code{
+
+    private bool _drawerOpen = true;
+    private NavMenu _navMenuRef;
+
+    [Inject] private NavigationManager NavigationManager { get; set; }
+
+
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    protected override void OnInitialized()
+    {
+        _currentTheme = _darkTheme;
+    }
+
+
+
+
+
+    private void DarkMode()
+    {
+        if (_currentTheme == _defaultTheme)
+        {
+            _currentTheme = _darkTheme;
+        }
+        else
+        {
+            _currentTheme = _defaultTheme;
+        }
+    }
+
+    private MudTheme _currentTheme = new MudTheme();
+    private readonly MudTheme _defaultTheme =
+        new MudTheme()
+        {
+            Palette = new Palette()
+            {
+                Black = "#272c34"
+            }
+        };
+    private readonly MudTheme _darkTheme =
+        new MudTheme()
+        {
+            Palette = new Palette()
+            {
+                Black = "#27272f",
+                Background = "#32333d",
+                BackgroundGrey = "#27272f",
+                Surface = "#373740",
+                DrawerBackground = "#27272f",
+                DrawerText = "rgba(255,255,255, 0.50)",              
+                TextPrimary = "rgba(255,255,255, 0.70)",
+                TextSecondary = "rgba(255,255,255, 0.50)",
+                ActionDefault = "#adadb1",
+                ActionDisabled = "rgba(255,255,255, 0.26)",
+                ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+                DrawerIcon = "rgba(255,255,255, 0.50)"
+            }
+        };
+}
