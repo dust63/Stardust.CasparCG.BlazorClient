@@ -4,10 +4,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
-namespace Stardust.Flux.ScheduleEngine.DTO
+namespace Stardust.Flux.Contract.DTO.Schedule
 {
-   
-        public record RecordParameters(string slotId, string fileName);       
-        
-    
+
+    public record RecordParameters(string slotId, string fileName);
+
+
 }

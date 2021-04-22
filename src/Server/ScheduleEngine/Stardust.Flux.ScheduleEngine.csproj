@@ -15,11 +15,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Contracts\Stardust.Flux.Contract.csproj" />
     <ProjectReference Include="..\..\Shared\Crosscutting\Stardust.Flux.Crosscutting.csproj" />
     <ProjectReference Include="..\..\Shared\Core\Stardust.Flux.Core.csproj" />
   </ItemGroup>

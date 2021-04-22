@@ -16,9 +16,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Stardust.Flux.Contract.DTO.Schedule;
 using Stardust.Flux.Core;
 using Stardust.Flux.Core.Configuration;
-using Stardust.Flux.ScheduleEngine.DTO;
 using Stardust.Flux.ScheduleEngine.Models;
 using Stardust.Flux.ScheduleEngine.Services;
 
@@ -71,6 +71,12 @@ namespace Stardust.Flux.ScheduleEngine
                             });
                         });
                     });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "Open",
+                    builder => builder.AllowAnyOrigin().AllowAnyHeader());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,6 +105,7 @@ namespace Stardust.Flux.ScheduleEngine
                 WorkerCount = 50
             };
             app.UseHangfireServer(options);
+            app.UseCors("Open");
             serviceProvider.GetService<IEventSchedulerService<RecordParameters>>().StopAllMissedStop();
             app.UseEndpoints(endpoints =>
             {

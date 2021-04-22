@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
 using System;
-namespace Stardust.Flux.ScheduleEngine.DTO
+
+namespace Stardust.Flux.Contract.DTO.Schedule
 {
     [Serializable]
     public abstract class BaseEventDto
@@ -11,11 +12,11 @@ namespace Stardust.Flux.ScheduleEngine.DTO
         [DataMember]
         public string Name { get; set; }
 
-     
+
 
         [DataMember]
-        public double DurationSeconds { get; set; }   
-      
+        public double DurationSeconds { get; set; }
+
 
         public override string ToString()
         {

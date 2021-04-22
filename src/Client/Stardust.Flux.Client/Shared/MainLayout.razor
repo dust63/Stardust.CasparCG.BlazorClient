@@ -1,99 +1,88 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components
+
+@using Radzen.Blazor
+@inject ThemeState ThemeState
+
+@inject NavigationManager UriHelper
+@inject IJSRuntime JSRuntime
 
 
 
 
 
-<MudThemeProvider Theme="_currentTheme"/>
-<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
-<MudSnackbarProvider />
 
-<MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudAppBarSpacer />
-        <MudDivider Vertical="true" FlexItem="true" DividerType="DividerType.Middle" Class="mx-4 my-3" />
-        <MudTooltip Text="Toggle light/dark theme">
-            <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => DarkMode())" />
-        </MudTooltip>
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h5" Class="mt-1">Application</MudText>
-        </MudDrawerHeader>
-        <NavMenu/>
-    </MudDrawer>
-    <MudMainContent>
-        @Body
-        <MudScrollToTop TopOffset="400">
-            <MudFab Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Primary" />
-        </MudScrollToTop>
-    </MudMainContent>
-</MudLayout>
+<RadzenDialog />
+<RadzenNotification />
+<RadzenTooltip />
+<RadzenContextMenu />
 
+<RadzenHeader>
+    <ChildContent>
+        <div class="row justify-content-start align-items-center">
+            <div class="col-6 d-flex align-items-center">
+                <RadzenSidebarToggle Click="@(args => { sidebarExpanded = !sidebarExpanded; bodyExpanded = !bodyExpanded; })">
+                </RadzenSidebarToggle>
+                <RadzenLabel Text="Radzen Blazor Components">
+                </RadzenLabel>
+            </div>
+            <div class="col-6 d-flex align-items-center justify-content-end">
+                <label class="d-none d-sm-inline-block" style="margin-left: 1rem">Theme:</label>
+                <RadzenDropDown style="margin:0 .5rem" TValue="string" TextProperty="Text" ValueProperty="Value" Data="@themes" Value="@ThemeState.CurrentTheme" Change="@ChangeTheme" />
+            </div>
+        </div>
+    </ChildContent>
+</RadzenHeader>
+<div style="width:100%">
+    <RadzenBody @ref="@body0" @bind-Expanded="@bodyExpanded">
+        <ChildContent>
+            <RadzenContentContainer Name="main">
+                @Body
+            </RadzenContentContainer>
+        </ChildContent>
+    </RadzenBody>
+</div>
+<RadzenSidebar @ref="@sidebar0" @bind-Expanded="@sidebarExpanded">
+    <ChildContent>
+        <NavMenu></NavMenu>
+    </ChildContent>
+</RadzenSidebar>
+<RadzenFooter>
+    <ChildContent>
+        <RadzenLabel Text="Radzen Blazor Components, Copyright &copy; 2020">
+        </RadzenLabel>
+        <RadzenLink Text="[source]" Path="https://github.com/radzenhq/radzen-blazor" Target="_blank" Style="margin-left:5px;vertical-align:bottom;" />
+    </ChildContent>
+</RadzenFooter>
 
 
 @code{
 
-    private bool _drawerOpen = true;
-    private NavMenu _navMenuRef;
+    RadzenSidebar sidebar0;
+    RadzenBody body0;
+    bool sidebarExpanded = true;
+    bool bodyExpanded = false;
 
-    [Inject] private NavigationManager NavigationManager { get; set; }
-
-
-
-    void DrawerToggle()
+    dynamic themes = new[]
     {
-        _drawerOpen = !_drawerOpen;
-    }
+        new { Text = "Default", Value = "default"},
+        new { Text = "Dark", Value="dark" },
+        new { Text = "Software", Value = "software"},
+        new { Text = "Humanistic", Value = "humanistic" }
+    };
 
-    protected override void OnInitialized()
+    string Theme
     {
-        _currentTheme = _darkTheme;
-    }
-
-
-
-
-
-    private void DarkMode()
-    {
-        if (_currentTheme == _defaultTheme)
+        get
         {
-            _currentTheme = _darkTheme;
-        }
-        else
-        {
-            _currentTheme = _defaultTheme;
+            return $"{ThemeState.CurrentTheme}.css";
         }
     }
 
-    private MudTheme _currentTheme = new MudTheme();
-    private readonly MudTheme _defaultTheme =
-        new MudTheme()
-        {
-            Palette = new Palette()
-            {
-                Black = "#272c34"
-            }
-        };
-    private readonly MudTheme _darkTheme =
-        new MudTheme()
-        {
-            Palette = new Palette()
-            {
-                Black = "#27272f",
-                Background = "#32333d",
-                BackgroundGrey = "#27272f",
-                Surface = "#373740",
-                DrawerBackground = "#27272f",
-                DrawerText = "rgba(255,255,255, 0.50)",              
-                TextPrimary = "rgba(255,255,255, 0.70)",
-                TextSecondary = "rgba(255,255,255, 0.50)",
-                ActionDefault = "#adadb1",
-                ActionDisabled = "rgba(255,255,255, 0.26)",
-                ActionDisabledBackground = "rgba(255,255,255, 0.12)",
-                DrawerIcon = "rgba(255,255,255, 0.50)"
-            }
-        };
+
+    void ChangeTheme(object value)
+    {
+        ThemeState.CurrentTheme = value.ToString();
+        UriHelper.NavigateTo(UriHelper.ToAbsoluteUri(UriHelper.Uri).ToString());
+    }
 }

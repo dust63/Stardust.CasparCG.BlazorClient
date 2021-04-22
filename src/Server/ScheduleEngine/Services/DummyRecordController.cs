@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.Logging;
-using Stardust.Flux.ScheduleEngine.DTO;
+using Stardust.Flux.Contract.DTO.Schedule;
 using Stardust.Flux.ScheduleEngine.Models;
 
 namespace Stardust.Flux.ScheduleEngine.Services

@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
 using System;
-namespace Stardust.Flux.ScheduleEngine.DTO
+
+namespace Stardust.Flux.Contract.DTO.Schedule
 {
     [DataContract]
     [Serializable]

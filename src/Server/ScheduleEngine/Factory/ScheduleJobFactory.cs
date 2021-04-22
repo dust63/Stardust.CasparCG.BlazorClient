@@ -1,6 +1,7 @@
 using System;
-using Stardust.Flux.ScheduleEngine.DTO;
+using Stardust.Flux.Contract.DTO.Schedule;
 using Stardust.Flux.ScheduleEngine.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Stardust.Flux.ScheduleEngine.Factory
 {
@@ -58,21 +59,18 @@ namespace Stardust.Flux.ScheduleEngine.Factory
 
 
 
-        public static EventResponseDto<ScheduleEventDto<TParam>> CreateScheduleResponseDto<TParam>(Event recordJob)
+        public static ScheduleEventResponse<TParam> CreateScheduleResponseDto<TParam>(Event recordJob)
         {
-            return new EventResponseDto<ScheduleEventDto<TParam>>
+            var schedule = new ScheduleEventDto<TParam>
             {
-                StartRecordJobId = recordJob.StartRecordJobId,
-                StopRecordJobId = recordJob.StopRecordJobId,
-                Record = new ScheduleEventDto<TParam>
-                {
-                    Id = recordJob.EventId,
-                    DurationSeconds = recordJob.Duration.TotalSeconds,
-                    ExtraParams = (TParam)recordJob.ExtraParams,
-                    Name = recordJob.Name,                 
-                    ScheduleAt = recordJob.ScheduleAt ?? DateTime.MinValue
-                }
+                Id = recordJob.EventId,
+                DurationSeconds = recordJob.Duration.TotalSeconds,
+                ExtraParams = ((JObject)recordJob.ExtraParams).ToObject<TParam>(),
+                Name = recordJob.Name,
+                ScheduleAt = recordJob.ScheduleAt ?? DateTime.MinValue
             };
+            return new ScheduleEventResponse<TParam>(recordJob.StartRecordJobId, recordJob.StopRecordJobId, schedule);
+           
         }
 
         public static void UpdateEntity<TParam>(Event recordJob, RecuringEventDto<TParam> eventRequest)
@@ -81,22 +79,23 @@ namespace Stardust.Flux.ScheduleEngine.Factory
             recordJob.CronExpression = recordJob.CronExpression;
         }
 
-        public static EventResponseDto<RecuringEventDto<TParam>> CreateRecuringResponseDto<TParam>(Event recordJob)
+        public static RecuringEventResponse<TParam> CreateRecuringResponseDto<TParam>(Event recordJob)
         {
-            return new EventResponseDto<RecuringEventDto<TParam>>
+            var recuring = new RecuringEventDto<TParam>
             {
-                StartRecordJobId = recordJob.StartRecordJobId,
-                StopRecordJobId = recordJob.StopRecordJobId,
-                Record = new RecuringEventDto<TParam>
-                {
-                    Id = recordJob.EventId,
-                    DurationSeconds = recordJob.Duration.TotalSeconds,
-                    Name = recordJob.Name,                 
-                    CronExpression = recordJob.CronExpression,
-                    ExtraParams = (TParam)recordJob.ExtraParams
-                    
-                }
+                Id = recordJob.EventId,
+                DurationSeconds = recordJob.Duration.TotalSeconds,
+                Name = recordJob.Name,
+                CronExpression = recordJob.CronExpression,
+                ExtraParams = (TParam)recordJob.ExtraParams
+
             };
+            return new RecuringEventResponse<TParam>
+            (
+                recordJob.StartRecordJobId,
+                recordJob.StopRecordJobId,
+                recuring
+            );
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
 using System;
-namespace Stardust.Flux.ScheduleEngine.DTO
+
+namespace Stardust.Flux.Contract.DTO.Schedule
 {
     [DataContract]
     [Serializable]
@@ -9,7 +10,12 @@ namespace Stardust.Flux.ScheduleEngine.DTO
         [DataMember]
         public DateTime ScheduleAt { get; set; }
 
+        [DataMember]
         public new TParam ExtraParams { get; set; }
+
+       
+
+
 
     }
 

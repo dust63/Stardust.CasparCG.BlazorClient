@@ -1,0 +1,46 @@
+﻿
+@page "/recordScheduler"
+@using Stardust.Flux.ClientServices;
+@using Stardust.Flux.Contract.DTO.Schedule;
+@inject IRecordModelService RecordService;
+
+
+
+<div class="container col-xl-12">
+    <div class="row">
+        <RadzenButton Click="@GetAllRecord" Text="Test"></RadzenButton>
+    </div>
+        <div class="row">
+            <RadzenScheduler TItem="ScheduledRecord" StartProperty="Start" EndProperty="End" Data=@Records TextProperty="Name" style="height: 95vh">
+                <RadzenDayView StartTime="@StartDay" EndTime="@EndDay" />
+                <RadzenWeekView StartTime="@StartDay" EndTime="@EndDay" />
+                <RadzenMonthView />
+            </RadzenScheduler>
+        </div>
+    </div>
+
+
+@code {
+
+
+
+    public TimeSpan StartDay => new TimeSpan(0, 0, 0, 0);
+
+    public TimeSpan EndDay => new TimeSpan(0, 23, 59, 59);
+
+
+    public async Task  GetAllRecord()
+    {
+        Records = await RecordService.GetAllScheduledRecords();
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllRecord();
+    }
+
+
+    IList<ScheduledRecord> Records = new List<ScheduledRecord>();
+
+}
