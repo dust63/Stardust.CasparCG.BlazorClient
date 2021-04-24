@@ -45,6 +45,8 @@ namespace Stardust.Flux.CoreApi
               })
               .AddUnitOfWork<DataContext>()
               .AddAutoMapper(typeof(Startup));
+
+            services.Configure<LicenceConfig>(Configuration.GetSection(nameof(LicenceConfig)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
