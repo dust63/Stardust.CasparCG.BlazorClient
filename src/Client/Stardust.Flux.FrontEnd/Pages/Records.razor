@@ -1,28 +1,57 @@
 @page "/records"
 @using Syncfusion.Blazor.Schedule
+@using Syncfusion.Blazor.Calendars
 @inject IRecordModelService RecordModelService
 
 <h1>List of you scheduled records</h1>
 
 
-<button class="btn btn-primary" @onclick="GetAllRecord">Click me</button>
+<button class="btn btn-primary" @onclick="GetAllRecord">Load</button>
+<button class="btn btn-primary" @onclick="Scroll">Go to now</button>
+<SfDatePicker TValue="DateTime" Width="100px"  @bind-Value="CurrentDate">
+    <DatePickerEvents TValue="DateTime" ValueChange="ValueChangeHandler"></DatePickerEvents>
+</SfDatePicker>
 
 
-<SfSchedule TValue="ScheduledRecord" Height="100vh" @bind-SelectedDate="@CurrentDate">
+<SfSchedule TValue="ScheduledRecord" Height="685px" @bind-SelectedDate="@CurrentDate" @ref="ScheduleObj" CurrentView="@CurrentView" >
     <ScheduleEventSettings DataSource="@RecordsData"></ScheduleEventSettings>
+    <ScheduleViews>
+        <ScheduleView Option="View.TimelineWeek" AllowVirtualScrolling="false" />
+        <ScheduleView Option="View.Day" />
+        <ScheduleView Option="View.Week" />
+    </ScheduleViews>
 </SfSchedule>
 
 @code {
 
+    View CurrentView = View.TimelineWeek;
+    SfSchedule<ScheduledRecord> ScheduleObj;
+    string ActualHour => DateTime.Now.Hour.ToString();
+
+    int TimeSlot = 2;
 
     public DateTime CurrentDate { get; set; } = DateTime.Now;
 
 
     IList<ScheduledRecord> RecordsData = new List<ScheduledRecord>();
 
-    private async Task GetAllRecord()
+    private async Task Scroll()
     {
 
-        RecordsData = await RecordModelService.GetAllScheduledRecords();
+        await ScheduleObj.ScrollTo(DateTime.Now.ToString("HH:mm"));
+    }
+
+
+    public async void ValueChangeHandler(ChangedEventArgs<DateTime> args)
+    {
+        CurrentDate = args.Value;
+        await Scroll();
+    }
+
+
+    private async Task GetAllRecord()
+    {
+        var records = await RecordModelService.GetAllScheduledRecords();
+        RecordsData = records.Where(x => x.StartTime > DateTime.Now && x.StartTime < DateTime.Now.AddDays(90)).ToList();
     }
 }

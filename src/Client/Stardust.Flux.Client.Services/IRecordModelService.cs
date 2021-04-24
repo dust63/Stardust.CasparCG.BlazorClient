@@ -60,9 +60,9 @@ namespace Stardust.Flux.Client.Services
             return new ScheduledRecord
             {
                 Id = recordDto.Id,
-                Start = startDate,
-                End = startDate.AddSeconds(recordDto.DurationSeconds),
-                Name = recordDto.Name,
+                StartTime = startDate,
+                EndTime = startDate.AddSeconds(recordDto.DurationSeconds),
+                Subject = recordDto.Name,
                 IsRecuring = true
             };
         }
@@ -72,9 +72,9 @@ namespace Stardust.Flux.Client.Services
             return new ScheduledRecord
             {
                 Id = recordDto.Id,
-                Start = recordDto.ScheduleAt,
-                End = recordDto.ScheduleAt.AddSeconds(recordDto.DurationSeconds),
-                Name = recordDto.Name
+                StartTime = recordDto.ScheduleAt,
+                EndTime = recordDto.ScheduleAt.AddSeconds(recordDto.DurationSeconds),
+                Subject = recordDto.Name
 
             };
         }

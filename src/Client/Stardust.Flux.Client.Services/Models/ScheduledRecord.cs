@@ -12,10 +12,10 @@ namespace Stardust.Flux.Client.Models
 
         public string Id { get; set; }
 
-        public DateTime Start { get; set; }
+        public DateTime StartTime { get; set; }
 
-        public DateTime End { get; set; }
+        public DateTime EndTime { get; set; }
 
-        public string Name { get; set; }
+        public string Subject { get; set; }
     }
 }
