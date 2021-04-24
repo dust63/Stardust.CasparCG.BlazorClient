@@ -1,0 +1,28 @@
+@page "/records"
+@using Syncfusion.Blazor.Schedule
+@inject IRecordModelService RecordModelService
+
+<h1>List of you scheduled records</h1>
+
+
+<button class="btn btn-primary" @onclick="GetAllRecord">Click me</button>
+
+
+<SfSchedule TValue="ScheduledRecord" Height="100vh" @bind-SelectedDate="@CurrentDate">
+    <ScheduleEventSettings DataSource="@RecordsData"></ScheduleEventSettings>
+</SfSchedule>
+
+@code {
+
+
+    public DateTime CurrentDate { get; set; } = DateTime.Now;
+
+
+    IList<ScheduledRecord> RecordsData = new List<ScheduledRecord>();
+
+    private async Task GetAllRecord()
+    {
+
+        RecordsData = await RecordModelService.GetAllScheduledRecords();
+    }
+}

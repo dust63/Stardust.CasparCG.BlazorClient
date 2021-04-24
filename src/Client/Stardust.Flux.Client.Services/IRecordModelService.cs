@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stardust.Flux.ClientServices
+namespace Stardust.Flux.Client.Services
 {
     public interface IRecordModelService
     {

@@ -65,12 +65,34 @@
             }
         },
         {
+            "name": ".NET Core Launch (blazor)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-blazor",
+            "program": "${workspaceFolder}/Client/Stardust.Flux.FrontEnd/bin/Debug/net5.0/Stardust.Flux.FrontEnd.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Server/PublishApi",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }         
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
-        }
-
+        }   
        
-    ]
+    ],
+    "compounds": [
+        {
+          "name": "Blazor + Api",
+          "configurations": [".NET Core Launch (schedule-api)", ".NET Core Launch (slot-core-api)", "Blazor Front"]
+        }
+      ]
 }

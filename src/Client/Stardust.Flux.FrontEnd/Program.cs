@@ -1,35 +1,51 @@
+using System;
+using System.Net.Http;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Radzen;
-using System;
-using System.Net.Http;
-
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Syncfusion.Blazor;
+using Stardust.Flux.Client.Services;
 using Refit;
 using Polly;
-using Stardust.Flux.Client.Services;
-using Stardust.Flux.ClientServices;
 
-namespace Stardust.Flux.Client
+namespace Stardust.Flux.FrontEnd
 {
-    public partial class Program
+    public class Program
     {
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
-
+            builder.Services.AddSyncfusionBlazor();
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 
-            builder.Services.AddScoped<DialogService>();
-            builder.Services.AddScoped<NotificationService>();
-            builder.Services.AddScoped<TooltipService>();
-            builder.Services.AddScoped<ContextMenuService>();
-            builder.Services.AddScoped<ThemeState>();
-            builder.Services.AddScoped<IRecordModelService, RecordModelService>();
+            ManageRefitClient(builder);
+            AddScheduleServices(builder);
 
+
+            await builder.Build().RunAsync();
+        }
+
+
+
+        private static void ManageRefitClient(WebAssemblyHostBuilder builder)
+        {
+            builder.Services
+                    .AddRefitClient<ILicenceClientApi>()
+                    .ConfigureHttpClient(c =>
+                    {
+                        c.BaseAddress = new Uri(builder.Configuration["CoreApiUrl"]);
+                    });
+        }
+
+
+        private static void AddScheduleServices(WebAssemblyHostBuilder builder)
+        {
             if (builder.HostEnvironment.Environment == "Development")
             {
 
@@ -37,7 +53,7 @@ namespace Stardust.Flux.Client
                        .AddRefitClient<IRecordClientApi>()
                        .ConfigureHttpClient(c =>
                        {
-                           c.BaseAddress = new Uri("https://localhost:44352");
+                           c.BaseAddress = new Uri(builder.Configuration["ScheduleApiUrl"]);
                        });
             }
             else
@@ -46,7 +62,7 @@ namespace Stardust.Flux.Client
                        .AddRefitClient<IRecordClientApi>()
                        .ConfigureHttpClient(c =>
                        {
-                           c.BaseAddress = new Uri("http://localhost:34158");
+                           c.BaseAddress = new Uri(builder.Configuration["ScheduleApiUrl"]);
                        })
                        //Retry policy using Polly
                        //You could also add a fallback policy, a circuit-breaker or any combination of these
@@ -58,11 +74,8 @@ namespace Stardust.Flux.Client
                        }));
 
             }
-
-
-          
-            await builder.Build().RunAsync();
-
+            builder.Services.AddScoped<IRecordModelService, RecordModelService>();
         }
+
     }
 }

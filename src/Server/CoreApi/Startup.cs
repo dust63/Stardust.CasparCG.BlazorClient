@@ -45,7 +45,12 @@ namespace Stardust.Flux.CoreApi
               })
               .AddUnitOfWork<DataContext>()
               .AddAutoMapper(typeof(Startup));
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "Open",
+                    builder => builder.AllowAnyOrigin().AllowAnyHeader());
+            });
             services.Configure<LicenceConfig>(Configuration.GetSection(nameof(LicenceConfig)));
         }
 
@@ -60,6 +65,7 @@ namespace Stardust.Flux.CoreApi
             }
 
             app.UseHttpsRedirection();
+            app.UseCors("Open");
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
