@@ -1,5 +1,5 @@
+using Innofactor.EfCoreJsonValueConverter;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Stardust.Flux.ScheduleEngine.Models
 {
@@ -22,9 +22,9 @@ namespace Stardust.Flux.ScheduleEngine.Models
 
             modelBuilder.Entity<Event>()
                 .Property(e => e.ExtraParams)
-                .HasConversion(
-                v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-                v => JsonConvert.DeserializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                .HasJsonValueConversion( );
         }
     }
+
+   
 }

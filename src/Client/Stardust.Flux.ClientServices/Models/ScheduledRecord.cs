@@ -7,6 +7,9 @@ namespace Stardust.Flux.Client.Models
 {
     public class ScheduledRecord
     {
+
+        public bool IsRecuring { get; set; }
+
         public string Id { get; set; }
 
         public DateTime Start { get; set; }

@@ -11,6 +11,11 @@ namespace Stardust.Flux.Contract.DTO.Schedule
     [DataContract]
     public class ScheduleEventResponse<TParam> : ScheduleEventDto<TParam>, IBaseEventResponseDto
     {
+        public ScheduleEventResponse()
+        {
+
+        }
+
         public ScheduleEventResponse(
             string startRecordJobId, 
             string stopRecordJobId,

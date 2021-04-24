@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Linq;
 
 namespace Stardust.Flux.ScheduleEngine.Models
 {
@@ -39,7 +40,7 @@ namespace Stardust.Flux.ScheduleEngine.Models
 
         public bool IsStarted { get; set; }
 
-        public object ExtraParams { get; set; }
+        public JObject ExtraParams { get; set; }
 
     }
 

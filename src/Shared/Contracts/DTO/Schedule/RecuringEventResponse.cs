@@ -5,6 +5,12 @@ namespace Stardust.Flux.Contract.DTO.Schedule
     [DataContract]
     public class RecuringEventResponse<TParam> : RecuringEventDto<TParam>, IBaseEventResponseDto
     {
+
+        public RecuringEventResponse()
+        {
+
+        }
+
         public RecuringEventResponse(
             string startRecordJobId,
             string stopRecordJobId,

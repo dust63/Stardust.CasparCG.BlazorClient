@@ -14,7 +14,7 @@ namespace Stardust.Flux.ScheduleEngine.Factory
             {
                 EventId = Guid.NewGuid().ToString(),
                 Duration = TimeSpan.FromSeconds(request.DurationSeconds),
-                ExtraParams = extraParams,
+                ExtraParams = JObject.FromObject(extraParams),
                 ParamType = typeof(TParam).FullName,
                 Name = request.Name,                
             };
@@ -53,7 +53,7 @@ namespace Stardust.Flux.ScheduleEngine.Factory
         {
             recordJob.Name = eventRequest.Name;
             recordJob.Duration = TimeSpan.FromSeconds(eventRequest.DurationSeconds);
-            recordJob.ExtraParams = extraParams;
+            recordJob.ExtraParams = JObject.FromObject( extraParams);
         }
 
 
@@ -87,8 +87,7 @@ namespace Stardust.Flux.ScheduleEngine.Factory
                 DurationSeconds = recordJob.Duration.TotalSeconds,
                 Name = recordJob.Name,
                 CronExpression = recordJob.CronExpression,
-                ExtraParams = (TParam)recordJob.ExtraParams
-
+                ExtraParams = ((JObject)recordJob.ExtraParams).ToObject<TParam>()
             };
             return new RecuringEventResponse<TParam>
             (

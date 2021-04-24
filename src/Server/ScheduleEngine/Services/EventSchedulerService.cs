@@ -4,6 +4,7 @@ using System.Linq;
 using Hangfire;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Stardust.Flux.Contract.DTO.Schedule;
 using Stardust.Flux.ScheduleEngine.Factory;
 using Stardust.Flux.ScheduleEngine.Models;
@@ -86,6 +87,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
 
     public class EventSchedulerService<T> : IEventSchedulerService<T>
     {
+        private const int MinimumEventDuration = 30;
         private readonly ILogger<EventSchedulerService<T>> logger;
         private readonly IEventConsumer<T> eventConsumer;
         private readonly IEventBusService eventBusService;
@@ -123,10 +125,10 @@ namespace Stardust.Flux.ScheduleEngine.Services
         }
 
         public Event AddRecuringEvent(RecuringEventDto<T> eventRequest)
-        {
-            RecuringPrecheck(eventRequest);
-            var eventJob = EventJobFactory.CreateEntity(eventRequest);
+        {         
 
+            RecuringPrecheck(eventRequest);
+            var eventJob = EventJobFactory.CreateEntity(eventRequest);          
             RecurringJob.AddOrUpdate<IEventSchedulerService<T>>(eventJob.StartRecordJobId, x => x.StartEvent(eventJob.EventId), eventRequest.CronExpression);
             scheduleContext.Add(eventJob);
             scheduleContext.SaveChanges();
@@ -161,6 +163,9 @@ namespace Stardust.Flux.ScheduleEngine.Services
             {
                 throw new ArgumentNullException(nameof(eventRequest.CronExpression));
             }
+
+            if (eventRequest.DurationSeconds < MinimumEventDuration)
+                throw new ArgumentOutOfRangeException(nameof(eventRequest.DurationSeconds), eventRequest.DurationSeconds, $"The duration must be superior to {MinimumEventDuration} seconds");
         }
 
 
@@ -229,6 +234,9 @@ namespace Stardust.Flux.ScheduleEngine.Services
                 throw new ArgumentNullException(nameof(eventRequest.ScheduleAt));
             }
 
+            if (eventRequest.DurationSeconds < MinimumEventDuration)
+                throw new ArgumentOutOfRangeException(nameof(eventRequest.DurationSeconds), eventRequest.DurationSeconds, $"The duration must be superior to {MinimumEventDuration} seconds");
+
         }
 
         public void RemoveEvent(string eventJobId)
@@ -260,11 +268,12 @@ namespace Stardust.Flux.ScheduleEngine.Services
             var eventJob = GetEvent(eventJobId);
             try
             {
-                eventConsumer.Start(eventJob.EventId, eventJob.Duration, (T)eventJob.ExtraParams);
+                var parameters = eventJob.ExtraParams.ToObject<T>();
+                eventConsumer.Start(eventJob.EventId, eventJob.Duration, parameters);
                 eventJob.StopRecordJobId = ScheduleStopRecord(eventJob);
                 eventJob.IsStarted = true;
 
-                eventBusService.NotifyForRecordStart<T>(eventJob.EventId,eventJob.Duration, (T)eventJob.ExtraParams);
+                eventBusService.NotifyForRecordStart<T>(eventJob.EventId,eventJob.Duration, parameters);
 
             }
             catch (Exception e)
@@ -282,6 +291,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
 
         public string StartEventNow(T parameters)
         {
+
             var eventJob = new Event
             {
                 EventId = Guid.NewGuid().ToString(),
@@ -289,7 +299,7 @@ namespace Stardust.Flux.ScheduleEngine.Services
                 ScheduleAt = DateTime.UtcNow,
                 Duration = TimeSpan.FromDays(1),
                 EventType = EventType.Manual,
-                ExtraParams = parameters
+                ExtraParams = JObject.FromObject( parameters)
                 
             };
             scheduleContext.Events.Add(eventJob);
@@ -319,7 +329,8 @@ namespace Stardust.Flux.ScheduleEngine.Services
             var eventJob = GetEvent(eventJobId);
             if (eventJob == null)
                 throw new NoEventFoundException(eventJobId);
-            eventConsumer.Stop(eventJob.EventId, (T)eventJob.ExtraParams);
+            var parameter = eventJob.ExtraParams.ToObject<T>();
+            eventConsumer.Stop(eventJob.EventId, parameter);
             BackgroundJob.Delete(eventJob.StopRecordJobId);
 
             eventJob.IsStarted = false;

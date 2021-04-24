@@ -30,6 +30,7 @@ namespace Stardust.Flux.ClientServices
             var records = new List<ScheduledRecord>();
             var manualRecords = await recordApi.GetManualRecords(0);
             var scheduledRecords = await recordApi.GetSchedule(0);
+            var recuringRecords = await recordApi.GetRecuring(0);
 
             if (manualRecords.IsSuccessStatusCode)
                 records.AddRange(manualRecords.Content.Select(x => x).Select(x => CreateModel(x)));
@@ -37,9 +38,34 @@ namespace Stardust.Flux.ClientServices
             if (scheduledRecords.IsSuccessStatusCode)
                 records.AddRange(scheduledRecords.Content.Select(x => x).Select(x => CreateModel(x)));
 
+            if (recuringRecords.IsSuccessStatusCode)
+                ManageRecuringRecords(records, recuringRecords.Content);
+
             return records;
         }
 
+        private void ManageRecuringRecords(List<ScheduledRecord> records, List<RecuringEventResponse<RecordParameters>> recuringEvents)
+        {
+            foreach (var recuringEvent in recuringEvents)
+            {
+                var cronExpression = Cronos.CronExpression.Parse(recuringEvent.CronExpression);
+                var recordOccurences = cronExpression.GetOccurrences(DateTime.UtcNow.AddMonths(-6), DateTime.UtcNow.AddYears(3)).Select(x => CreateModel(recuringEvent, x));
+                records.AddRange(recordOccurences);
+            }
+
+        }
+
+        static ScheduledRecord CreateModel(RecuringEventResponse<RecordParameters> recordDto, DateTime startDate)
+        {
+            return new ScheduledRecord
+            {
+                Id = recordDto.Id,
+                Start = startDate,
+                End = startDate.AddSeconds(recordDto.DurationSeconds),
+                Name = recordDto.Name,
+                IsRecuring = true
+            };
+        }
 
         static ScheduledRecord CreateModel(ScheduleEventDto<RecordParameters> recordDto)
         {

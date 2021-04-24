@@ -18,7 +18,7 @@ namespace Stardust.Flux.Client.Services
         Task<ApiResponse<List<ScheduleEventResponse<RecordParameters>>>> GetManualRecords(int start, int limit = 100);
 
         [Get("/recuring")]
-        Task<ApiResponse<List<ScheduleEventResponse<RecordParameters>>>> GetRecuring(int start = 0, int limit = 0);
+        Task<ApiResponse<List<RecuringEventResponse<RecordParameters>>>> GetRecuring(int start = 0, int limit = 100);
 
         [Get("/schedule")]
         Task<ApiResponse<List<ScheduleEventResponse<RecordParameters>>>> GetSchedule(int start = 0, int limit = 100);

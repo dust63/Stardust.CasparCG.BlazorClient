@@ -88,7 +88,7 @@ namespace Stardust.Flux.ScheduleEngine.Controllers
         public List<RecuringEventResponse<RecordParameters>> GetRecuring(int start = 0, int limit = 0)
         {
             return _recordService
-            .GetEvents(EventType.Schedule, start, limit)
+            .GetEvents(EventType.Recuring, start, limit)
             .Select(x => EventJobFactory.CreateRecuringResponseDto<RecordParameters>(x))
             .ToList();
         }
