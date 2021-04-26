@@ -12,6 +12,7 @@ using Stardust.Flux.Client.Services;
 using Refit;
 using Polly;
 
+
 namespace Stardust.Flux.FrontEnd
 {
     public class Program
@@ -22,8 +23,8 @@ namespace Stardust.Flux.FrontEnd
             builder.RootComponents.Add<App>("#app");
             builder.Services.AddSyncfusionBlazor();
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-
+            builder.Services.AddLocalization();
+    
             ManageRefitClient(builder);
             AddScheduleServices(builder);
 
