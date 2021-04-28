@@ -1,0 +1,55 @@
+@page "/records"
+
+
+<PageContainer Title="Records">
+    <Content>
+        <p>Schedule or launch a record</p>
+       
+      
+    </Content>
+    <ChildContent >
+        <div class="scrollable-container" id="scrollable-container">
+
+            <div class="contentLink" style="margin: 24px 0">
+
+            <Tooltip Title=@("record now")>
+                <Button OnClick="AddRecord" Icon="play-circle" Type="primary" Ghost="true">
+                    Record
+                </Button>
+            </Tooltip>
+
+            <Tooltip Title=@("add a record")>
+                <Button OnClick="AddRecord" Icon="plus">
+                    Add
+                </Button>
+            </Tooltip>
+        </div>
+        <Card Class="CARD">         
+            <AntDesign.Calendar validRange="@ValidRange" DisabledDate="DisableDateFilter" />
+        </Card>
+
+    </div>
+    </ChildContent>
+      
+</PageContainer>
+
+
+
+<style>
+	.scrollable-container{
+		height: 80%;
+		overflow-y: scroll;
+	}	
+</style>
+
+@code{
+    DateTime[] ValidRange = new[] { DateTime.Now, DateTime.Now.AddDays(90) };
+    private bool DisableDateFilter(DateTime date)
+    {
+        return date < DateTime.Now.Date;
+    }
+
+    private void AddRecord(){
+
+    }
+}

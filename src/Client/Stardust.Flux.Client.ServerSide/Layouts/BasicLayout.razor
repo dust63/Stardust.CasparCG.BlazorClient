@@ -1,0 +1,67 @@
+﻿@namespace Stardust.Flux.Client.ServerSide
+@inherits LayoutComponentBase
+
+<AntDesign.Pro.Layout.BasicLayout 
+    Logo="@("https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg")"
+    MenuData="_menuData">
+    <RightContentRender>
+        <Stardust.Flux.Client.ServerSide.Components.RightContent />
+    </RightContentRender>
+    <ChildContent>
+        @Body
+    </ChildContent>
+</AntDesign.Pro.Layout.BasicLayout>
+<SettingDrawer />
+
+@code
+{
+    private readonly MenuDataItem[] _menuData = 
+    {
+        new MenuDataItem
+        {
+            Path = "/",
+            Name = "Welcome",
+            Key = "welcome",
+            Icon = "smile",
+        },
+        new MenuDataItem
+        {
+            Path = "/records",
+            Name = "Records",
+            Key = "records",
+            Icon = "play-circle",
+        }       
+        ,
+        new MenuDataItem
+        {
+            Path = "/live",
+            Name = "Live",
+            Key = "live",
+            Icon = "calendar",
+        }
+        ,
+        new MenuDataItem
+        {
+            Path = "/publish",
+            Name = "Publish",
+            Key = "publish",
+            Icon = "pull-request",
+            Children = new[]{
+                 new MenuDataItem
+        {
+            Path = "/settings",
+            Name = "Settings",
+            Key = "settings",
+            Icon = "setting",
+        },
+         new MenuDataItem{
+            Path = "/",
+            Name = "Dashboard",
+            Key = "dashboard",
+            Icon = "dashboard",
+        }
+
+            }
+        }
+    };
+}
