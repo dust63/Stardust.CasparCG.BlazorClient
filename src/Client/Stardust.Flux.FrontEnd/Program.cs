@@ -24,9 +24,8 @@ namespace Stardust.Flux.FrontEnd
             builder.Services.AddSyncfusionBlazor();
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddLocalization();
-    
-            ManageRefitClient(builder);
-            AddScheduleServices(builder);
+
+            builder.AddFluxClientServices();
 
 
             await builder.Build().RunAsync();
@@ -34,49 +33,6 @@ namespace Stardust.Flux.FrontEnd
 
 
 
-        private static void ManageRefitClient(WebAssemblyHostBuilder builder)
-        {
-            builder.Services
-                    .AddRefitClient<ILicenceClientApi>()
-                    .ConfigureHttpClient(c =>
-                    {
-                        c.BaseAddress = new Uri(builder.Configuration["CoreApiUrl"]);
-                    });
-        }
-
-
-        private static void AddScheduleServices(WebAssemblyHostBuilder builder)
-        {
-            if (builder.HostEnvironment.Environment == "Development")
-            {
-
-                builder.Services
-                       .AddRefitClient<IRecordClientApi>()
-                       .ConfigureHttpClient(c =>
-                       {
-                           c.BaseAddress = new Uri(builder.Configuration["ScheduleApiUrl"]);
-                       });
-            }
-            else
-            {
-                builder.Services
-                       .AddRefitClient<IRecordClientApi>()
-                       .ConfigureHttpClient(c =>
-                       {
-                           c.BaseAddress = new Uri(builder.Configuration["ScheduleApiUrl"]);
-                       })
-                       //Retry policy using Polly
-                       //You could also add a fallback policy, a circuit-breaker or any combination of these
-                       .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                       .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[] {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(5),
-                    TimeSpan.FromSeconds(10)
-                       }));
-
-            }
-            builder.Services.AddScoped<IRecordModelService, RecordModelService>();
-        }
-
+      
     }
 }

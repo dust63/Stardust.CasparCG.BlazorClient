@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using AntDesign.Pro.Layout;
+using Stardust.Flux.Client.Services.Extensions;
 
 namespace Stardust.Flux.Client.ServerSide
 {
@@ -35,6 +36,7 @@ namespace Stardust.Flux.Client.ServerSide
                 BaseAddress = new Uri(sp.GetService<NavigationManager>().BaseUri)
             });
             services.Configure<ProSettings>(Configuration.GetSection("ProSettings"));
+            services.AddFluxClientServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

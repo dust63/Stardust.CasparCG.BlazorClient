@@ -41,7 +41,7 @@ namespace Stardust.Flux.Client.Services
             if (recuringRecords.IsSuccessStatusCode)
                 ManageRecuringRecords(records, recuringRecords.Content, pastOffset, futurOffset);
 
-            return records.Where(x => x.StartTime < DateTime.UtcNow.Subtract(pastOffset) && x.EndTime < DateTime.UtcNow.Add(futurOffset)).ToList();
+            return records.Where(x => x.StartTime >= DateTime.UtcNow.Subtract(pastOffset) && x.EndTime <= DateTime.UtcNow.Add(futurOffset)).ToList();
         }
 
         private void ManageRecuringRecords(List<ScheduledRecord> records, List<RecuringEventResponse<RecordParameters>> recuringEvents, TimeSpan pastOffset, TimeSpan futurOffset)

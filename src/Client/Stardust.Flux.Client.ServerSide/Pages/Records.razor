@@ -1,55 +1,129 @@
 @page "/records"
+@inject IRecordModelService RecordModelService
+@inject ModalService ModalService
 
 
 <PageContainer Title="Records">
     <Content>
         <p>Schedule or launch a record</p>
-       
-      
+
+
     </Content>
-    <ChildContent >
+    <ChildContent>
         <div class="scrollable-container" id="scrollable-container">
 
             <div class="contentLink" style="margin: 24px 0">
 
-            <Tooltip Title=@("record now")>
-                <Button OnClick="AddRecord" Icon="play-circle" Type="primary" Ghost="true">
-                    Record
-                </Button>
-            </Tooltip>
+                <Tooltip Title=@("record now")>
+                    <Button OnClick="AddRecord" Icon="play-circle" Type="primary" Ghost="true">
+                        Record
+                    </Button>
+                </Tooltip>
 
-            <Tooltip Title=@("add a record")>
-                <Button OnClick="AddRecord" Icon="plus">
-                    Add
-                </Button>
-            </Tooltip>
+                <Tooltip Title=@("add a record")>
+                    <Button OnClick="AddRecord" Icon="plus">
+                        Add
+                    </Button>
+                </Tooltip>
+
+
+                <Tooltip Title=@("add a record")>
+                    <Button OnClick="LoadRecords" Icon="refresh">
+                        Load
+                    </Button>
+                </Tooltip>
+            </div>
+            <Card Class="CARD">
+                <Calendar validRange="@ValidRange" DisabledDate="DisableDateFilter" @ref="CalendarRef" DateCellRender="DateCellRender" />
+            </Card>
+
         </div>
-        <Card Class="CARD">         
-            <AntDesign.Calendar validRange="@ValidRange" DisabledDate="DisableDateFilter" />
-        </Card>
-
-    </div>
     </ChildContent>
-      
+
 </PageContainer>
 
 
 
 <style>
-	.scrollable-container{
-		height: 80%;
-		overflow-y: scroll;
-	}	
+    .scrollable-container {
+        height: 80%;
+        overflow-y: scroll;
+    }
 </style>
 
-@code{
-    DateTime[] ValidRange = new[] { DateTime.Now, DateTime.Now.AddDays(90) };
+@code{DateTime[] ValidRange = new[] { DateTime.Now.AddMonths(-1), DateTime.Now.AddYears(1) };
+
+    IList<ScheduledRecord> ScheduledRecords = new List<ScheduledRecord>();
+
+    Calendar CalendarRef { get; set; }
+
+    private ModalRef _modalRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRecords();
+    }
+
     private bool DisableDateFilter(DateTime date)
     {
         return date < DateTime.Now.Date;
     }
 
-    private void AddRecord(){
+    private void AddRecord()
+    {
 
     }
+
+
+
+    private RenderFragment DateCellRender(DateTime value)
+    {
+        var value2 = value;
+        return@<Template>
+        <ul class="events">
+            @foreach (var data in ScheduledRecords.Where(x => x.StartTime.Date == value.Date))
+            {
+<li key="@data.Title" >
+    <Tooltip Title="@data.Title">
+        <a @onclick="e => ScheduleItemClick(data)">
+            <Badge Color="@SwitchBadgeColor(data)" Text="@data.Title" />
+        </a>
+    </Tooltip>
+
+</li>}
+        </ul>
+    </Template>;
+    }
+
+
+    private string SwitchBadgeColor(ScheduledRecord record)
+    {
+        if (record.IsRecuring)
+            return "lime";
+
+        return "blue";
+    }
+
+    private async Task LoadRecords()
+    {
+        ScheduledRecords = await RecordModelService.GetAllScheduledRecords(DateTime.Now, TimeSpan.FromDays(31), TimeSpan.FromDays(365));
+        var datesToRefresh = ScheduledRecords.GroupBy(x => x.StartTime.Date);
+
+        foreach (var date in datesToRefresh)
+        {
+            await CalendarRef.ChangeValue(date.Key);
+        }
+    }
+
+
+    private async void ScheduleItemClick(ScheduledRecord record)
+    {
+        var modalConfig = new ModalOptions();
+        modalConfig.Title = record.Title;
+
+        _modalRef = await ModalService
+         .CreateModalAsync<RecordDetails, ScheduledRecord>
+         (modalConfig, record);
+    }
+
 }
