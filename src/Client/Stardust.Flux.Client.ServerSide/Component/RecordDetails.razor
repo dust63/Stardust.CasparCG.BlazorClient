@@ -1,4 +1,5 @@
-﻿@using System.ComponentModel.DataAnnotations
+﻿@inject IStringLocalizer<Localization> local
+@using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @inherits FeedbackComponent<ScheduledRecord>
 
@@ -11,16 +12,16 @@
                        Lg="new EmbeddedProperty{Span = 24}"
                        Md="new EmbeddedProperty{Span = 24}"
                        Sm="12">
-            <FormItem Label="Title">
-                <Input @bind-Value="@context.Title" />
+            <FormItem Label="@local["Title"]">
+                <Input @bind-Value="@context.Title" Placeholder="@Localization.TitlePlaceholder"/>
             </FormItem>
         </AntDesign.Col>
         <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
                        Lg="new EmbeddedProperty { Span = 24 }"
                        Md="new EmbeddedProperty{Span = 24}"
                        Sm="12">
-            <FormItem Label="Description">
-                <Input @bind-Value="@context.Description" />
+            <FormItem Label="@local["Description"]">
+                <Input @bind-Value="@context.Description" Placeholder="@Localization.DescriptionPlaceholder" />
             </FormItem>
         </AntDesign.Col>
 
@@ -28,8 +29,8 @@
                        Lg="new EmbeddedProperty { Span = 12 }"
                        Md="new EmbeddedProperty{Span = 12}"
                        Sm="12">
-            <FormItem Label="Start Time">
-                <DatePicker @bind-Value="@context.StartTime" ShowTime="@true" />
+            <FormItem Label="@local["StartTime"]">
+                <DatePicker @bind-Value="@context.StartTime" ShowTime="@true" DefaultValue="DateTime.Now.AddMinutes(5)" />
             </FormItem>
         </AntDesign.Col>
 
@@ -37,8 +38,8 @@
                        Lg="new EmbeddedProperty { Span = 12 }"
                        Md="new EmbeddedProperty{Span = 12}"
                        Sm="12">
-            <FormItem Label="End time">
-                <DatePicker @bind-Value="@context.EndTime" ShowTime="@true" />
+            <FormItem Label="@local["EndTime"]">
+                <DatePicker @bind-Value="@context.EndTime" ShowTime="@true" DefaultValue="DateTime.Now.AddMinutes(15)"/>
             </FormItem>
         </AntDesign.Col>
 
@@ -47,29 +48,26 @@
                        Lg="new EmbeddedProperty { Span = 12 }"
                        Md="new EmbeddedProperty{Span = 12}"
                        Sm="12">
-         <label class="ant-form-item-label">Tags</label>
-              <TagsEditor Tags="@context.YoutubeTags"/>
-            
+            <label class="ant-form-item-label">"@local["Tags"]</label>
+              <TagsEditor Tags="@context.YoutubeTags"/>            
         </AntDesign.Col>
-
-    </Row>
-
-
-
-     
+    </Row>     
 </Form>
 
 @code {
 
-
+  
     public DateTime?[] DateRange { get; set; }
 
     private ScheduledRecord _model;
     protected override void OnInitialized()
     {
+       
         _model = base.Options ?? new ScheduledRecord();
         base.OnInitialized();
     }
+
+
 
     private void OnFinish(EditContext editContext)
     {

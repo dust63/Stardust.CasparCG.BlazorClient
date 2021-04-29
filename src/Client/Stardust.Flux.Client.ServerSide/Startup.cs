@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using AntDesign.Pro.Layout;
 using Stardust.Flux.Client.Services.Extensions;
+using Microsoft.AspNetCore.Localization;
+using Stardust.Flux.Client.ServerSide.Resources;
 
 namespace Stardust.Flux.Client.ServerSide
 {
@@ -31,12 +33,20 @@ namespace Stardust.Flux.Client.ServerSide
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddAntDesign();
+            services.AddLocalization(opt=> opt.ResourcesPath = "Resources");
 			services.AddScoped(sp => new HttpClient
             {
                 BaseAddress = new Uri(sp.GetService<NavigationManager>().BaseUri)
             });
             services.Configure<ProSettings>(Configuration.GetSection("ProSettings"));
             services.AddFluxClientServices(Configuration);
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[] { "en", "fr"};
+                options.DefaultRequestCulture = new RequestCulture("fr");
+                options.AddSupportedCultures(supportedCultures);
+                options.AddSupportedUICultures(supportedCultures);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,7 +67,7 @@ namespace Stardust.Flux.Client.ServerSide
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseRequestLocalization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();

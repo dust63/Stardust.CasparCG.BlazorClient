@@ -1,4 +1,6 @@
 @page "/records"
+@inject IStringLocalizer<Localization> local
+
 @inject IRecordModelService RecordModelService
 @inject ModalService ModalService
 
@@ -14,22 +16,22 @@
 
             <div class="contentLink" style="margin: 24px 0">
 
-                <Tooltip Title=@("record now")>
+                <Tooltip Title="@(Localization.RecordNowTooltip)">
                     <Button OnClick="AddRecord" Icon="play-circle" Type="primary" Ghost="true">
-                        Record
+                        @Localization.Record
                     </Button>
                 </Tooltip>
 
-                <Tooltip Title=@("add a record")>
+                <Tooltip Title="@(Localization.ScheduleRecordTooltip)" >
                     <Button OnClick="AddRecord" Icon="plus">
-                        Add
+                      @Localization.Add
                     </Button>
                 </Tooltip>
 
 
-                <Tooltip Title=@("add a record")>
+                <Tooltip Title="@(Localization.Load)" >
                     <Button OnClick="LoadRecords" Icon="refresh">
-                        Load
+                        @Localization.Load
                     </Button>
                 </Tooltip>
             </div>
@@ -46,53 +48,58 @@
 
 <style>
     .scrollable-container {
-        height: 80%;
-        overflow-y: scroll;
-    }
+                            height: 80%;
+                                overflow-y: scroll;
+                            }
 </style>
 
-@code{DateTime[] ValidRange = new[] { DateTime.Now.AddMonths(-1), DateTime.Now.AddYears(1) };
+@code{
 
-    IList<ScheduledRecord> ScheduledRecords = new List<ScheduledRecord>();
+                                DateTime[] ValidRange = new[] { DateTime.Now.AddMonths(-1), DateTime.Now.AddYears(1) };
 
-    Calendar CalendarRef { get; set; }
+                                IList<ScheduledRecord> ScheduledRecords = new List<ScheduledRecord>();
 
-    private ModalRef _modalRef;
+                                Calendar CalendarRef { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadRecords();
-    }
-
-    private bool DisableDateFilter(DateTime date)
-    {
-        return date < DateTime.Now.Date;
-    }
-
-    private void AddRecord()
-    {
-
-    }
+            private ModalRef _modalRef;
 
 
 
-    private RenderFragment DateCellRender(DateTime value)
-    {
-        var value2 = value;
-        return@<Template>
-        <ul class="events">
-            @foreach (var data in ScheduledRecords.Where(x => x.StartTime.Date == value.Date))
-            {
-<li key="@data.Title" >
-    <Tooltip Title="@data.Title">
-        <a @onclick="e => ScheduleItemClick(data)">
-            <Badge Color="@SwitchBadgeColor(data)" Text="@data.Title" />
-        </a>
-    </Tooltip>
+                        protected override async Task OnInitializedAsync()            {
 
-</li>}
-        </ul>
-    </Template>;
+                            await LoadRecords();
+                        }
+
+                        private bool DisableDateFilter(DateTime date)
+                        {
+                            return date < DateTime.Now.Date;
+                        }
+
+                        private void AddRecord()
+                        {
+
+                        }
+
+
+
+                        private RenderFragment DateCellRender(DateTime value)
+                        {
+                            var value2 = value;
+                            return@<Template>
+                <ul class="events">
+                    @foreach (var data in ScheduledRecords.Where(x => x.StartTime.Date == value.Date))
+                    {
+    <li key="@data.Title">
+        <Tooltip Title="@data.Title">
+            <a @onclick="e => ScheduleItemClick(data)">
+                <Badge Color="@SwitchBadgeColor(data)" Text="@data.Title" />
+            </a>
+        </Tooltip>
+
+    </li>
+}
+                </ul>
+            </Template>;
     }
 
 
@@ -120,10 +127,13 @@
     {
         var modalConfig = new ModalOptions();
         modalConfig.Title = record.Title;
+        modalConfig.CancelText = Localization.Cancel;
+        modalConfig.OkText = Localization.Ok;
+
 
         _modalRef = await ModalService
-         .CreateModalAsync<RecordDetails, ScheduledRecord>
-         (modalConfig, record);
-    }
+     .CreateModalAsync<RecordDetails, ScheduledRecord>
+      (modalConfig, record);
+ }
 
 }
