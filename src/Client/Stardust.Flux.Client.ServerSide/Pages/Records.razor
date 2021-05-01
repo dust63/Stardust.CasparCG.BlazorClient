@@ -3,6 +3,7 @@
 
 @inject IRecordModelService RecordModelService
 @inject ModalService ModalService
+@inject MessageService _message
 
 
 <PageContainer Title="Records">
@@ -17,19 +18,19 @@
             <div class="contentLink" style="margin: 24px 0">
 
                 <Tooltip Title="@(Localization.RecordNowTooltip)">
-                    <Button OnClick="AddRecord" Icon="play-circle" Type="primary" Ghost="true">
+                    <Button OnClick="OnRecordNow" Icon="play-circle" Type="primary" Ghost="true">
                         @Localization.Record
                     </Button>
                 </Tooltip>
 
-                <Tooltip Title="@(Localization.ScheduleRecordTooltip)" >
-                    <Button OnClick="AddRecord" Icon="plus">
-                      @Localization.Add
+                <Tooltip Title="@(Localization.ScheduleRecordTooltip)">
+                    <Button OnClick="OnAddRecord" Icon="plus">
+                        @Localization.Add
                     </Button>
                 </Tooltip>
 
 
-                <Tooltip Title="@(Localization.Load)" >
+                <Tooltip Title="@(Localization.Load)">
                     <Button OnClick="LoadRecords" Icon="refresh">
                         @Localization.Load
                     </Button>
@@ -48,67 +49,69 @@
 
 <style>
     .scrollable-container {
-                            height: 80%;
-                                overflow-y: scroll;
-                            }
+        height: 80%;
+        overflow-y: scroll;
+    }
 </style>
 
-@code{
+@code{DateTime[] ValidRange = new[] { DateTime.Now.AddMonths(-1), DateTime.Now.AddYears(1) };
 
-                                DateTime[] ValidRange = new[] { DateTime.Now.AddMonths(-1), DateTime.Now.AddYears(1) };
+    IList<ScheduledRecord> ScheduledRecords = new List<ScheduledRecord>();
 
-                                IList<ScheduledRecord> ScheduledRecords = new List<ScheduledRecord>();
+    Calendar CalendarRef { get; set; }
 
-                                Calendar CalendarRef { get; set; }
-
-            private ModalRef _modalRef;
+    private ModalRef _modalRef;
 
 
 
-                        protected override async Task OnInitializedAsync()            {
+    protected override async Task OnInitializedAsync()
+    {
 
-                            await LoadRecords();
-                        }
+        await LoadRecords();
+    }
 
-                        private bool DisableDateFilter(DateTime date)
-                        {
-                            return date < DateTime.Now.Date;
-                        }
-
-                        private void AddRecord()
-                        {
-
-                        }
+    private bool DisableDateFilter(DateTime date)
+    {
+        return date < DateTime.Now.Date;
+    }
 
 
 
-                        private RenderFragment DateCellRender(DateTime value)
-                        {
-                            var value2 = value;
-                            return@<Template>
-                <ul class="events">
-                    @foreach (var data in ScheduledRecords.Where(x => x.StartTime.Date == value.Date))
-                    {
-    <li key="@data.Title">
-        <Tooltip Title="@data.Title">
-            <a @onclick="e => ScheduleItemClick(data)">
-                <Badge Color="@SwitchBadgeColor(data)" Text="@data.Title" />
-            </a>
-        </Tooltip>
 
-    </li>
-}
-                </ul>
-            </Template>;
+    private RenderFragment DateCellRender(DateTime value)
+    {
+        var value2 = value;
+        return@<Template>
+        <ul class="events">
+            @foreach (var data in ScheduledRecords.Where(x => x.StartTime.Date == value.Date))
+            {
+<li key="@data.Title">
+    <Tooltip Title="@data.Title">
+        <a @onclick="e => ScheduleItemClick(data)">
+            <Badge Color="@SwitchBadgeColor(data)" Text="@data.Title" />
+        </a>
+    </Tooltip>
+
+</li>}
+        </ul>
+    </Template>;
     }
 
 
     private string SwitchBadgeColor(ScheduledRecord record)
     {
-        if (record.IsRecuring)
-            return "lime";
+        switch (record.Mode)
+        {
 
-        return "blue";
+            case ScheduledRecord.ProgramMode.Daily:
+                return "lime";
+            case ScheduledRecord.ProgramMode.Weekly:
+                return "pink";
+            default:
+                return "blue";
+
+
+        }
     }
 
     private async Task LoadRecords()
@@ -116,24 +119,103 @@
         ScheduledRecords = await RecordModelService.GetAllScheduledRecords(DateTime.Now, TimeSpan.FromDays(31), TimeSpan.FromDays(365));
         var datesToRefresh = ScheduledRecords.GroupBy(x => x.StartTime.Date);
 
-        foreach (var date in datesToRefresh)
-        {
-            await CalendarRef.ChangeValue(date.Key);
-        }
+
     }
 
-
-    private async void ScheduleItemClick(ScheduledRecord record)
+    private async void OnRecordNow()
     {
         var modalConfig = new ModalOptions();
-        modalConfig.Title = record.Title;
+        modalConfig.Title = Localization.AddANewRecord;
         modalConfig.CancelText = Localization.Cancel;
         modalConfig.OkText = Localization.Ok;
 
+        var record = new ManualRecord();
+        _modalRef = await ModalService
+        .CreateModalAsync<RecordNowForm, ManualRecord>
+        (modalConfig, record);
+
+
+        _modalRef.OnOk = () =>
+        {
+
+            ScheduledRecords.Add(new ScheduledRecord
+            {
+                StartTime = DateTime.Now,
+                EndTime = DateTime.Now.Add(new TimeSpan(record.Duration.Value.Hour, record.Duration.Value.Minute, record.Duration.Value.Second)),
+                Title = record.Title,
+                Description = record.Description,
+                Filename = record.Filename ?? $"MyRecord-{DateTime.Now.ToString("yyyy-MM-dd")}"
+            });
+            _message.Success(Localization.RecordAddedMessage);
+            return Task.CompletedTask;
+
+        };
+
+        _modalRef.OnCancel = () =>
+        {
+            Console.WriteLine("Canceled");
+            return Task.CompletedTask;
+
+        };
+
+    }
+
+    private void OnAddRecord()
+    {
+        ScheduleItemClick(new ScheduledRecord { StartTime = DateTime.Now.AddMinutes(5), DayOfWeek = DateTime.Now.DayOfWeek });
+    }
+
+
+    private ScheduledRecord _editRecord;
+    private ScheduledRecord _editRecordCloned;
+    private async void ScheduleItemClick(ScheduledRecord record)
+    {
+        _editRecord = record;
+        _editRecordCloned = record.Clone();
+        var modalConfig = new ModalOptions();
+        modalConfig.Title = record.Id == null ? Localization.AddANewRecord : Localization.EditYourRecord;
+        modalConfig.CancelText = Localization.Cancel;
+        modalConfig.OkText = Localization.Ok;
 
         _modalRef = await ModalService
-     .CreateModalAsync<RecordDetails, ScheduledRecord>
-      (modalConfig, record);
- }
+        .CreateModalAsync<RecordDetails, ScheduledRecord>
+        (modalConfig, _editRecordCloned);
 
-}
+
+        _modalRef.OnOk = () =>
+        {
+            Console.WriteLine("Ok");
+            if (record.Id == null)
+            {
+                ScheduledRecords.Add(record);
+                _message.Success(Localization.RecordAddedMessage);
+            }
+
+            else
+            {
+                _editRecord.StartTime = _editRecordCloned.StartTime;
+                _editRecord.EndTime = _editRecordCloned.EndTime;
+                _editRecord.Mode = _editRecordCloned.Mode;
+                _editRecord.DayOfWeek = _editRecordCloned.DayOfWeek;
+                _editRecord.Description = _editRecordCloned.Description;
+                _editRecord.Filename = _editRecordCloned.Filename;
+                _editRecord.IsPrivate = _editRecordCloned.IsPrivate;
+                _editRecord.Title = _editRecordCloned.Title;
+                _editRecord.YoutubeTags = _editRecordCloned.YoutubeTags.ToList();
+            }
+
+            return Task.CompletedTask;
+
+        };
+
+        _modalRef.OnCancel = () =>
+        {
+            Console.WriteLine("Canceled");
+            return Task.CompletedTask;
+
+        };
+
+
+    }
+
+    }

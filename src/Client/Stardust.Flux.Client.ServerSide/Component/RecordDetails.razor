@@ -1,10 +1,11 @@
 ﻿@inject IStringLocalizer<Localization> local
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
+@using System.Globalization
 @inherits FeedbackComponent<ScheduledRecord>
 
 <Form Model="@_model"
-      Layout="@FormLayout.Vertical"  
+      Layout="@FormLayout.Vertical"
       OnFinish="OnFinish"
       OnFinishFailed="OnFinishFailed">
     <Row Gutter="16">
@@ -12,25 +13,76 @@
                        Lg="new EmbeddedProperty{Span = 24}"
                        Md="new EmbeddedProperty{Span = 24}"
                        Sm="12">
-            <FormItem Label="@local["Title"]">
-                <Input @bind-Value="@context.Title" Placeholder="@Localization.TitlePlaceholder"/>
+            <FormItem Label="@Localization.Title">
+                <Input @bind-Value="@context.Title" Placeholder="@Localization.TitlePlaceholder" />
             </FormItem>
         </AntDesign.Col>
         <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
                        Lg="new EmbeddedProperty { Span = 24 }"
                        Md="new EmbeddedProperty{Span = 24}"
                        Sm="12">
-            <FormItem Label="@local["Description"]">
+            <FormItem Label="@Localization.Description">
                 <Input @bind-Value="@context.Description" Placeholder="@Localization.DescriptionPlaceholder" />
             </FormItem>
         </AntDesign.Col>
 
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
+                       Lg="new EmbeddedProperty { Span = 24 }"
+                       Md="new EmbeddedProperty{Span = 24}"
+                       Sm="12">
+            <FormItem Label="@Localization.ProgramMode">
+                <RadioGroup @bind-Value="@context.Mode" ButtonStyle="solid">
+                    <Radio RadioButton Value="@(ScheduledRecord.ProgramMode.Normal)">Normal</Radio>
+                    <Radio RadioButton Value="@(ScheduledRecord.ProgramMode.Daily)">Daily</Radio>
+                    <Radio RadioButton Value="@(ScheduledRecord.ProgramMode.Weekly)">Weekly</Radio>
+                </RadioGroup>
+            </FormItem>
+        </AntDesign.Col>
+
+        @switch (context.Mode)
+        {
+            case ScheduledRecord.ProgramMode.Normal:
+                <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
+                               Lg="new EmbeddedProperty { Span = 24 }"
+                               Md="new EmbeddedProperty{Span = 24}"
+                               Sm="24">
+                    <FormItem Label="@Localization.Date">
+                        <DatePicker @bind-Value="@DateStart" ShowTime="@false" DefaultValue="DateTime.Now.AddMinutes(5)" />
+                    </FormItem>
+                </AntDesign.Col>
+              
+                break;
+            case ScheduledRecord.ProgramMode.Daily:       
+
+                break;
+            case ScheduledRecord.ProgramMode.Weekly:
+                <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
+                               Lg="new EmbeddedProperty { Span = 24 }"
+                               Md="new EmbeddedProperty{Span = 24}"
+                               Sm="12">
+                    <FormItem Label="@Localization.ChooseADay">
+                        <RadioGroup @bind-Value="@context.DayOfWeek" ButtonStyle="solid">
+                            <Radio RadioButton Value="@(DayOfWeek.Monday)">@_dayNames[(int)DayOfWeek.Monday]</Radio>
+                            <Radio RadioButton Value="@(DayOfWeek.Tuesday)">@_dayNames[(int)DayOfWeek.Tuesday]</Radio>
+                            <Radio RadioButton Value="@(DayOfWeek.Wednesday)">@_dayNames[(int)DayOfWeek.Wednesday]</Radio>
+                            <Radio RadioButton Value="@(DayOfWeek.Thursday)">@_dayNames[(int)DayOfWeek.Thursday]</Radio>
+                            <Radio RadioButton Value="@(DayOfWeek.Friday)">@_dayNames[(int)DayOfWeek.Friday]</Radio>
+                            <Radio RadioButton Value="@(DayOfWeek.Saturday)">@_dayNames[(int)DayOfWeek.Saturday]</Radio>
+                            <Radio RadioButton Value="@(DayOfWeek.Sunday)">@_dayNames[(int)DayOfWeek.Sunday]</Radio>
+                        </RadioGroup>
+                    </FormItem>
+                </AntDesign.Col>
+
+
+                break;
+        }
+
         <AntDesign.Col Xl="new EmbeddedProperty{Span = 12}"
                        Lg="new EmbeddedProperty { Span = 12 }"
                        Md="new EmbeddedProperty{Span = 12}"
                        Sm="12">
-            <FormItem Label="@local["StartTime"]">
-                <DatePicker @bind-Value="@context.StartTime" ShowTime="@true" DefaultValue="DateTime.Now.AddMinutes(5)" />
+            <FormItem Label="@Localization.StartTime">
+                <TimePicker @bind-Value="@context.StartTime" Format="@("hh:mm")" DefaultValue="DateTime.Now.AddMinutes(5)" />
             </FormItem>
         </AntDesign.Col>
 
@@ -38,8 +90,18 @@
                        Lg="new EmbeddedProperty { Span = 12 }"
                        Md="new EmbeddedProperty{Span = 12}"
                        Sm="12">
-            <FormItem Label="@local["EndTime"]">
-                <DatePicker @bind-Value="@context.EndTime" ShowTime="@true" DefaultValue="DateTime.Now.AddMinutes(15)"/>
+            <FormItem Label="@Localization.EndTime">
+                <TimePicker @bind-Value="@context.EndTime" Format="@("hh:mm")" DefaultValue="DateTime.Now.AddMinutes(15)" />
+            </FormItem>
+        </AntDesign.Col>
+
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
+                       Lg="new EmbeddedProperty { Span = 24 }"
+                       Md="new EmbeddedProperty{Span = 24}"
+                       Sm="12">
+            <FormItem Label="@Localization.Filename">
+                <Input @bind-Value="@context.Filename" Placeholder="@Localization.FilenamePlaceholder" />
             </FormItem>
         </AntDesign.Col>
 
@@ -48,30 +110,44 @@
                        Lg="new EmbeddedProperty { Span = 12 }"
                        Md="new EmbeddedProperty{Span = 12}"
                        Sm="12">
-            <label class="ant-form-item-label">"@local["Tags"]</label>
-              <TagsEditor Tags="@context.YoutubeTags"/>            
+            <label class="ant-form-item-label">@Localization.Tags</label>
+            <TagsEditor Tags="@context.YoutubeTags" />
         </AntDesign.Col>
-    </Row>     
+    </Row>
 </Form>
 
 @code {
 
-  
     public DateTime?[] DateRange { get; set; }
+    private string[] _dayNames { get; set; }
+    private DateTime _dateStart;
+
+
+    public DateTime DateStart { get => _dateStart;
+        set {
+            _dateStart = new DateTime(value.Year, value.Month, value.Day, _model.StartTime.Hour, _model.StartTime.Minute, _model.StartTime.Second);
+            _model.StartTime = _dateStart;
+        } }
 
     private ScheduledRecord _model;
     protected override void OnInitialized()
-    {
-       
-        _model = base.Options ?? new ScheduledRecord();
+    {     
+
+   
+        _model = base.Options;
+        DateStart = _model.StartTime;
+        var format = CultureInfo.CurrentCulture.DateTimeFormat;
+        _dayNames = format.DayNames.Select(x=> x.Substring(0,2).ToUpper()).ToArray();
         base.OnInitialized();
     }
 
 
 
+
+
+
     private void OnFinish(EditContext editContext)
-    {
-        Console.WriteLine($"Success:{JsonSerializer.Serialize(_model)}");
+    {     
         _ = base.FeedbackRef.CloseAsync();
     }
 

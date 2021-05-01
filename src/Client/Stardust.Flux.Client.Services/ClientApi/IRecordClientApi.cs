@@ -24,16 +24,32 @@ namespace Stardust.Flux.Client.Services
         Task<ApiResponse<List<ScheduleEventResponse<RecordParameters>>>> GetSchedule(int start = 0, int limit = 100);
 
 
-
+        [Post("/recuring")]
         ScheduleEventResponse<RecordParameters> AddRecuring(RecuringEventDto<RecordParameters> recordRequest);
+
+        [Post("/schedule")]
         ScheduleEventResponse<RecordParameters> AddSchedule(ScheduleEventDto<RecordParameters> scheduleRecordRequest);
 
-        void RemoveRecuring(string jobId);
-        void RemoveSchedule(string recordJobId);
-        string StartRecord(RecordParameters parameters);
-        void StopRecord(string recordJobId);
-        ScheduleEventResponse<RecordParameters> UpdateRecuring(RecuringEventDto<RecordParameters> recordRequest);
-        ScheduleEventResponse<RecordParameters> UpdateSchedule(ScheduleEventDto<RecordParameters> scheduleRecordRequest);
+        [Delete("/recuring")]
+        Task<IApiResponse> RemoveRecuring(string jobId);
+
+
+        [Delete("/schedule")]
+        Task<IApiResponse> RemoveSchedule(string recordJobId);
+
+        [Post("/manual/start")]
+        Task<IApiResponse> StartRecord(RecordParameters parameters);
+
+
+        [Post("/manual/stop")]
+        Task<IApiResponse> StopRecord(string recordJobId);
+
+
+        [Put("/recuring")]
+        Task<ApiResponse<ScheduleEventResponse<RecordParameters>>> UpdateRecuring(RecuringEventDto<RecordParameters> recordRequest);
+
+        [Put("/schedule")]
+        Task<ApiResponse<ScheduleEventResponse<RecordParameters>>> UpdateSchedule(ScheduleEventDto<RecordParameters> scheduleRecordRequest);
 
     }
 }

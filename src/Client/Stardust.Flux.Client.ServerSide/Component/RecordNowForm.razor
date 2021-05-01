@@ -1,0 +1,84 @@
+﻿@inherits FeedbackComponent<ManualRecord>
+
+<Form Model="@_model"
+      Layout="@FormLayout.Vertical"
+      OnFinish="OnFinish"
+      OnFinishFailed="OnFinishFailed">
+    <Row Gutter="16">
+
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 12}"
+                       Lg="new EmbeddedProperty { Span = 12 }"
+                       Md="new EmbeddedProperty{Span = 12}"
+                       Sm="12">
+            <FormItem Label="@Localization.Duration">
+                <TimePicker TValue="DateTime?" @bind-Value="@context.Duration" Format="@("hh:mm")"/>
+            </FormItem>
+        </AntDesign.Col>
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
+                       Lg="new EmbeddedProperty{Span = 24}"
+                       Md="new EmbeddedProperty{Span = 24}"
+                       Sm="12">
+            <FormItem Label="@Localization.Title">
+                <Input @bind-Value="@context.Title" Placeholder="@Localization.TitlePlaceholder" />
+            </FormItem>
+        </AntDesign.Col>
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
+                       Lg="new EmbeddedProperty { Span = 24 }"
+                       Md="new EmbeddedProperty{Span = 24}"
+                       Sm="12">
+            <FormItem Label="@Localization.Description">
+                <Input @bind-Value="@context.Description" Placeholder="@Localization.DescriptionPlaceholder" />
+            </FormItem>
+        </AntDesign.Col>
+
+
+
+
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
+                       Lg="new EmbeddedProperty { Span = 24 }"
+                       Md="new EmbeddedProperty{Span = 24}"
+                       Sm="12">
+            <FormItem Label="@Localization.Filename">
+                <Input @bind-Value="@context.Filename" Placeholder="@Localization.FilenamePlaceholder" />
+            </FormItem>
+        </AntDesign.Col>
+
+
+
+    </Row>
+</Form>
+
+@code {
+
+
+
+    private ManualRecord _model;
+    protected override void OnInitialized()
+    {
+
+        _model = base.Options ?? new ManualRecord();
+    
+        base.OnInitialized();
+    }
+
+
+
+    private void OnFinish(EditContext editContext)
+    {        
+        _ = base.FeedbackRef.CloseAsync();
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        
+    }
+
+ 
+
+
+
+
+}

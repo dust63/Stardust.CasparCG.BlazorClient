@@ -63,7 +63,7 @@ namespace Stardust.Flux.Client.Services
                 StartTime = startDate,
                 EndTime = startDate.AddSeconds(recordDto.DurationSeconds),
                 Title = recordDto.Name,
-                IsRecuring = true
+                Mode = ParseMode(recordDto.CronExpression)
             };
         }
 
@@ -74,9 +74,29 @@ namespace Stardust.Flux.Client.Services
                 Id = recordDto.Id,
                 StartTime = recordDto.ScheduleAt,
                 EndTime = recordDto.ScheduleAt.AddSeconds(recordDto.DurationSeconds),
-                Title = recordDto.Name
-
+                Title = recordDto.Name,
+                Mode = ScheduledRecord.ProgramMode.Normal
             };
+        }
+
+
+        static ScheduledRecord.ProgramMode ParseMode(string cronExpression)
+        {
+            var splitCron = cronExpression.Split();
+
+            if(splitCron.Skip(2).Take(3).All(x=> x == "*"))           
+                return ScheduledRecord.ProgramMode.Daily;      
+                
+
+            return ScheduledRecord.ProgramMode.Weekly;
+        }
+
+        static string GetCronExpression(DateTime startTime,DayOfWeek dayOfWeek, ScheduledRecord.ProgramMode mode)
+        {
+            if (mode == ScheduledRecord.ProgramMode.Daily)
+                return $"{startTime.Minute} {startTime.Hour} * * *";
+
+            return $"{startTime.Minute} {startTime.Hour} * * {dayOfWeek}";
         }
     }
 }

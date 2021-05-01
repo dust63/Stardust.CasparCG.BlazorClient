@@ -8,12 +8,13 @@ namespace Stardust.Flux.Client.Models
 {
     public class ScheduledRecord
     {
+        private ProgramMode mode;
+
         public ScheduledRecord()
         {
             YoutubeTags = new List<string>();
         }
 
-        public bool IsRecuring { get; set; }
 
         public string Id { get; set; }
 
@@ -22,13 +23,17 @@ namespace Stardust.Flux.Client.Models
 
         [Required]
         public DateTime EndTime { get; set; }
-          
+
 
         [Required]
         public string Title { get; set; }
 
 
-        public string Description { get; set;}
+        public string Description { get; set; }
+
+
+        [Required]
+        public string Filename { get; set; }
 
 
         public List<string> YoutubeTags { get; set; }
@@ -36,7 +41,35 @@ namespace Stardust.Flux.Client.Models
         public bool IsPrivate { get; set; }
 
 
-        public string RecurrenceRule { get; set; }
+        public DayOfWeek DayOfWeek { get; set; } = DayOfWeek.Monday;
+
+
+        public ProgramMode Mode { get; set; }
+
+        public enum ProgramMode
+        {
+            Normal = 0,
+            Daily = 1,
+            Weekly = 2
+        }
+
+        public ScheduledRecord Clone()
+        {
+            return new ScheduledRecord
+            {
+                Id = this.Id,
+                StartTime = this.StartTime,
+                Description = this.Description,
+                DayOfWeek = this.DayOfWeek,
+                EndTime = this.EndTime,
+                Filename = this.Filename,
+                IsPrivate = this.IsPrivate,
+                Mode = this.Mode,
+                Title = this.Title,
+                YoutubeTags = this.YoutubeTags.ToList()
+            };
+
+        }
 
 
     }

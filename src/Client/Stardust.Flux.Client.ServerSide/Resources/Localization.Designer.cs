@@ -70,11 +70,38 @@ namespace Stardust.Flux.Client.ServerSide.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a new record.
+        /// </summary>
+        internal static string AddANewRecord {
+            get {
+                return ResourceManager.GetString("AddANewRecord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         internal static string Cancel {
             get {
                 return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose a day.
+        /// </summary>
+        internal static string ChooseADay {
+            get {
+                return ResourceManager.GetString("ChooseADay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        internal static string Date {
+            get {
+                return ResourceManager.GetString("Date", resourceCulture);
             }
         }
         
@@ -97,11 +124,47 @@ namespace Stardust.Flux.Client.ServerSide.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duration.
+        /// </summary>
+        internal static string Duration {
+            get {
+                return ResourceManager.GetString("Duration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit you record.
+        /// </summary>
+        internal static string EditYourRecord {
+            get {
+                return ResourceManager.GetString("EditYourRecord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to End at.
         /// </summary>
         internal static string EndTime {
             get {
                 return ResourceManager.GetString("EndTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File name.
+        /// </summary>
+        internal static string Filename {
+            get {
+                return ResourceManager.GetString("Filename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MyFilename.
+        /// </summary>
+        internal static string FilenamePlaceholder {
+            get {
+                return ResourceManager.GetString("FilenamePlaceholder", resourceCulture);
             }
         }
         
@@ -124,11 +187,29 @@ namespace Stardust.Flux.Client.ServerSide.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Program mode.
+        /// </summary>
+        internal static string ProgramMode {
+            get {
+                return ResourceManager.GetString("ProgramMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Record.
         /// </summary>
         internal static string Record {
             get {
                 return ResourceManager.GetString("Record", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your record was added sucessfully.
+        /// </summary>
+        internal static string RecordAddedMessage {
+            get {
+                return ResourceManager.GetString("RecordAddedMessage", resourceCulture);
             }
         }
         
