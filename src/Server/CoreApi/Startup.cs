@@ -15,6 +15,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Stardust.Flux.CoreApi.Models;
 using AutoMapper;
+using StarDust.CasparCG.net.Connection;
+using StarDust.CasparCG.net.AmcpProtocol;
+using StarDust.CasparCG.net.Device;
 
 namespace Stardust.Flux.CoreApi
 {
@@ -52,6 +55,7 @@ namespace Stardust.Flux.CoreApi
                     builder => builder.AllowAnyOrigin().AllowAnyHeader());
             });
             services.Configure<LicenceConfig>(Configuration.GetSection(nameof(LicenceConfig)));
+            AddCasparCg(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +76,19 @@ namespace Stardust.Flux.CoreApi
             {
                 endpoints.MapControllers();
             });
+        }
+
+
+        public void AddCasparCg(IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.AddSingleton<ICasparCgDeviceFactory, CasparCgDeviceFactory>();
+            services.AddScoped<IServerConnection, ServerConnection>();          
+            services.AddTransient<IAMCPTcpParser, AmcpTCPParser>();
+            services.AddTransient<IDataParser, CasparCGDataParser>();
+            services.AddTransient<IAMCPProtocolParser,AMCPProtocolParser>();
+            services.AddScoped<ICasparDevice, CasparDevice>();
+
         }
     }
 }
