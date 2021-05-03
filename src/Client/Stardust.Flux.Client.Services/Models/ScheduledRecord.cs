@@ -46,6 +46,12 @@ namespace Stardust.Flux.Client.Models
 
         public ProgramMode Mode { get; set; }
 
+        public string Logo { get; set; }
+
+        public string OpenCreditMovie { get; set; }
+
+        public string EndCreditMovie { get; set; }
+
         public enum ProgramMode
         {
             Normal = 0,
@@ -66,7 +72,10 @@ namespace Stardust.Flux.Client.Models
                 IsPrivate = this.IsPrivate,
                 Mode = this.Mode,
                 Title = this.Title,
-                YoutubeTags = this.YoutubeTags.ToList()
+                YoutubeTags = this.YoutubeTags.ToList(),
+                Logo = this.Logo,
+                OpenCreditMovie = this.OpenCreditMovie,
+                EndCreditMovie = this.EndCreditMovie
             };
 
         }

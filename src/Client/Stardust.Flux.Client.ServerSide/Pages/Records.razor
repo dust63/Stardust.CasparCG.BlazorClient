@@ -6,41 +6,22 @@
 @inject MessageService _message
 
 
-<PageContainer Title="Records">
+<PageContainer>
+
     <Content>
+        <h3>Records</h3>
         <p>Schedule or launch a record</p>
 
 
     </Content>
     <ChildContent>
-        <div class="scrollable-container" id="scrollable-container">
 
-            <div class="contentLink" style="margin: 24px 0">
-
-                <Tooltip Title="@(Localization.RecordNowTooltip)">
-                    <Button OnClick="OnRecordNow" Icon="play-circle" Type="primary" Ghost="true">
-                        @Localization.Record
-                    </Button>
-                </Tooltip>
-
-                <Tooltip Title="@(Localization.ScheduleRecordTooltip)">
-                    <Button OnClick="OnAddRecord" Icon="plus">
-                        @Localization.Add
-                    </Button>
-                </Tooltip>
+        <Card Class="CARD">
+            <Calendar validRange="@ValidRange" DisabledDate="DisableDateFilter" @ref="CalendarRef" DateCellRender="DateCellRender" OnSelect="OnCalendarSelect" HeaderRender="HeaderRender" />
 
 
-                <Tooltip Title="@(Localization.Load)">
-                    <Button OnClick="LoadRecords" Icon="refresh">
-                        @Localization.Load
-                    </Button>
-                </Tooltip>
-            </div>
-            <Card Class="CARD">
-                <Calendar validRange="@ValidRange" DisabledDate="DisableDateFilter" @ref="CalendarRef" DateCellRender="DateCellRender" />
-            </Card>
 
-        </div>
+        </Card>
     </ChildContent>
 
 </PageContainer>
@@ -54,14 +35,21 @@
     }
 </style>
 
-@code{DateTime[] ValidRange = new[] { DateTime.Now.AddMonths(-1), DateTime.Now.AddYears(1) };
+@code{
+
+
+
+    DateTime[] ValidRange = new[] { DateTime.Now.AddMonths(-1), DateTime.Now.AddYears(1) };
 
     IList<ScheduledRecord> ScheduledRecords = new List<ScheduledRecord>();
+
+    private bool _popOverIsVisible;
 
     Calendar CalendarRef { get; set; }
 
     private ModalRef _modalRef;
 
+    private DateTime selectedValue = DateTime.Now;
 
 
     protected override async Task OnInitializedAsync()
@@ -76,146 +64,221 @@
     }
 
 
-
+    private void OnCalendarSelect(DateTime date)
+    {
+        selectedValue = date;
+    }
 
     private RenderFragment DateCellRender(DateTime value)
     {
-        var value2 = value;
         return@<Template>
         <ul class="events">
+
             @foreach (var data in ScheduledRecords.Where(x => x.StartTime.Date == value.Date))
             {
-<li key="@data.Title">
-    <Tooltip Title="@data.Title">
-        <a @onclick="e => ScheduleItemClick(data)">
-            <Badge Color="@SwitchBadgeColor(data)" Text="@data.Title" />
-        </a>
-    </Tooltip>
 
-</li>}
+                <li key="@data.Title">
+                    <a @onclick="()=> ScheduleItemClick(data)">
+                        <Badge Color="@SwitchBadgeColor(data)" Text="@data.Title" />
+                    </a>
+
+                </li>
+
+            }
         </ul>
     </Template>;
     }
 
 
-    private string SwitchBadgeColor(ScheduledRecord record)
-    {
-        switch (record.Mode)
-        {
 
-            case ScheduledRecord.ProgramMode.Daily:
-                return "lime";
-            case ScheduledRecord.ProgramMode.Weekly:
-                return "pink";
-            default:
-                return "blue";
+         private string SwitchBadgeColor(ScheduledRecord record)
+         {
+             switch (record.Mode)
+             {
 
-
-        }
-    }
-
-    private async Task LoadRecords()
-    {
-        ScheduledRecords = await RecordModelService.GetAllScheduledRecords(DateTime.Now, TimeSpan.FromDays(31), TimeSpan.FromDays(365));
-        var datesToRefresh = ScheduledRecords.GroupBy(x => x.StartTime.Date);
+                 case ScheduledRecord.ProgramMode.Daily:
+                     return "lime";
+                 case ScheduledRecord.ProgramMode.Weekly:
+                     return "pink";
+                 default:
+                     return "blue";
 
 
-    }
+             }
+         }
 
-    private async void OnRecordNow()
-    {
-        var modalConfig = new ModalOptions();
-        modalConfig.Title = Localization.AddANewRecord;
-        modalConfig.CancelText = Localization.Cancel;
-        modalConfig.OkText = Localization.Ok;
-
-        var record = new ManualRecord();
-        _modalRef = await ModalService
-        .CreateModalAsync<RecordNowForm, ManualRecord>
-        (modalConfig, record);
+         private async Task LoadRecords()
+         {
+             ScheduledRecords = await RecordModelService.GetAllScheduledRecords(DateTime.Now, TimeSpan.FromDays(31), TimeSpan.FromDays(365));
+             var datesToRefresh = ScheduledRecords.GroupBy(x => x.StartTime.Date);
 
 
-        _modalRef.OnOk = () =>
-        {
+         }
 
-            ScheduledRecords.Add(new ScheduledRecord
-            {
-                StartTime = DateTime.Now,
-                EndTime = DateTime.Now.Add(new TimeSpan(record.Duration.Value.Hour, record.Duration.Value.Minute, record.Duration.Value.Second)),
-                Title = record.Title,
-                Description = record.Description,
-                Filename = record.Filename ?? $"MyRecord-{DateTime.Now.ToString("yyyy-MM-dd")}"
-            });
-            _message.Success(Localization.RecordAddedMessage);
-            return Task.CompletedTask;
+         private async void OnRecordNow()
+         {
+             var modalConfig = new ModalOptions();
+             modalConfig.Title = Localization.AddANewRecord;
+             modalConfig.CancelText = Localization.Cancel;
+             modalConfig.OkText = Localization.Ok;
 
-        };
-
-        _modalRef.OnCancel = () =>
-        {
-            Console.WriteLine("Canceled");
-            return Task.CompletedTask;
-
-        };
-
-    }
-
-    private void OnAddRecord()
-    {
-        ScheduleItemClick(new ScheduledRecord { StartTime = DateTime.Now.AddMinutes(5), DayOfWeek = DateTime.Now.DayOfWeek });
-    }
+             var record = new ManualRecord();
+             _modalRef = await ModalService
+             .CreateModalAsync<RecordNowForm, ManualRecord>
+             (modalConfig, record);
 
 
-    private ScheduledRecord _editRecord;
-    private ScheduledRecord _editRecordCloned;
-    private async void ScheduleItemClick(ScheduledRecord record)
-    {
-        _editRecord = record;
-        _editRecordCloned = record.Clone();
-        var modalConfig = new ModalOptions();
-        modalConfig.Title = record.Id == null ? Localization.AddANewRecord : Localization.EditYourRecord;
-        modalConfig.CancelText = Localization.Cancel;
-        modalConfig.OkText = Localization.Ok;
+             _modalRef.OnOk = () =>
+             {
 
-        _modalRef = await ModalService
-        .CreateModalAsync<RecordDetails, ScheduledRecord>
-        (modalConfig, _editRecordCloned);
+                 ScheduledRecords.Add(new ScheduledRecord
+                 {
+                     StartTime = DateTime.Now,
+                     EndTime = DateTime.Now.Add(new TimeSpan(record.Duration.Value.Hour, record.Duration.Value.Minute, record.Duration.Value.Second)),
+                     Title = record.Title,
+                     Description = record.Description,
+                     Filename = record.Filename ?? $"MyRecord-{DateTime.Now.ToString("yyyy-MM-dd")}"
+                 });
+                 _message.Success(Localization.RecordAddedMessage);
+                 return Task.CompletedTask;
 
+             };
 
-        _modalRef.OnOk = () =>
-        {
-            Console.WriteLine("Ok");
-            if (record.Id == null)
-            {
-                ScheduledRecords.Add(record);
-                _message.Success(Localization.RecordAddedMessage);
-            }
+             _modalRef.OnCancel = () =>
+             {
+                 Console.WriteLine("Canceled");
+                 return Task.CompletedTask;
 
-            else
-            {
-                _editRecord.StartTime = _editRecordCloned.StartTime;
-                _editRecord.EndTime = _editRecordCloned.EndTime;
-                _editRecord.Mode = _editRecordCloned.Mode;
-                _editRecord.DayOfWeek = _editRecordCloned.DayOfWeek;
-                _editRecord.Description = _editRecordCloned.Description;
-                _editRecord.Filename = _editRecordCloned.Filename;
-                _editRecord.IsPrivate = _editRecordCloned.IsPrivate;
-                _editRecord.Title = _editRecordCloned.Title;
-                _editRecord.YoutubeTags = _editRecordCloned.YoutubeTags.ToList();
-            }
+             };
 
-            return Task.CompletedTask;
+         }
 
-        };
-
-        _modalRef.OnCancel = () =>
-        {
-            Console.WriteLine("Canceled");
-            return Task.CompletedTask;
-
-        };
+         private void OnAddRecord()
+         {
+             ScheduleItemClick(new ScheduledRecord { StartTime = DateTime.Now.AddMinutes(5), DayOfWeek = DateTime.Now.DayOfWeek });
+         }
 
 
-    }
 
-    }
+
+         private ScheduledRecord _editRecord;
+         private ScheduledRecord _editRecordCloned;
+         private async Task ScheduleItemClick(ScheduledRecord record)
+         {
+             _editRecord = record;
+             _editRecordCloned = record.Clone();
+             var modalConfig = new ModalOptions();
+             modalConfig.Title = record.Id == null ? Localization.AddANewRecord : Localization.EditYourRecord;
+             modalConfig.CancelText = Localization.Cancel;
+             modalConfig.OkText = Localization.Ok;
+
+             _modalRef = await ModalService
+             .CreateModalAsync<RecordDetails, ScheduledRecord>
+             (modalConfig, _editRecordCloned);
+
+
+             _modalRef.OnOk = () =>
+             {
+                 Console.WriteLine("Ok");
+                 if (record.Id == null)
+                 {
+                     ScheduledRecords.Add(record);
+                     _message.Success(Localization.RecordAddedMessage);
+                 }
+
+                 else
+                 {
+                     _editRecord.StartTime = _editRecordCloned.StartTime;
+                     _editRecord.EndTime = _editRecordCloned.EndTime;
+                     _editRecord.Mode = _editRecordCloned.Mode;
+                     _editRecord.DayOfWeek = _editRecordCloned.DayOfWeek;
+                     _editRecord.Description = _editRecordCloned.Description;
+                     _editRecord.Filename = _editRecordCloned.Filename;
+                     _editRecord.IsPrivate = _editRecordCloned.IsPrivate;
+                     _editRecord.Title = _editRecordCloned.Title;
+                     _editRecord.YoutubeTags = _editRecordCloned.YoutubeTags.ToList();
+                     _editRecord.Logo = _editRecordCloned.Logo;
+                     _editRecord.OpenCreditMovie = _editRecordCloned.OpenCreditMovie;
+                     _editRecord.EndCreditMovie = _editRecordCloned.EndCreditMovie;
+                 }
+
+                 return Task.CompletedTask;
+
+             };
+
+             _modalRef.OnCancel = () =>
+             {
+                 Console.WriteLine("Canceled");
+                 return Task.CompletedTask;
+
+             };
+
+
+         }
+
+         private RenderFragment HeaderRender(CalendarHeaderRenderArgs args)
+         {
+             return
+        @<Template>
+            <div>
+                <Row>
+                    <div class="ant-col ant-col-8 ant-picker-calendar-header" style="justify-content: flex-start;">
+                        <Space Size=@("small") Align="center">
+                            <SpaceItem>
+                                <Tooltip Title="@(Localization.RecordNowTooltip)">
+                                    <Button OnClick="OnRecordNow" Icon="play-circle" Type="primary" Ghost="true">
+                                        @Localization.Record
+                                    </Button>
+                                </Tooltip>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Tooltip Title="@(Localization.ScheduleRecordTooltip)">
+                                    <Button OnClick="OnAddRecord" Icon="plus">
+                                        @Localization.Add
+                                    </Button>
+                                </Tooltip>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Tooltip Title="@(Localization.Load)">
+                                    <Button OnClick="LoadRecords" Icon="refresh">
+                                        @Localization.Load
+                                    </Button>
+                                </Tooltip>
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                    <div class="ant-col ant-col-8 ant-picker-calendar-header" style="justify-content: center;">
+                        <Space Size=@("middle") Align="center">
+                            <SpaceItem>
+                                <Badge Color="pink" Text="Weekly">
+
+                                </Badge>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Badge Color="lime" Text="Daily">
+
+                                </Badge>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Badge Color="blue" Text="Normal">
+
+                                </Badge>
+                            </SpaceItem>
+                        </Space>
+                    </div>
+                    <div class="ant-col ant-col-8">
+
+                        <CascadingValue Value="@CalendarRef" Name="Calendar">
+                            <CascadingValue Value="@CalendarRef.PrefixCls" Name="PrefixCls">
+                                <CalendarHeader />
+                            </CascadingValue>
+                        </CascadingValue>
+
+                    </div>
+                </Row>
+            </div>
+        </Template>;
+
+}
+
+}

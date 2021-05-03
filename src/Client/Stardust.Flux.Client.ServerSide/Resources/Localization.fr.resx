@@ -186,4 +186,13 @@
   <data name="Date" xml:space="preserve">
     <value>Date</value>
   </data>
+  <data name="Logo" xml:space="preserve">
+    <value>Logo</value>
+  </data>
+  <data name="OpenCredits" xml:space="preserve">
+    <value>Générique début</value>
+  </data>
+  <data name="EndCredits" xml:space="preserve">
+    <value>Générique de fin</value>
+  </data>
 </root>

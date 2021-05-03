@@ -142,6 +142,15 @@ namespace Stardust.Flux.Client.ServerSide.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to End credits.
+        /// </summary>
+        internal static string EndCredits {
+            get {
+                return ResourceManager.GetString("EndCredits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to End at.
         /// </summary>
         internal static string EndTime {
@@ -178,11 +187,29 @@ namespace Stardust.Flux.Client.ServerSide.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logo.
+        /// </summary>
+        internal static string Logo {
+            get {
+                return ResourceManager.GetString("Logo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ok.
         /// </summary>
         internal static string Ok {
             get {
                 return ResourceManager.GetString("Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open credits.
+        /// </summary>
+        internal static string OpenCredits {
+            get {
+                return ResourceManager.GetString("OpenCredits", resourceCulture);
             }
         }
         
