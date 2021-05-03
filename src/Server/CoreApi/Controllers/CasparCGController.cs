@@ -26,7 +26,7 @@ namespace Stardust.Flux.CoreApi.Controllers
         private readonly IUnitOfWork unitOfWork;
         private readonly ICasparCgDeviceFactory casparDeviceFactory;
 
-        public CasparCGController(ILogger<CasparCGController> logger, IUnitOfWork unitOfWork,  ICasparCgDeviceFactory casparDeviceFactory )
+        public CasparCGController(ILogger<CasparCGController> logger, IUnitOfWork unitOfWork, ICasparCgDeviceFactory casparDeviceFactory)
         {
             _logger = logger;
             this.unitOfWork = unitOfWork;
@@ -40,12 +40,24 @@ namespace Stardust.Flux.CoreApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("template/list")]
-        public async Task<IList<TemplateBaseInfo>> GetTemplates([FromQuery] int serverId)
-        {          
+        public async Task<IList<TemplateDto>> GetTemplates([FromQuery] int serverId)
+        {
 
             ICasparDevice device = await GetDeviceInstanceAndConnect(serverId);
             var templates = await device.GetTemplatesAsync();
-            return templates.OfType<TemplateBaseInfo>().ToList();
+            return templates.OfType<TemplateBaseInfo>().Select(x => ToTemplateDto(x)).ToList();
+        }
+
+        private static TemplateDto ToTemplateDto(TemplateBaseInfo template)
+        {
+            return new TemplateDto
+            {
+                Folder = template.Folder,
+                Size = template.Size,
+                Name = template.Name,
+                FullName = template.FullName,
+                LastUpdated = template.LastUpdated
+            };
         }
 
         private async Task<ICasparDevice> GetDeviceInstanceAndConnect(int serverId)
@@ -70,14 +82,26 @@ namespace Stardust.Flux.CoreApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("movie/list")]
-        public async Task<IList<MediaInfo>> GetMovies([FromQuery] int serverId)
-        {   
+        public async Task<IList<MovieDto>> GetMovies([FromQuery] int serverId)
+        {
             var device = await GetDeviceInstanceAndConnect(serverId);
             var movies = await device.GetMediafilesAsync();
-            return movies;
+            return movies.Select(x => ToMovieDto(x)).ToList();
         }
 
-
+        private static MovieDto ToMovieDto(MediaInfo x)
+        {
+            return new MovieDto
+            {
+                FullName = x.FullName,
+                Fps = x.Fps,
+                Frames = x.Frames,
+                LastUpdated = x.LastUpdated,
+                Name = x.Name,
+                Size = x.Size,
+                Type = x.Type.ToString()
+            };
+        }
     }
 }
 

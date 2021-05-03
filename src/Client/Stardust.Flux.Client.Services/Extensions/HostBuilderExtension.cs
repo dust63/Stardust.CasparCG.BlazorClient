@@ -63,7 +63,23 @@ namespace Stardust.Flux.Client.Services.Extensions
                     TimeSpan.FromSeconds(10)
                        }));
 
-       
+
+            services
+                     .AddRefitClient<ICasparDataApi>()
+                     .ConfigureHttpClient(c =>
+                     {
+                         c.BaseAddress = new Uri(configuration["CoreApiUrl"]);
+                     })
+                     //Retry policy using Polly
+                     //You could also add a fallback policy, a circuit-breaker or any combination of these
+                     .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                     .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[] {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(5),
+                    TimeSpan.FromSeconds(10)
+                     }));
+
+
             services.AddScoped<IRecordModelService, RecordModelService>();
         }
     }
