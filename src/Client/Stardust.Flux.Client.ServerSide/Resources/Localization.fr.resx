@@ -195,4 +195,10 @@
   <data name="EndCredits" xml:space="preserve">
     <value>Générique de fin</value>
   </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>Créer un nouveau</value>
+  </data>
+  <data name="EmptySlotDescription" xml:space="preserve">
+    <value>Aucun &lt;a&gt;slot&lt;/a&gt; encore défini</value>
+  </data>
 </root>

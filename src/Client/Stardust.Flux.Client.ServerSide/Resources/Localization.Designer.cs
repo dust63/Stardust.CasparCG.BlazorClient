@@ -97,6 +97,15 @@ namespace Stardust.Flux.Client.ServerSide.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new.
+        /// </summary>
+        internal static string CreateNew {
+            get {
+                return ResourceManager.GetString("CreateNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date.
         /// </summary>
         internal static string Date {
@@ -138,6 +147,15 @@ namespace Stardust.Flux.Client.ServerSide.Resources {
         internal static string EditYourRecord {
             get {
                 return ResourceManager.GetString("EditYourRecord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No &lt;a&gt;slot&lt;/a&gt; yet defined.
+        /// </summary>
+        internal static string EmptySlotDescription {
+            get {
+                return ResourceManager.GetString("EmptySlotDescription", resourceCulture);
             }
         }
         

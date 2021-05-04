@@ -195,4 +195,10 @@
   <data name="EndCredits" xml:space="preserve">
     <value>End credits</value>
   </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>Create new</value>
+  </data>
+  <data name="EmptySlotDescription" xml:space="preserve">
+    <value>No &lt;a&gt;slot&lt;/a&gt; yet defined</value>
+  </data>
 </root>

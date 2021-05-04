@@ -15,14 +15,23 @@
 
 @code
 {
-    private readonly MenuDataItem[] _menuData = 
+    private readonly MenuDataItem[] _menuData =
     {
         new MenuDataItem
         {
             Path = "/",
             Name = "Welcome",
-            Key = "welcome",
-            Icon = "smile",
+            Key = "welcome",  
+            Icon = "smile"       
+        },
+
+        new MenuDataItem
+        {
+            Path = "/videoslot",
+            Name = "Video Slot",
+            Key = "videoslot",
+            Icon = "video-camera-add"
+         
         },
         new MenuDataItem
         {
@@ -30,7 +39,7 @@
             Name = "Records",
             Key = "records",
             Icon = "play-circle",
-        }       
+        }
         ,
         new MenuDataItem
         {

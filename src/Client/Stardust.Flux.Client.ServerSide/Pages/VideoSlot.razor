@@ -1,0 +1,51 @@
+@page "/videoslot"
+
+
+
+<PageContainer>
+    <Content>
+        <h3>Video slot</h3>
+        <p>Schedule or launch a record</p>
+
+    </Content>
+    <ChildContent>
+        <div class="empty-container">
+            <Row Align="middle" Justify="center">
+                <Col>
+                <Empty>
+                    <DescriptionTemplate>
+                        <span>@Localization.EmptySlotDescription</span>
+                    </DescriptionTemplate>
+                    <ChildContent>
+                        <Button type="@ButtonType.Primary" OnClick="CreateNewSlot">@Localization.CreateNew</Button>
+                    </ChildContent>
+                </Empty>
+                </Col>
+            </Row>
+        </div>
+    </ChildContent>
+
+</PageContainer>
+
+
+
+
+<style>
+    .scrollable-container {
+        height: 80%;
+        overflow-y: scroll;
+    }
+
+    .empty-container {
+        height: calc(100vh - 140px );
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+@code{ private void CreateNewSlot()
+    {
+        var local = @Localization.EndCredits;
+        Console.Write(local);
+    } }
