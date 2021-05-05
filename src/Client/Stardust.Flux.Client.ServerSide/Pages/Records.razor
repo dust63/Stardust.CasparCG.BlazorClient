@@ -43,7 +43,6 @@
 
     IList<ScheduledRecord> ScheduledRecords = new List<ScheduledRecord>();
 
-    private bool _popOverIsVisible;
 
     Calendar CalendarRef { get; set; }
 
@@ -153,9 +152,9 @@
 
          }
 
-         private void OnAddRecord()
+         private async void OnAddRecord()
          {
-             ScheduleItemClick(new ScheduledRecord { StartTime = DateTime.Now.AddMinutes(5), DayOfWeek = DateTime.Now.DayOfWeek });
+           await  ScheduleItemClick(new ScheduledRecord { StartTime = DateTime.Now.AddMinutes(5), DayOfWeek = DateTime.Now.DayOfWeek });
          }
 
 
