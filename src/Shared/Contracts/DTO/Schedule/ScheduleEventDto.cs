@@ -11,12 +11,7 @@ namespace Stardust.Flux.Contract.DTO.Schedule
         public DateTime ScheduleAt { get; set; }
 
         [DataMember]
-        public new TParam ExtraParams { get; set; }
-
-       
-
-
-
+        public TParam ExtraParams { get; set; }   
     }
 
 }

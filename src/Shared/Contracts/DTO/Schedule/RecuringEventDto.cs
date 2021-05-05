@@ -18,7 +18,7 @@ namespace Stardust.Flux.Contract.DTO.Schedule
         public DateTime? NextExecution { get; set; }
         public string LastError { get; internal set; }
 
-        public new TParam ExtraParams { get; set; }
+        public TParam ExtraParams { get; set; }
     }
 
 
