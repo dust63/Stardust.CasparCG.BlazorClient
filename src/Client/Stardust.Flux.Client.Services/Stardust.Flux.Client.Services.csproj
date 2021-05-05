@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Contracts\Stardust.Flux.Contract.csproj" />
+    <ProjectReference Include="..\..\Shared\Crosscutting\Stardust.Flux.Crosscutting.csproj" />
   </ItemGroup>
 
 </Project>

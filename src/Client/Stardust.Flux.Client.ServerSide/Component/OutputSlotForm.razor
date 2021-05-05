@@ -1,0 +1,65 @@
+﻿@inherits FeedbackComponent<OutputSlot>
+@inject IStringLocalizer<App> local
+@inject IEncodingOptionProvider encodingOptionsProvider 
+
+<Form Model="@_model" Layout="@FormLayout.Vertical" OnFinish="OnFinish" OnFinishFailed="OnFinishFailed">
+    <Row Gutter="16">
+
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}" Lg="new EmbeddedProperty{Span = 24}"
+                       Md="new EmbeddedProperty{Span = 24}" Sm="12">
+            <FormItem Label="@local["Output"]">
+                <RadioGroup @bind-Value="context.Type" TValue="string">
+                    <Radio RadioButton Value="@("UDP")">UDP Stream</Radio>
+                    <Radio RadioButton Value="@("File")">File</Radio>
+                </RadioGroup>
+            </FormItem>
+        </AntDesign.Col>
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}" Lg="new EmbeddedProperty{Span = 24}"
+                       Md="new EmbeddedProperty{Span = 24}" Sm="12">
+            <FormItem Label="@local["VideoCodec"]">
+                <RadioGroup @bind-Value="context.VideoCodec" TValue="string">
+                    @foreach (var option in encodingOptionsProvider.GetAll())
+                     {
+                        <Radio RadioButton Value="@(option.CommandLine)">@option.ProfileName</Radio>
+                    }                   
+                </RadioGroup>
+            </FormItem>
+        </AntDesign.Col>   
+
+
+    </Row>
+</Form>
+
+@code {
+
+
+
+    private OutputSlot _model;
+    protected override void OnInitialized()
+    {
+
+        _model = base.Options ?? new OutputSlot();
+
+        base.OnInitialized();
+    }
+
+
+
+    private void OnFinish(EditContext editContext)
+    {
+        _ = base.FeedbackRef.CloseAsync();
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+
+    }
+
+
+
+
+
+
+}

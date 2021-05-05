@@ -14,7 +14,7 @@ namespace Stardust.Flux.Client.Services.Extensions
 
             ManageRefitClient(services, configuration);
             AddScheduleServices(services, configuration);
-
+            services.AddScoped<IEncodingOptionProvider, EncodingOptionProvider>();
             return services;
 
         }
@@ -43,6 +43,7 @@ namespace Stardust.Flux.Client.Services.Extensions
                         c.BaseAddress = new Uri(configuration["CoreApiUrl"]);
                     });
         }
+
 
 
         private static void AddScheduleServices(IServiceCollection services, IConfiguration configuration)

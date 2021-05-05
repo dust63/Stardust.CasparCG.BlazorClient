@@ -1,6 +1,7 @@
 @page "/videoslot"
 @inject IStringLocalizer<App> local
-
+@inject ModalService ModalService
+@inject MessageService _message
 
 <PageContainer>
     <Content>
@@ -9,20 +10,82 @@
 
     </Content>
     <ChildContent>
-        <div class="empty-container">
-            <Row Align="middle" Justify="center">
-                <Col>
-                <Empty>
-                    <DescriptionTemplate>
-                        <span>@local["EmptySlotDescription"]</span>
-                    </DescriptionTemplate>
-                    <ChildContent>
-                        <Button type="@ButtonType.Primary" OnClick="CreateNewSlot">@local["CreateNew"]</Button>
-                    </ChildContent>
-                </Empty>
-                </Col>
-            </Row>
-        </div>
+
+        <Card Title="@local["InputSlots"]" Style="margin-bottom:16px;">
+            <Extra>
+                <a @onclick="CreateNewInputSlot">Add</a>
+            </Extra>
+            <Body>
+
+
+                <div class="card-container" hidden="@(inputSlots.Any())">
+                    <Row Align="middle" Justify="center">
+                        <Col>
+                        <Empty>
+                            <DescriptionTemplate>
+                                <span>@local["EmptySlotDescription"]</span>
+                            </DescriptionTemplate>
+                            <ChildContent>
+                                <Button type="@ButtonType.Primary" OnClick="CreateNewInputSlot">@local["CreateNew"]</Button>
+                            </ChildContent>
+                        </Empty>
+                        </Col>
+                    </Row>
+                </div>
+
+                <Row Align="middle" Justify="center">
+
+                    @foreach (var slot in inputSlots)
+                    {
+    <div style="margin:8px">
+        <Card Hoverable Style="width:300px; height:120px" Actions="@(new[] { actionDelete(()=> OnDeleteInput(@slot)) , actionEdit(()=> OnEditInput(@slot))})">
+            <CardMeta Style="height:80px" Title="@(slot.Id + " - " + slot.InputType)" Description="@(slot.Description ?? local["InputDescription", slot.InputType])" />
+        </Card>
+    </div>}
+                </Row>
+
+
+            </Body>
+        </Card>
+
+
+        <Card Title="@local["OutputSlots"]" Style="margin-bottom:16px;">
+            <Extra>
+                <a @onclick="CreateNewOutputSlot">Add</a>
+            </Extra>
+            <Body>
+
+
+                <div class="card-container" hidden="@(outputSlots.Any())">
+                    <Row Align="middle" Justify="center">
+                        <Col>
+                        <Empty>
+                            <DescriptionTemplate>
+                                <span>@local["EmptySlotDescription"]</span>
+                            </DescriptionTemplate>
+                            <ChildContent>
+                                <Button type="@ButtonType.Primary" OnClick="CreateNewOutputSlot">@local["CreateNew"]</Button>
+                            </ChildContent>
+                        </Empty>
+                        </Col>
+                    </Row>
+                </div>
+
+                <Row Align="middle" Justify="center">
+
+                    @foreach (var slot in outputSlots)
+                    {
+    <div style="margin:8px">
+        <Card Hoverable Style="width:300px; height:120px" Actions="@(new[] { actionDelete(()=> OnDeleteOutput(@slot)) , actionEdit(()=> OnEditOutput(@slot))})">
+            <CardMeta Style="height:80px" Title="@(slot.Id + " - " + slot.Type)"  Description="@slot.VideoCodec"/>
+        </Card>
+    </div>}
+                </Row>
+
+
+            </Body>
+        </Card>
+
     </ChildContent>
 
 </PageContainer>
@@ -36,8 +99,8 @@
         overflow-y: scroll;
     }
 
-    .empty-container {
-        height: calc(100vh - 140px );
+    .card-container {
+        height: calc(40vh - 140px );
         display: flex;
         justify-content: center;
         align-items: center;
@@ -46,9 +109,119 @@
 
 @code{ 
     
-    private void CreateNewSlot()
-    {      
-        Console.Write(local["EndCredits"]);
-    } 
-    
+    RenderFragment actionDelete(Action clickAction) =>@<Button Type="link" Danger Icon="delete" OnClick="@clickAction">@local["Delete"]</Button>;
+
+RenderFragment actionEdit(Action clickAction) =>@<Button Type="link" Icon="edit" OnClick="@clickAction">@local["Edit"]</Button>;
+
+
+    public bool InitLoading { get; set; } = true;
+
+    public bool Loading { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        InitLoading = false;
+        await base.OnInitializedAsync();
+    }
+    IList<InputSlot> inputSlots = new List<InputSlot> { new InputSlot { Id = 1, InputType = "Decklink" }, new InputSlot { Id = 2, InputType = "NDI" } };
+    IList<OutputSlot>outputSlots = new List<OutputSlot> { new OutputSlot { Id = 1, Type = "UDP", VideoCodec = "Youtube" }};
+    ModalRef _modalRef;
+    private async void CreateNewInputSlot()
+    {
+        var modalConfig = new ModalOptions();
+        modalConfig.Title = local["AddNewSlot"].Value;
+        modalConfig.CancelText = local["Cancel"].Value;
+        modalConfig.OkText = local["Ok"].Value;
+
+        var slot = new InputSlot();
+        _modalRef = await ModalService
+        .CreateModalAsync<InputSlotForm, InputSlot>
+        (modalConfig, slot);
+
+
+        _modalRef.OnOk = () =>
+        {
+
+            inputSlots.Add(slot);
+            InvokeAsync(()=>StateHasChanged());
+            _message.Success(local["SlotAddedMessage"].Value);
+            return Task.CompletedTask;
+
+        };
+
+        _modalRef.OnCancel = () =>
+        {
+            Console.WriteLine("Canceled");
+            return Task.CompletedTask;
+
+        };
+
+    }
+
+    private async void CreateNewOutputSlot()
+    {
+        var modalConfig = new ModalOptions();
+        modalConfig.Title = local["AddNewSlot"].Value;
+        modalConfig.CancelText = local["Cancel"].Value;
+        modalConfig.OkText = local["Ok"].Value;
+
+        var slot = new OutputSlot();
+        _modalRef = await ModalService
+        .CreateModalAsync<OutputSlotForm, OutputSlot>
+        (modalConfig, slot);
+
+
+        _modalRef.OnOk = () =>
+        {
+
+            outputSlots.Add(slot);
+            InvokeAsync(() => StateHasChanged());
+            _message.Success(local["SlotAddedMessage"].Value);
+            return Task.CompletedTask;
+
+        };
+
+        _modalRef.OnCancel = () =>
+        {
+            Console.WriteLine("Canceled");
+            return Task.CompletedTask;
+
+        };
+    }
+
+    private void OnDeleteInput(InputSlot slot)
+    {
+         ModalService.Confirm(new ConfirmOptions()
+        {
+            Title = $"Do you Want to delete {slot.Id}-{slot.InputType}?",
+            Icon = @<Icon Type="exclamation-circle" Theme="outline"></Icon>,
+            Content = "",
+            OnOk =async (e)=>{},
+            OnCancel = async(e)=>{}
+        });
+    }
+
+    private void OnEditInput(InputSlot slot)
+    {
+
+    }
+
+
+private void OnDeleteOutput(OutputSlot slot)
+    {
+  ModalService.Confirm(new ConfirmOptions()
+        {
+            Title = $"Do you Want to delete {slot.Id}-{slot.Type}?",
+            Icon = @<Icon Type="exclamation-circle" Theme="outline"></Icon>,
+            Content = "",
+            OnOk =async (e)=>{},
+            OnCancel = async(e)=>{}
+        });
+    }
+
+    private void OnEditOutput(OutputSlot slot)
+    {
+
+    }
+
 }

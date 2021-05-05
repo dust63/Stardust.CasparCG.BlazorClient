@@ -1,0 +1,90 @@
+﻿@inherits FeedbackComponent<InputSlot>
+@inject IStringLocalizer<App> local
+
+<Form Model="@_model" Layout="@FormLayout.Vertical" OnFinish="OnFinish" OnFinishFailed="OnFinishFailed">
+    <Row Gutter="16">
+
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}" Lg="new EmbeddedProperty{Span = 24}"
+                       Md="new EmbeddedProperty{Span = 24}" Sm="12">
+            <FormItem Label="@local["InputType"]">
+                <RadioGroup @bind-Value="context.InputType" TValue="string">
+                    <Radio RadioButton Value="@("Decklink")">Decklink</Radio>
+                    <Radio RadioButton Value="@("NDI")">NDI</Radio>
+                    <Radio RadioButton Value="@("Screen")">Screen</Radio>
+                </RadioGroup>
+            </FormItem>
+        </AntDesign.Col>
+
+
+      
+   
+        <AntDesign.Col Style="@(context.InputType != "Decklink" ? "display:none" : "")" Xl="new EmbeddedProperty{Span = 12}" Lg="new EmbeddedProperty{Span = 12}"
+                       Md="new EmbeddedProperty{Span = 12}" Sm="12">
+            <FormItem Label="@local["InputFormat"]">
+                <Select TItem="string" TItemValue="string" Placeholder="@local["InputFormatPlaceholder"]" @bind-Value="context.InputVideoFormat">
+                    <SelectOptions>
+                        <SelectOption TItemValue="string" TItem="string" Value="@("1920 x 1080")" Label="1920 x 1080" />
+                        <SelectOption TItemValue="string" TItem="string" Value="@("720p")" Label="720p" />
+                        <SelectOption TItemValue="string" TItem="string" Value="@("SD")" Label="SD" />
+                    </SelectOptions>
+                </Select>
+            </FormItem>
+        </AntDesign.Col>
+
+        <AntDesign.Col  Style="@(context.InputType != "Decklink" ? "display:none" : "")" Xl="8">
+            <FormItem Label="@local["DecklinkId"]">
+                <AntDesign.InputNumber @bind-Value="@context.DecklinkId" />
+            </FormItem>
+        </AntDesign.Col>
+   
+        
+            <AntDesign.Col Style="@(context.InputType != "NDI" ? "display:none" : "")">
+                <FormItem Label="@local["NdiUrl"]">
+                    <Input @bind-Value="context.NdiUrl" Placeholder="ndi://CASPAR/CG" />
+                </FormItem>
+            </AntDesign.Col>
+        
+
+        <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}" Lg="new EmbeddedProperty { Span = 24 }"
+                       Md="new EmbeddedProperty{Span = 24}" Sm="12">
+            <FormItem Label="@local["Description"]">
+                <Input @bind-Value="context.Description" Placeholder="@local["DescriptionPlaceholder"]" />
+            </FormItem>
+        </AntDesign.Col>
+
+
+    </Row>
+</Form>
+
+@code {
+
+
+
+    private InputSlot _model;
+    protected override void OnInitialized()
+    {
+
+        _model = base.Options ?? new InputSlot();
+
+        base.OnInitialized();
+    }
+
+
+
+    private void OnFinish(EditContext editContext)
+    {
+        _ = base.FeedbackRef.CloseAsync();
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+
+    }
+
+
+
+
+
+
+}

@@ -60,45 +60,45 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string"/>
-              <xsd:attribute name="type" type="xsd:string"/>
-              <xsd:attribute name="mimetype" type="xsd:string"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string"/>
-              <xsd:attribute name="name" type="xsd:string"/>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -119,122 +119,173 @@
   </resheader>
   <data name="Title" xml:space="preserve">
     <value>Title</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Add" xml:space="preserve">
     <value>Add</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Load" xml:space="preserve">
     <value>Load</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Record" xml:space="preserve">
     <value>Record</value>
-    <comment/>
+    <comment />
   </data>
   <data name="StartTime" xml:space="preserve">
     <value>Start at</value>
-    <comment/>
+    <comment />
   </data>
   <data name="EndTime" xml:space="preserve">
     <value>End at</value>
-    <comment/>
+    <comment />
   </data>
   <data name="TitlePlaceholder" xml:space="preserve">
     <value>Enter your title</value>
-    <comment/>
+    <comment />
   </data>
   <data name="DescriptionPlaceholder" xml:space="preserve">
     <value>Enter your description</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Tags" xml:space="preserve">
     <value>Tags</value>
-    <comment/>
+    <comment />
   </data>
   <data name="RecordNowTooltip" xml:space="preserve">
     <value>Launch a record now</value>
-    <comment/>
+    <comment />
   </data>
   <data name="ScheduleRecordTooltip" xml:space="preserve">
     <value>Plan a record</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Filename" xml:space="preserve">
     <value>File name</value>
-    <comment/>
+    <comment />
   </data>
   <data name="FilenamePlaceholder" xml:space="preserve">
     <value>MyFilename</value>
-    <comment/>
+    <comment />
   </data>
   <data name="ProgramMode" xml:space="preserve">
     <value>Program mode</value>
-    <comment/>
+    <comment />
   </data>
   <data name="EditYourRecord" xml:space="preserve">
     <value>Edit you record</value>
-    <comment/>
+    <comment />
   </data>
   <data name="AddANewRecord" xml:space="preserve">
     <value>Add a new record</value>
-    <comment/>
+    <comment />
   </data>
   <data name="ChooseADay" xml:space="preserve">
     <value>Choose a day</value>
-    <comment/>
+    <comment />
   </data>
   <data name="RecordAddedMessage" xml:space="preserve">
     <value>Your record was added sucessfully</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Duration" xml:space="preserve">
     <value>Duration</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Logo" xml:space="preserve">
     <value>Logo</value>
-    <comment/>
+    <comment />
   </data>
   <data name="OpenCredits" xml:space="preserve">
     <value>Open credits</value>
-    <comment/>
+    <comment />
   </data>
   <data name="EndCredits" xml:space="preserve">
     <value>End credits</value>
-    <comment/>
+    <comment />
   </data>
   <data name="CreateNew" xml:space="preserve">
     <value>Create new</value>
-    <comment/>
+    <comment />
   </data>
   <data name="EmptySlotDescription" xml:space="preserve">
     <value>No &lt;a&gt;slot&lt;/a&gt; yet defined</value>
-    <comment/>
+    <comment />
   </data>
   <data name="Records" xml:space="preserve">
     <value>Records</value>
-    <comment/>
+    <comment />
   </data>
   <data name="RecordsSubtitle" xml:space="preserve">
     <value>Launch or schedule a record</value>
-    <comment/>
+    <comment />
+  </data>
+  <data name="InputType" xml:space="preserve">
+    <value>Input type</value>
+    <comment />
+  </data>
+  <data name="NdiUrl" xml:space="preserve">
+    <value>NDI Url</value>
+    <comment />
+  </data>
+  <data name="InputTypePlaceholder" xml:space="preserve">
+    <value>Select an input type</value>
+    <comment />
+  </data>
+  <data name="InputFormat" xml:space="preserve">
+    <value>Input video format</value>
+    <comment />
+  </data>
+  <data name="InputFormatPlaceholder" xml:space="preserve">
+    <value>Select a video format</value>
+    <comment />
+  </data>
+  <data name="AddNewSlot" xml:space="preserve">
+    <value>Add a new slot</value>
+    <comment />
+  </data>
+  <data name="SlotAddedMessage" xml:space="preserve">
+    <value>Your slot was added sucessfully</value>
+    <comment />
+  </data>
+  <data name="InputSlots" xml:space="preserve">
+    <value>Input slots</value>
+    <comment />
+  </data>
+  <data name="OutputSlots" xml:space="preserve">
+    <value>Output slots</value>
+    <comment />
+  </data>
+  <data name="InputDescription" xml:space="preserve">
+    <value>You can record or broadcast from {0}</value>
+    <comment />
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+    <comment />
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+    <comment />
+  </data>
+  <data name="DecklinkId" xml:space="preserve">
+    <value>Decklink Id</value>
   </data>
 </root>
