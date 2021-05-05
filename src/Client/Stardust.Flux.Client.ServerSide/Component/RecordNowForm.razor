@@ -1,4 +1,5 @@
 ﻿@inherits FeedbackComponent<ManualRecord>
+@inject IStringLocalizer<App> local
 
 <Form Model="@_model"
       Layout="@FormLayout.Vertical"
@@ -11,7 +12,7 @@
                        Lg="new EmbeddedProperty { Span = 12 }"
                        Md="new EmbeddedProperty{Span = 12}"
                        Sm="12">
-            <FormItem Label="@Localization.Duration">
+            <FormItem Label="@local["Duration"]">
                 <TimePicker TValue="DateTime?" @bind-Value="@context.Duration" Format="@("hh:mm")"/>
             </FormItem>
         </AntDesign.Col>
@@ -20,16 +21,16 @@
                        Lg="new EmbeddedProperty{Span = 24}"
                        Md="new EmbeddedProperty{Span = 24}"
                        Sm="12">
-            <FormItem Label="@Localization.Title">
-                <Input @bind-Value="@context.Title" Placeholder="@Localization.TitlePlaceholder" />
+            <FormItem Label="@local["Title"]">
+                <Input @bind-Value="@context.Title" Placeholder="@local["TitlePlaceholder"]" />
             </FormItem>
         </AntDesign.Col>
         <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
                        Lg="new EmbeddedProperty { Span = 24 }"
                        Md="new EmbeddedProperty{Span = 24}"
                        Sm="12">
-            <FormItem Label="@Localization.Description">
-                <Input @bind-Value="@context.Description" Placeholder="@Localization.DescriptionPlaceholder" />
+            <FormItem Label="@local["Description"]">
+                <Input @bind-Value="@context.Description" Placeholder="@local["DescriptionPlaceholder"]" />
             </FormItem>
         </AntDesign.Col>
 
@@ -41,8 +42,8 @@
                        Lg="new EmbeddedProperty { Span = 24 }"
                        Md="new EmbeddedProperty{Span = 24}"
                        Sm="12">
-            <FormItem Label="@Localization.Filename">
-                <Input @bind-Value="@context.Filename" Placeholder="@Localization.FilenamePlaceholder" />
+            <FormItem Label="@local["Filename"]">
+                <Input @bind-Value="@context.Filename" Placeholder="@local["FilenamePlaceholder"]" />
             </FormItem>
         </AntDesign.Col>
 

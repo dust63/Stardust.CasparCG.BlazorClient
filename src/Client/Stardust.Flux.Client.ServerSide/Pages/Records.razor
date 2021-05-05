@@ -1,5 +1,5 @@
 @page "/records"
-@inject IStringLocalizer<Localization> local
+@inject IStringLocalizer<App> local
 
 @inject IRecordModelService RecordModelService
 @inject ModalService ModalService
@@ -9,8 +9,8 @@
 <PageContainer>
 
     <Content>
-        <h3>Records</h3>
-        <p>Schedule or launch a record</p>
+        <h3>@local["Records"]</h3>
+        <p>@local["RecordsSubtitle"]</p>
 
 
     </Content>
@@ -116,11 +116,11 @@
          }
 
          private async void OnRecordNow()
-         {
+         {           
              var modalConfig = new ModalOptions();
-             modalConfig.Title = Localization.AddANewRecord;
-             modalConfig.CancelText = Localization.Cancel;
-             modalConfig.OkText = Localization.Ok;
+             modalConfig.Title = local["AddANewRecord"].Value;
+             modalConfig.CancelText =  local["Cancel"].Value;
+             modalConfig.OkText =  local["Ok"].Value;
 
              var record = new ManualRecord();
              _modalRef = await ModalService
@@ -139,7 +139,7 @@
                      Description = record.Description,
                      Filename = record.Filename ?? $"MyRecord-{DateTime.Now.ToString("yyyy-MM-dd")}"
                  });
-                 _message.Success(Localization.RecordAddedMessage);
+                 _message.Success(local["RecordAddedMessage"].Value);
                  return Task.CompletedTask;
 
              };
@@ -168,9 +168,9 @@
              _editRecord = record;
              _editRecordCloned = record.Clone();
              var modalConfig = new ModalOptions();
-             modalConfig.Title = record.Id == null ? Localization.AddANewRecord : Localization.EditYourRecord;
-             modalConfig.CancelText = Localization.Cancel;
-             modalConfig.OkText = Localization.Ok;
+             modalConfig.Title = record.Id == null ?local["AddANewRecord"] :local["EditYourRecord"];
+             modalConfig.CancelText =local["Cancel"].Value;
+             modalConfig.OkText =local["Ok"].Value;
 
              _modalRef = await ModalService
              .CreateModalAsync<RecordDetails, ScheduledRecord>
@@ -183,7 +183,7 @@
                  if (record.Id == null)
                  {
                      ScheduledRecords.Add(record);
-                     _message.Success(Localization.RecordAddedMessage);
+                     _message.Success(local["RecordAddedMessage"].Value);
                  }
 
                  else
@@ -225,23 +225,23 @@
                     <div class="ant-col ant-col-8 ant-picker-calendar-header" style="justify-content: flex-start;">
                         <Space Size=@("small") Align="center">
                             <SpaceItem>
-                                <Tooltip Title="@(Localization.RecordNowTooltip)">
+                                <Tooltip Title="@local["RecordNowTooltip"].Value">
                                     <Button OnClick="OnRecordNow" Icon="play-circle" Type="primary" Ghost="true">
-                                        @Localization.Record
+                                        @local["Record"]
                                     </Button>
                                 </Tooltip>
                             </SpaceItem>
                             <SpaceItem>
-                                <Tooltip Title="@(Localization.ScheduleRecordTooltip)">
+                                <Tooltip Title="@local["ScheduleRecordTooltip"].Value">
                                     <Button OnClick="OnAddRecord" Icon="plus">
-                                        @Localization.Add
+                                        @local["Add"]
                                     </Button>
                                 </Tooltip>
                             </SpaceItem>
                             <SpaceItem>
-                                <Tooltip Title="@(Localization.Load)">
+                                <Tooltip Title="@local["Load"].Value">
                                     <Button OnClick="LoadRecords" Icon="refresh">
-                                        @Localization.Load
+                                        @local["Load"]
                                     </Button>
                                 </Tooltip>
                             </SpaceItem>

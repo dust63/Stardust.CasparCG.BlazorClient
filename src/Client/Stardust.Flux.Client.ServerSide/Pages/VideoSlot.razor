@@ -1,5 +1,5 @@
 @page "/videoslot"
-
+@inject IStringLocalizer<App> local
 
 
 <PageContainer>
@@ -14,10 +14,10 @@
                 <Col>
                 <Empty>
                     <DescriptionTemplate>
-                        <span>@Localization.EmptySlotDescription</span>
+                        <span>@local["EmptySlotDescription"]</span>
                     </DescriptionTemplate>
                     <ChildContent>
-                        <Button type="@ButtonType.Primary" OnClick="CreateNewSlot">@Localization.CreateNew</Button>
+                        <Button type="@ButtonType.Primary" OnClick="CreateNewSlot">@local["CreateNew"]</Button>
                     </ChildContent>
                 </Empty>
                 </Col>
@@ -44,8 +44,11 @@
     }
 </style>
 
-@code{ private void CreateNewSlot()
-    {
-        var local = @Localization.EndCredits;
-        Console.Write(local);
-    } }
+@code{ 
+    
+    private void CreateNewSlot()
+    {      
+        Console.Write(local["EndCredits"]);
+    } 
+    
+}

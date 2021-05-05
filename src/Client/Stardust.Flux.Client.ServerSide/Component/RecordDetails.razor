@@ -1,4 +1,4 @@
-﻿@inject IStringLocalizer<Localization> local
+﻿@inject IStringLocalizer<App> local
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using System.Globalization
@@ -17,16 +17,16 @@
                                    Lg="new EmbeddedProperty{Span = 24}"
                                    Md="new EmbeddedProperty{Span = 24}"
                                    Sm="12">
-                        <FormItem Label="@Localization.Title">
-                            <Input @bind-Value="@context.Title" Placeholder="@Localization.TitlePlaceholder" />
+                        <FormItem Label="@local["Title"]">
+                            <Input @bind-Value="@context.Title" Placeholder="@local["TitlePlaceholder"]" />
                         </FormItem>
                     </AntDesign.Col>
                     <AntDesign.Col Xl="new EmbeddedProperty{Span = 24}"
                                    Lg="new EmbeddedProperty { Span = 24 }"
                                    Md="new EmbeddedProperty{Span = 24}"
                                    Sm="12">
-                        <FormItem Label="@Localization.Description">
-                            <Input @bind-Value="@context.Description" Placeholder="@Localization.DescriptionPlaceholder" />
+                        <FormItem Label="@local["Description"]">
+                            <Input @bind-Value="@context.Description" Placeholder="@local["DescriptionPlaceholder"]" />
                         </FormItem>
                     </AntDesign.Col>
 
@@ -34,7 +34,7 @@
                                    Lg="new EmbeddedProperty { Span = 24 }"
                                    Md="new EmbeddedProperty{Span = 24}"
                                    Sm="12">
-                        <FormItem Label="@Localization.ProgramMode">
+                        <FormItem Label="@local["ProgramMode"]">
                             <RadioGroup @bind-Value="@context.Mode" ButtonStyle="solid">
                                 <Radio RadioButton Value="@(ScheduledRecord.ProgramMode.Normal)">Normal</Radio>
                                 <Radio RadioButton Value="@(ScheduledRecord.ProgramMode.Daily)">Daily</Radio>
@@ -50,7 +50,7 @@
                                            Lg="new EmbeddedProperty { Span = 24 }"
                                            Md="new EmbeddedProperty{Span = 24}"
                                            Sm="24">
-                                <FormItem Label="@Localization.Date">
+                                <FormItem Label="@local["Date"]">
                                     <DatePicker @bind-Value="@DateStart" ShowTime="@false" DefaultValue="DateTime.Now.AddMinutes(5)" />
                                 </FormItem>
                             </AntDesign.Col>
@@ -64,7 +64,7 @@
                                            Lg="new EmbeddedProperty { Span = 24 }"
                                            Md="new EmbeddedProperty{Span = 24}"
                                            Sm="12">
-                                <FormItem Label="@Localization.ChooseADay">
+                                <FormItem Label="@local["ChooseADay"]">
                                     <RadioGroup @bind-Value="@context.DayOfWeek" ButtonStyle="solid">
                                         <Radio RadioButton Value="@(DayOfWeek.Monday)">@_dayNames[(int)DayOfWeek.Monday]</Radio>
                                         <Radio RadioButton Value="@(DayOfWeek.Tuesday)">@_dayNames[(int)DayOfWeek.Tuesday]</Radio>
@@ -85,7 +85,7 @@
                                    Lg="new EmbeddedProperty { Span = 12 }"
                                    Md="new EmbeddedProperty{Span = 12}"
                                    Sm="12">
-                        <FormItem Label="@Localization.StartTime">
+                        <FormItem Label="@local["StartTime"]">
                             <TimePicker @bind-Value="@context.StartTime" Format="@("hh:mm")" DefaultValue="DateTime.Now.AddMinutes(5)" />
                         </FormItem>
                     </AntDesign.Col>
@@ -94,7 +94,7 @@
                                    Lg="new EmbeddedProperty { Span = 12 }"
                                    Md="new EmbeddedProperty{Span = 12}"
                                    Sm="12">
-                        <FormItem Label="@Localization.EndTime">
+                        <FormItem Label="@local["EndTime"]">
                             <TimePicker @bind-Value="@context.EndTime" Format="@("hh:mm")" DefaultValue="DateTime.Now.AddMinutes(15)" />
                         </FormItem>
                     </AntDesign.Col>
@@ -104,8 +104,8 @@
                                    Lg="new EmbeddedProperty { Span = 24 }"
                                    Md="new EmbeddedProperty{Span = 24}"
                                    Sm="12">
-                        <FormItem Label="@Localization.Filename">
-                            <Input @bind-Value="@context.Filename" Placeholder="@Localization.FilenamePlaceholder" />
+                        <FormItem Label="@local["Filename"]">
+                            <Input @bind-Value="@context.Filename" Placeholder="@local["FilenamePlaceholder"]" />
                         </FormItem>
                     </AntDesign.Col>
 
@@ -114,7 +114,7 @@
                                    Lg="new EmbeddedProperty { Span = 12 }"
                                    Md="new EmbeddedProperty{Span = 12}"
                                    Sm="12">
-                        <label class="ant-form-item-label">@Localization.Tags</label>
+                        <label class="ant-form-item-label">@local["Tags"]</label>
                         <TagsEditor Tags="@context.YoutubeTags" />
                     </AntDesign.Col>
                 </Row>
@@ -128,7 +128,7 @@
                                    Lg="new EmbeddedProperty { Span = 24 }"
                                    Md="new EmbeddedProperty{Span = 24}"
                                    Sm="12">
-                        <FormItem Label="@Localization.Logo">
+                        <FormItem Label="@local["Logo"].Value">
                             <Select @bind-Value="@context.Logo"
                                     TItemValue="string"
                                     TItem="string">
@@ -147,7 +147,7 @@
                                    Lg="new EmbeddedProperty { Span = 12 }"
                                    Md="new EmbeddedProperty{Span = 12}"
                                    Sm="12">
-                        <FormItem Label="@Localization.OpenCredits">
+                        <FormItem Label="@local["OpenCredits"].Value">
                             <Select @bind-Value="@context.OpenCreditMovie"
                                     TItemValue="string"
                                     TItem="string">
@@ -166,7 +166,7 @@
                                    Lg="new EmbeddedProperty { Span = 12 }"
                                    Md="new EmbeddedProperty{Span = 12}"
                                    Sm="12">
-                        <FormItem Label="@Localization.EndCredits">
+                        <FormItem Label="@local["EndCredits"].Value">
                             <Select @bind-Value="@context.EndCreditMovie"
                                     TItemValue="string"
                                     TItem="string">
