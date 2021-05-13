@@ -51,6 +51,18 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build-obs-api",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Server/ObsController/ObsController.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build-publish-api",
             "command": "dotnet",
             "type": "process",

@@ -65,6 +65,26 @@
             }
         },
         {
+            "name": ".NET Core Launch (obs-api)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-obs-api",
+            "program": "${workspaceFolder}/Server/ObsController/bin/Debug/net5.0/ObsController.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Server/ObsController",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
             "name": ".NET Core Launch (blazor)",
             "type": "coreclr",
             "request": "launch",
