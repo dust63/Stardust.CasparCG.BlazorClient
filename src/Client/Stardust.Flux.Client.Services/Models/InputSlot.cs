@@ -1,4 +1,4 @@
-using Stardust.Flux.Crosscutting.Attributes;
+using Stardust.Flux.Client.Services.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Stardust.Flux.Client.Models

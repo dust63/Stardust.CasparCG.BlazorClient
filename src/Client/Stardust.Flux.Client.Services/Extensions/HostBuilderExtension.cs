@@ -4,6 +4,7 @@ using Refit;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http;
 
 namespace Stardust.Flux.Client.Services.Extensions
 {
@@ -42,7 +43,34 @@ namespace Stardust.Flux.Client.Services.Extensions
                     {
                         c.BaseAddress = new Uri(configuration["CoreApiUrl"]);
                     });
+
+            services
+                 .AddRefitClient<IYoutubeApi>()
+                 .ConfigureHttpClient(c =>
+                 {
+                     c.BaseAddress = new Uri(configuration["YoutubeApiUrl"]);
+                 })
+                 //Retry policy using Polly
+                 //You could also add a fallback policy, a circuit-breaker or any combination of these
+                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                 .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[] {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(5),
+                    TimeSpan.FromSeconds(10)
+                 }));
+            services.AddHttpClient<IYoutubeAccountManager, YoutubeAccountManager>(client =>
+                 {
+                     client.BaseAddress = new Uri(configuration["YoutubeApiUrl"]);
+                 }).ConfigurePrimaryHttpMessageHandler(() =>
+                 {
+                     return new HttpClientHandler
+                     {
+                         AllowAutoRedirect = false
+                     };
+                 }); ;
         }
+
+
 
 
 
@@ -63,22 +91,9 @@ namespace Stardust.Flux.Client.Services.Extensions
                     TimeSpan.FromSeconds(5),
                     TimeSpan.FromSeconds(10)
                        }));
+                    
 
-
-            services
-                     .AddRefitClient<ICasparDataApi>()
-                     .ConfigureHttpClient(c =>
-                     {
-                         c.BaseAddress = new Uri(configuration["CoreApiUrl"]);
-                     })
-                     //Retry policy using Polly
-                     //You could also add a fallback policy, a circuit-breaker or any combination of these
-                     .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                     .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[] {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(5),
-                    TimeSpan.FromSeconds(10)
-                     }));
+         
 
 
             services.AddScoped<IRecordModelService, RecordModelService>();

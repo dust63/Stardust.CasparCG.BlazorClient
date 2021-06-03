@@ -1,9 +1,6 @@
 ﻿using Refit;
-using Stardust.Flux.Contract.ApiContracts;
 using Stardust.Flux.Contract.DTO.Schedule;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Stardust.Flux.Client.Services

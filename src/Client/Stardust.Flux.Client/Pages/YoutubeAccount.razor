@@ -1,0 +1,99 @@
+﻿@using Stardust.Flux.Contract.DTO
+@page "/youtube"
+@using System.Linq
+@inject IStringLocalizer<App> local
+@inject IYoutubeApi YoutubeApiService
+@inject IYoutubeAccountManager YoutubeAccountService
+@inject IJSRuntime jsRuntime
+
+<PageContainer>
+
+    <Content>
+        <h3>@local["Records"]</h3>
+        <p>@local["RecordsSubtitle"]</p>
+    </Content>
+    <ChildContent>
+        <AntDesign.Empty Style="@(AccountNotDefined ?  null : "display:none")">
+            <DescriptionTemplate>
+                @local["NoYoutubeAccount"]
+            </DescriptionTemplate>
+            <ChildContent>
+                <Button type="@ButtonType.Primary" OnClick="AddYoutubeAccount">Add Now</Button>
+            </ChildContent>
+
+        </AntDesign.Empty>
+        <Card Class="CARD" Style="@(AccountNotDefined ?  "display:none" : null)">
+            <AntList DataSource="@Accounts" ItemLayout="@ListItemLayout.Vertical">
+                <ChildContent Context="item">
+                    <ListItem  Actions="@(new[] { iconText(("start",item.Value.SubscriberCount.ToString())),iconText(("eye",item.Value.ViewCount.ToString())) })">
+                        <ListItemMeta Description="@item.Value.Description">
+                            <AvatarTemplate>
+                                <Avatar Src="@item.Value.Thumbnails"></Avatar>
+                            </AvatarTemplate>
+                            <TitleTemplate>
+                                <a href="@item.Value.CustomUrl">@item.Value.Title</a>
+                            </TitleTemplate>
+                        </ListItemMeta>
+                    </ListItem>
+                </ChildContent>
+                <Footer>
+                </Footer>
+            </AntList>
+
+
+        </Card>
+    </ChildContent>
+
+</PageContainer>
+
+
+
+@code {
+    
+
+
+RenderFragment<(string icon, string text)> iconText = context =>
+@<Template>
+    <Space>
+        <SpaceItem><Icon Type="@context.icon" /></SpaceItem>
+        <SpaceItem>@context.text</SpaceItem>
+    </Space>
+</Template>;
+
+    public bool AccountNotDefined { get; set; } = true;
+
+    public IDictionary<string, YoutubeChannelDto> Accounts { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var response = await YoutubeApiService.GetAccountsInfo(0, 100);
+        if (response.IsSuccessStatusCode)
+        {
+            Accounts = new Dictionary<string, YoutubeChannelDto>();
+            foreach (var account in response.Content)
+            {
+                var channelResponse = await YoutubeApiService.GetChannelInfo(account.Key);
+                Accounts.Add(account.Key, channelResponse.Content.FirstOrDefault());
+            }
+
+            AccountNotDefined = !Accounts.Any();
+
+        }
+
+    }
+
+
+    public async Task AddYoutubeAccount()
+    {
+        var response = await YoutubeAccountService.AddAccount();
+        if (response.StatusCode == System.Net.HttpStatusCode.Redirect)
+        {
+            await jsRuntime.InvokeAsync<object>("open", response.Headers.Location, "_blank");
+        }
+
+    }
+
+
+}
