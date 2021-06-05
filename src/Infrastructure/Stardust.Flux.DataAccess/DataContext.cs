@@ -11,7 +11,7 @@ namespace Stardust.Flux.DataAccess
 
         }
 
-        public DataContext(DbContextOptions options) : base(options)
+        public DataContext(DbContextOptions<DataContext> contextOptions) : base(contextOptions)
         {
 
         }

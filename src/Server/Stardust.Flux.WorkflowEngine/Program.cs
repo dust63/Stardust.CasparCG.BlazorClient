@@ -1,20 +1,19 @@
-using Elsa.Persistence.EntityFramework.Core;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Stardust.Flux.Crosscutting;
-using Stardust.Flux.DataAccess;
-using Stardust.Flux.Server;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Stardust.Flux.ScheduleEngine
+namespace Stardust.Flux.WorkflowEngine
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args)
-            .Build()
-            .MigrateDatabase<DataContext>()         
-            .Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

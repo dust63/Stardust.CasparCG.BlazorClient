@@ -10,16 +10,16 @@ using Stardust.Flux.DataAccess;
 namespace Stardust.Flux.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210603220812_Initial")]
+    [Migration("20210603231033_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "5.0.6")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("Stardust.Flux.DataAccess.Models.Event", b =>
                 {

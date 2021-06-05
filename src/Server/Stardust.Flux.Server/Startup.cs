@@ -9,11 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Stardust.Flux.Contract.DTO.Schedule;
-
 using Stardust.Flux.DataAccess;
 using Stardust.Flux.ScheduleEngine.Services;
 using Stardust.Flux.Server.Extensions;
-using Stardust.Flux.Server.Hangfire;
 
 namespace Stardust.Flux.Server
 {
@@ -35,9 +33,9 @@ namespace Stardust.Flux.Server
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ScheduleEngine", Version = "v1" });
             });
-
+         
             services.AddEntityFrameworkNpgsql().AddDbContext<DataContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("DefaultConnection")));
+                   
             services.AddEventServices();
             services.AddYoutube(Configuration);
 
@@ -67,20 +65,12 @@ namespace Stardust.Flux.Server
             app.UseRouting();
             app.UseAuthorization();
 
-            GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
-            //Will be available under http://localhost:5000/hangfire"
-            app.UseHangfireDashboard();
-            app.UseHangfireServer(new BackgroundJobServerOptions
-            {
-                SchedulePollingInterval = TimeSpan.FromSeconds(1),
-                WorkerCount = 50
-            });
+          
             app.UseCors("Open");
             serviceProvider.GetService<IEventSchedulerService<RecordParameters>>().StopAllMissedStop();
             app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapHangfireDashboard();
+            {              
+                endpoints.MapControllers();              
             });
         }
     }

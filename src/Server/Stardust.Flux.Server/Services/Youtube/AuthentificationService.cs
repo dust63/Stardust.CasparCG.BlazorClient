@@ -122,7 +122,7 @@ namespace Stardust.Flux.Server.Services.Youtube
             CheckForAccount(accountId);
             // Now, let's grab the AuthorizationCodeFlow that will generate a unique authorization URL to redirect our user to
             var googleAuthorizationCodeFlow = GetGoogleAuthorizationCodeFlow(null, scopes);
-            var account = await publishContext.YoutubeAccounts.FirstOrDefaultAsync(x => x.Key == accountId);
+            var account = await publishContext.YoutubeAccounts.AsQueryable().FirstOrDefaultAsync(x => x.Key == accountId);
             if (account == null)
                 throw new InvalidOperationException("Account not found for this id");
             try
@@ -147,7 +147,7 @@ namespace Stardust.Flux.Server.Services.Youtube
             CheckForAccount(accountId);
             // Now, let's grab the AuthorizationCodeFlow that will generate a unique authorization URL to redirect our user to
             var googleAuthorizationCodeFlow = GetGoogleAuthorizationCodeFlow(null, scopes);
-            var account = await publishContext.YoutubeAccounts.FirstOrDefaultAsync(x => x.Key == accountId);
+            var account = await publishContext.YoutubeAccounts.AsQueryable().FirstOrDefaultAsync(x => x.Key == accountId);
             if (account == null)
                 throw new InvalidOperationException("Account not found for this id");
             try

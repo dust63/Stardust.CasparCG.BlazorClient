@@ -77,7 +77,7 @@ namespace Stardust.Flux.Server.Services.Youtube
 
         public async Task<IDictionary<string, string>> GetAccountsInfo(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
-            var results = await publishContext.YoutubeAccounts
+            var results = await publishContext.YoutubeAccounts.AsQueryable()
             .OrderBy(x => x.Name)
             .Skip(pageIndex * pageSize)
             .Take(pageSize).ToDictionaryAsync(x => x.Key, x => x.Name, cancellationToken);

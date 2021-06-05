@@ -34,7 +34,7 @@ namespace Stardust.Flux.Server.Services.Youtube
 
         public async Task ClearAsync()
         {
-            context.YoutubeAccounts.RemoveRange(context.YoutubeAccounts.Where(x => x.Key == AccountId));
+            context.YoutubeAccounts.RemoveRange(context.YoutubeAccounts.AsQueryable().Where(x => x.Key == AccountId));
             await context.SaveChangesAsync();
         }
 
@@ -85,7 +85,7 @@ namespace Stardust.Flux.Server.Services.Youtube
 
             var newToken = value as TokenResponse;
 
-            var item = await context.YoutubeAccounts.SingleOrDefaultAsync(x => x.Key == key);
+            var item = await context.YoutubeAccounts.AsQueryable().SingleOrDefaultAsync(x => x.Key == key);
 
             if (item == null)
             {
