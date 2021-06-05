@@ -10,7 +10,7 @@ using OBSWebsocketDotNet;
 namespace Stardust.Flux.WorkflowEngine.Activities
 {
 
-    [Activity(Category = "OBS", DisplayName = "Obs Connection", Outcomes = new[] { "Done", "Error" })]
+    [Activity(Category = "OBS", DisplayName = "Obs Connection",Description = "Initialize websocket connection to OBS studio. Use the plugin from https://github.com/Palakis/obs-websocket", Outcomes = new[] { "Done", "Error" })]
     public class ObsInitializeConnection : Activity
     {
         public IConfiguration Configuration { get; }
