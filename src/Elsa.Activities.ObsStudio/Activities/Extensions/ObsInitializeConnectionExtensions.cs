@@ -4,7 +4,7 @@ using OBSWebsocketDotNet;
 using System;
 using System.Threading.Tasks;
 
-namespace Stardust.Flux.WorkflowEngine.Activities
+namespace Elsa.Activities.ObsStudio.Activities.Extensions
 {
     public static class ObsInitializeConnectionExtensions
     {

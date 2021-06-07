@@ -7,7 +7,7 @@ using Elsa.Services.Models;
 using Microsoft.Extensions.Configuration;
 using OBSWebsocketDotNet;
 
-namespace Stardust.Flux.WorkflowEngine.Activities
+namespace Elsa.Activities.ObsStudio.Activities
 {
 
     [Activity(Category = "OBS", DisplayName = "Obs Connection",Description = "Initialize websocket connection to OBS studio. Use the plugin from https://github.com/Palakis/obs-websocket", Outcomes = new[] { "Done", "Error" })]

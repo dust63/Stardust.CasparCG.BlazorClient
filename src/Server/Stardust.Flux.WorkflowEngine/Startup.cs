@@ -6,15 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Elsa;
 using Hangfire.PostgreSql;
 using Elsa.Persistence.EntityFramework.Sqlite;
-using Stardust.Flux.WorkflowEngine.Activities;
-using Stardust.Flux.WorkflowEngine.Workflow;
-using NodaTime;
+
 
 namespace Stardust.Flux.WorkflowEngine
 {
@@ -31,19 +26,26 @@ namespace Stardust.Flux.WorkflowEngine
         {
             services.AddRazorPages();
 
-            var elsaSection = Configuration.GetSection("Elsa");          
+            var elsaSection = Configuration.GetSection("Elsa");
             services
                .AddElsa(elsa => elsa
                    .UseEntityFrameworkPersistence(ef => ef.UseSqlite(Configuration.GetConnectionString("Elsa")), true)
-                   .AddHttpActivities(htttp=> htttp.BasePath = "/api")
+                   .AddActivitiesFrom<Startup>()
+                   .AddHttpActivities(elsaSection.GetSection("Server").Bind)
                    .AddEntityActivities()
                    .AddObsActivities()
-                   .AddHangfireTemporalActivities(hangfire => hangfire.UsePostgreSqlStorage(Configuration.GetConnectionString("DefaultConnection")),(s,o)=> { o.SchedulePollingInterval = TimeSpan.FromSeconds(1); })                  
-                   //.AddWorkflowsFrom<Startup>()
-                   //.AddWorkflow((srv)=> new StreamingEventWorkflow(SystemClock.Instance.GetCurrentInstant().Plus(Duration.FromSeconds(5)), Duration.FromSeconds(10)))
+                   .AddFTPActivities()
+                   .AddActivitiesFrom<Startup>()
+                   .AddHangfireTemporalActivities(hangfire => hangfire.UsePostgreSqlStorage(Configuration.GetConnectionString("DefaultConnection")), (s, o) => { o.SchedulePollingInterval = TimeSpan.FromSeconds(1); })
+               //.AddWorkflowsFrom<Startup>()
+               //.AddWorkflow((srv)=> new StreamingEventWorkflow(SystemClock.Instance.GetCurrentInstant().Plus(Duration.FromSeconds(5)), Duration.FromSeconds(10)))
                );
-      
-            services.AddElsaApiEndpoints();
+
+            services
+                    .AddElsaSwagger()
+                    .AddElsaApiEndpoints();
+
+            services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("Content-Disposition")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,20 +54,28 @@ namespace Stardust.Flux.WorkflowEngine
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Elsa"));
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
-            app                  
-                 .UseStaticFiles() // For Dashboard.
-                 .UseHttpActivities()
-                 .UseRouting()
-                 .UseEndpoints(endpoints =>
-                 {
-                    // Elsa API Endpoints are implemented as regular ASP.NET Core API controllers.
-                    endpoints.MapControllers();
+            app.UseCors();
+            app.UseStaticFiles();
+            app.UseHttpActivities();
+            app.UseRouting();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                // Elsa Server uses ASP.NET Core Controllers.
+                endpoints.MapControllers();
 
-                    // For Dashboard.
-                    endpoints.MapFallbackToPage("/_Host");
-                 });
+                endpoints.MapFallbackToPage("/_Host");
+            });
         }
     }
 }

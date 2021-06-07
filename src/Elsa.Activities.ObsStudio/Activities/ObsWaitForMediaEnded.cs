@@ -1,4 +1,5 @@
-﻿using Elsa.ActivityResults;
+﻿using Elsa.Activities.ObsStudio.Activities;
+using Elsa.ActivityResults;
 using Elsa.Attributes;
 using Elsa.Expressions;
 using Elsa.Services;
@@ -8,7 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Stardust.Flux.WorkflowEngine.Activities
+namespace Elsa.Activities.ObsStudio.Activities
 {
     [Activity(
      Category = "OBS",

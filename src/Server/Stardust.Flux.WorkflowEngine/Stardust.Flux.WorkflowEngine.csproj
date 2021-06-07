@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,5 +23,10 @@
     <PackageReference Include="HangFire.Core" Version="1.7.22" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.8.4" />
     <PackageReference Include="obs-websocket-dotnet" Version="4.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Elsa.Activities.FileTransferProtocol\Elsa.Activities.FileTransferProtocol.csproj" />
+    <ProjectReference Include="..\..\Elsa.Activities.ObsStudio\Elsa.Activities.ObsStudio.csproj" />
   </ItemGroup>
 </Project>

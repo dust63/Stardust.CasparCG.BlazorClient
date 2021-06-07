@@ -2,11 +2,11 @@
 using Elsa.Attributes;
 using Elsa.Services;
 using Elsa.Services.Models;
-using Microsoft.Extensions.Configuration;
 using OBSWebsocketDotNet;
+using Elsa.Activities.ObsStudio.Activities;
 using System.Threading.Tasks;
 
-namespace Stardust.Flux.WorkflowEngine.Activities
+namespace Elsa.Activities.ObsStudio.Activities
 {
     [Activity(Category = "OBS", DisplayName = "Obs start streaming", Description = "Use obs websocket to start streaming")]
     public abstract class ObsBaseActivity : Activity
@@ -21,7 +21,7 @@ namespace Stardust.Flux.WorkflowEngine.Activities
         {
             _obsWebsocketInstanceService = obsWebSocketInstanceService;
         }
-          
+
 
 
         protected override IActivityExecutionResult OnExecute(ActivityExecutionContext context)
@@ -43,7 +43,7 @@ namespace Stardust.Flux.WorkflowEngine.Activities
             return base.ExecuteAsync(context);
         }
 
-     
+
 
     }
 }

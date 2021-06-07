@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Stardust.Flux.WorkflowEngine.Activities
+namespace Elsa.Activities.ObsStudio.Activities.Extensions
 {
 
     public static class ObsActivityExtensions
@@ -23,6 +23,8 @@ namespace Stardust.Flux.WorkflowEngine.Activities
 
         public static IActivityBuilder ObsConnect(this IBuilder builder, [CallerLineNumber] int lineNumber = default, [CallerFilePath] string sourceFile = default) =>
                builder.ObsConnect(setup => setup.UseHost("localhost").UsePort(4444), lineNumber, sourceFile);
+
+
         public static IActivityBuilder ObsStartStreaming(this IBuilder builder, [CallerLineNumber] int lineNumber = default, [CallerFilePath] string? sourceFile = default) =>
          builder.Then<ObsStartStreaming>();
 

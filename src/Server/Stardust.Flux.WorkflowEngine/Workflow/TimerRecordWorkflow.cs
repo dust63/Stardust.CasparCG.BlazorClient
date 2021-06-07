@@ -2,7 +2,7 @@
 using Elsa.Activities.Temporal;
 using Elsa.Builders;
 using NodaTime;
-using Stardust.Flux.WorkflowEngine.Activities;
+using Elsa.Activities.ObsStudio.Activities.Extensions;
 
 namespace Stardust.Flux.WorkflowEngine.Workflow
 {

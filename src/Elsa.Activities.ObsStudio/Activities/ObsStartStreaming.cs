@@ -1,10 +1,11 @@
-﻿using Elsa.ActivityResults;
+﻿using Elsa.Activities.ObsStudio.Activities;
+using Elsa.ActivityResults;
 using Elsa.Attributes;
 using Elsa.Services;
 using Elsa.Services.Models;
 using OBSWebsocketDotNet;
 
-namespace Stardust.Flux.WorkflowEngine.Activities
+namespace Elsa.Activities.ObsStudio.Activities
 {
     [Activity(
     Category = "OBS",

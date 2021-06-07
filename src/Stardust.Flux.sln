@@ -31,7 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.ObsController
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.Client", "Client\Stardust.Flux.Client\Stardust.Flux.Client.csproj", "{10592C36-FE07-4D95-BD0E-BAC3EF421400}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stardust.Flux.WorkflowEngine", "Server\Stardust.Flux.WorkflowEngine\Stardust.Flux.WorkflowEngine.csproj", "{B0F07ACA-C636-47A3-817A-525CA2D6AAAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.WorkflowEngine", "Server\Stardust.Flux.WorkflowEngine\Stardust.Flux.WorkflowEngine.csproj", "{B0F07ACA-C636-47A3-817A-525CA2D6AAAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{7EAF3444-633D-4D07-A02A-63D1C92410B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Activities.ObsStudio", "Elsa.Activities.ObsStudio\Elsa.Activities.ObsStudio.csproj", "{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Activities.FileTransferProtocol", "Elsa.Activities.FileTransferProtocol\Elsa.Activities.FileTransferProtocol.csproj", "{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -139,6 +145,30 @@ Global
 		{B0F07ACA-C636-47A3-817A-525CA2D6AAAC}.Release|x64.Build.0 = Release|Any CPU
 		{B0F07ACA-C636-47A3-817A-525CA2D6AAAC}.Release|x86.ActiveCfg = Release|Any CPU
 		{B0F07ACA-C636-47A3-817A-525CA2D6AAAC}.Release|x86.Build.0 = Release|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Debug|x64.Build.0 = Debug|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Debug|x86.Build.0 = Debug|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Release|x64.ActiveCfg = Release|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Release|x64.Build.0 = Release|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Release|x86.ActiveCfg = Release|Any CPU
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C}.Release|x86.Build.0 = Release|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Debug|x64.Build.0 = Debug|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Release|x64.ActiveCfg = Release|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Release|x64.Build.0 = Release|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +182,8 @@ Global
 		{C570DDD5-0DE6-4632-9034-E1B71F29929D} = {9D4ED182-04A8-4C22-881C-7482CD81D61B}
 		{10592C36-FE07-4D95-BD0E-BAC3EF421400} = {176D4504-D0A5-4297-BA80-B2EE567BCC06}
 		{B0F07ACA-C636-47A3-817A-525CA2D6AAAC} = {9D4ED182-04A8-4C22-881C-7482CD81D61B}
+		{8754AAC9-CCA6-43E6-8E3B-CE7E10BE596C} = {7EAF3444-633D-4D07-A02A-63D1C92410B2}
+		{1A6F81CE-CD64-49A1-9DFB-2B921624FCE3} = {7EAF3444-633D-4D07-A02A-63D1C92410B2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89229574-1CE7-4D47-8586-3E3EC8059E6B}

@@ -2,7 +2,7 @@
 using Elsa.Services.Models;
 using System;
 
-namespace Stardust.Flux.WorkflowEngine.Activities
+namespace Elsa.Activities.ObsStudio.Activities.Extensions
 {
 
 
