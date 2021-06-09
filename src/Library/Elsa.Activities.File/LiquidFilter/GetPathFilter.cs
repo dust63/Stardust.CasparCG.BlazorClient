@@ -4,9 +4,9 @@ using Fluid.Values;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Elsa.Activities.FileTransferProtocol.LiquidFilter
+namespace Elsa.Activities.File.LiquidFilter
 {
-    public class GetPathFilter : ILiquidFilter
+    public class GetDirectoryFilter : ILiquidFilter
     {
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {

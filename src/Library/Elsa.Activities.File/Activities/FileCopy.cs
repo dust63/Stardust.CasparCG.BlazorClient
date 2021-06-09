@@ -1,10 +1,10 @@
-﻿using Elsa.Activities.FileTransferProtocol.Extensions;
+﻿using Elsa.Activities.File.Extensions;
 using Elsa.ActivityResults;
 using Elsa.Attributes;
 using Elsa.Services;
-using System.IO;
 
-namespace Elsa.Activities.FileTransferProtocol.Activities
+
+namespace Elsa.Activities.File
 {
     [Activity(DisplayName = "File copy", Category = "File", Description = "Copy a file on local file system", Outcomes = new[] { "Done", "Not found" })]
     public class FileCopy : Activity
@@ -20,11 +20,11 @@ namespace Elsa.Activities.FileTransferProtocol.Activities
 
         protected override IActivityExecutionResult OnExecute()
         {
-            if (File.Exists(SourceFilePath))
+            if (System.IO.File.Exists(SourceFilePath))
             {
-                var destinationPath = Path.Combine(DestinationDirectory, Path.GetFileName(SourceFilePath));
+                var destinationPath = System.IO.Path.Combine(DestinationDirectory, System.IO.Path.GetFileName(SourceFilePath));
                 destinationPath.EnsureDirectoryExists();
-                File.Copy(SourceFilePath, destinationPath);
+                System.IO.File.Copy(SourceFilePath, destinationPath);
                 return Done(destinationPath);
             }
 

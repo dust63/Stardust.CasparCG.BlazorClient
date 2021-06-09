@@ -1,10 +1,10 @@
-﻿using Elsa.Activities.FileTransferProtocol.Extensions;
+﻿using Elsa.Activities.File.Extensions;
 using Elsa.ActivityResults;
 using Elsa.Attributes;
 using Elsa.Services;
 using System.IO;
 
-namespace Elsa.Activities.FileTransferProtocol.Activities
+namespace Elsa.Activities.File
 {
     [Activity(DisplayName = "File moved/rename", Category = "File", Description = "Rename a file on local file system", Outcomes = new[] { "Done", "Not found" })]
     public class FileMoved : Activity
@@ -20,10 +20,10 @@ namespace Elsa.Activities.FileTransferProtocol.Activities
 
         protected override IActivityExecutionResult OnExecute()
         {
-            if (File.Exists(SourceFilePath))
+            if (System.IO.File.Exists(SourceFilePath))
             {
                 DestinationFilePath.EnsureDirectoryExists();
-                File.Move(SourceFilePath, DestinationFilePath);
+                System.IO.File.Move(SourceFilePath, DestinationFilePath);
                 return Done(DestinationFilePath);
             }
 

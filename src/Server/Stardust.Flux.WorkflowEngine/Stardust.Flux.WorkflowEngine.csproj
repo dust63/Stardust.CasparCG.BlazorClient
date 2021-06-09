@@ -22,11 +22,14 @@
     <PackageReference Include="HangFire" Version="1.7.22" />
     <PackageReference Include="HangFire.Core" Version="1.7.22" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.8.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.6" />
     <PackageReference Include="obs-websocket-dotnet" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Elsa.Activities.FileTransferProtocol\Elsa.Activities.FileTransferProtocol.csproj" />
-    <ProjectReference Include="..\..\Elsa.Activities.ObsStudio\Elsa.Activities.ObsStudio.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Stardust.Flux.DataAccess\Stardust.Flux.DataAccess.csproj" />
+    <ProjectReference Include="..\..\Library\Elsa.Activities.FileTransferProtocol\Elsa.Activities.FileTransferProtocol.csproj" />
+    <ProjectReference Include="..\..\Library\Elsa.Activities.File\Elsa.Activities.File.csproj" />
+    <ProjectReference Include="..\..\Library\Elsa.Activities.ObsStudio\Elsa.Activities.ObsStudio.csproj" />
   </ItemGroup>
 </Project>

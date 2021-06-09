@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Elsa.Activities.FileTransferProtocol.Extensions
+namespace Elsa.Activities.File.Extensions
 {
     public static class FileExtensions
     {

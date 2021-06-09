@@ -10,7 +10,6 @@ using Google.Apis.Auth.OAuth2;
 
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Services;
-
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +17,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stardust.Flux.Crosscutting.Extensions;
-using Hangfire;
 using Stardust.Flux.Contract.DTO;
 using Stardust.Flux.DataAccess;
 using Stardust.Flux.Server.Options;
 using Stardust.Flux.PublishApi.Youtube;
+using Hangfire;
 
 namespace Stardust.Flux.Server.Services.Youtube
 {

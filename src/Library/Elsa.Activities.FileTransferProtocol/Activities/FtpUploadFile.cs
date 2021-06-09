@@ -4,8 +4,6 @@ using Elsa.Services.Models;
 using Elsa.Attributes;
 using System.IO;
 using System.Net;
-using System;
-using Elsa.Activities.FileTransferProtocol.Extensions;
 using Elsa.Activities.FileTransferProtocol.Models;
 
 namespace Elsa.Activities.FileTransferProtocol.Activities

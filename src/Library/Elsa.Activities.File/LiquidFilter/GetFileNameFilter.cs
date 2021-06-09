@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Elsa.Activities.FileTransferProtocol.LiquidFilter
+namespace Elsa.Activities.File.LiquidFilter
 {
     public class GetFilenameFilter : ILiquidFilter
     {

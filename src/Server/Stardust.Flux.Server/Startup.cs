@@ -1,6 +1,6 @@
 using System;
 using Hangfire;
-using Hangfire.PostgreSql;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +37,7 @@ namespace Stardust.Flux.Server
             services.AddEntityFrameworkNpgsql().AddDbContext<DataContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
                    
             services.AddEventServices();
+          
             services.AddYoutube(Configuration);
 
             services.AddCors(options =>
@@ -64,7 +65,8 @@ namespace Stardust.Flux.Server
 
             app.UseRouting();
             app.UseAuthorization();
-
+            app.UseHangfireDashboard()
+                .UseHangfireServer(new BackgroundJobServerOptions {ServerName = GetType().Namespace });
           
             app.UseCors("Open");
             serviceProvider.GetService<IEventSchedulerService<RecordParameters>>().StopAllMissedStop();

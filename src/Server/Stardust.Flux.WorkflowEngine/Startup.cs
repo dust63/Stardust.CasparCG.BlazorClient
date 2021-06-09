@@ -9,7 +9,8 @@ using System;
 using Elsa;
 using Hangfire.PostgreSql;
 using Elsa.Persistence.EntityFramework.Sqlite;
-
+using Microsoft.EntityFrameworkCore;
+using Stardust.Flux.DataAccess;
 
 namespace Stardust.Flux.WorkflowEngine
 {
@@ -34,16 +35,16 @@ namespace Stardust.Flux.WorkflowEngine
                    .AddHttpActivities(elsaSection.GetSection("Server").Bind)
                    .AddEntityActivities()
                    .AddObsActivities()
-                   .AddFTPActivities()
-                   .AddActivitiesFrom<Startup>()
+                   .AddFTPActivities()               
                    .AddHangfireTemporalActivities(hangfire => hangfire.UsePostgreSqlStorage(Configuration.GetConnectionString("DefaultConnection")), (s, o) => { o.SchedulePollingInterval = TimeSpan.FromSeconds(1); })
                //.AddWorkflowsFrom<Startup>()
                //.AddWorkflow((srv)=> new StreamingEventWorkflow(SystemClock.Instance.GetCurrentInstant().Plus(Duration.FromSeconds(5)), Duration.FromSeconds(10)))
                );
-
             services
                     .AddElsaSwagger()
                     .AddElsaApiEndpoints();
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<DataContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("Content-Disposition")));
         }
@@ -78,4 +79,6 @@ namespace Stardust.Flux.WorkflowEngine
             });
         }
     }
+
+   
 }

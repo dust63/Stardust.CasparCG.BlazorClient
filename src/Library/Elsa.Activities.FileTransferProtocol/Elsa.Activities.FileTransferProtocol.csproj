@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="Elsa.Core" Version="2.0.0.159" />
-    <PackageReference Include="Elsa.Scripting.Liquid" Version="2.0.0.159" />
     <PackageReference Include="obs-websocket-dotnet" Version="4.9.0" />
   </ItemGroup>
 </Project>

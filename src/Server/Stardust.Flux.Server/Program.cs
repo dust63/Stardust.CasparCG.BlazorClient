@@ -1,4 +1,3 @@
-using Elsa.Persistence.EntityFramework.Core;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Stardust.Flux.Crosscutting;

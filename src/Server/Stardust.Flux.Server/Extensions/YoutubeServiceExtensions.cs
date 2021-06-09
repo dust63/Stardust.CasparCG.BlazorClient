@@ -3,7 +3,8 @@ using Stardust.Flux.Server.Options;
 using Stardust.Flux.Server.Services;
 using Stardust.Flux.Server.Services.Youtube;
 using Microsoft.Extensions.Configuration;
-
+using Hangfire;
+using Hangfire.MemoryStorage;
 
 namespace Stardust.Flux.Server.Extensions
 {
@@ -21,7 +22,7 @@ namespace Stardust.Flux.Server.Extensions
             services.AddScoped<AuthentificationService>();
             services.AddScoped<YoutubeUploader>();
             services.AddTransient<YoutubeSignalRClient>();
-
+            services.AddHangfire(c => c.UseMemoryStorage());
             return services;
         }
     }
