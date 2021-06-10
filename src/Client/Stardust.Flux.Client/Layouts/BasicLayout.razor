@@ -1,12 +1,10 @@
-﻿@namespace Stardust.Flux.Client.ServerSide
+﻿@namespace Stardust.Flux.Client
 @inherits LayoutComponentBase
 
-<AntDesign.Pro.Layout.BasicLayout 
-    Logo="@("https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg")"
-    MenuData="_menuData">
-    <RightContentRender>
-        <RightContent />
-    </RightContentRender>
+
+<AntDesign.Pro.Layout.BasicLayout Logo="@("https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg")"
+                                  MenuData="_menuData">
+
     <ChildContent>
         @Body
     </ChildContent>
@@ -14,15 +12,14 @@
 <SettingDrawer />
 
 @code
-{
-    private readonly MenuDataItem[] _menuData =
-    {
+{ private readonly MenuDataItem[] _menuData =
+                {
         new MenuDataItem
         {
             Path = "/",
             Name = "Welcome",
-            Key = "welcome",  
-            Icon = "smile"       
+            Key = "welcome",
+            Icon = "smile"
         },
 
         new MenuDataItem
@@ -31,7 +28,7 @@
             Name = "Video Slot",
             Key = "videoslot",
             Icon = "video-camera-add"
-         
+
         },
         new MenuDataItem
         {
@@ -72,5 +69,4 @@
 
             }
         }
-    };
-}
+    }; }

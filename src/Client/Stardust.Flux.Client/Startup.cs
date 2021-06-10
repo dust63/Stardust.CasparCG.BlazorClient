@@ -1,20 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+using AntDesign.Pro.Layout;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using AntDesign.Pro.Layout;
 using Stardust.Flux.Client.Services.Extensions;
-using Microsoft.AspNetCore.Localization;
+using System;
+using System.Net.Http;
 
-namespace Stardust.Flux.Client.ServerSide
+namespace Stardust.Flux.Client
 {
     public class Startup
     {
@@ -32,8 +28,8 @@ namespace Stardust.Flux.Client.ServerSide
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddAntDesign();
-            services.AddLocalization(opt=> opt.ResourcesPath = "Resources");
-			services.AddScoped(sp => new HttpClient
+            services.AddLocalization(opt => opt.ResourcesPath = "Resources");
+            services.AddScoped(sp => new HttpClient
             {
                 BaseAddress = new Uri(sp.GetService<NavigationManager>().BaseUri)
             });
@@ -41,7 +37,7 @@ namespace Stardust.Flux.Client.ServerSide
             services.AddFluxClientServices(Configuration);
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                var supportedCultures = new[] { "en", "fr"};
+                var supportedCultures = new[] { "en", "fr" };
                 options.DefaultRequestCulture = new RequestCulture("fr");
                 options.AddSupportedCultures(supportedCultures);
                 options.AddSupportedUICultures(supportedCultures);

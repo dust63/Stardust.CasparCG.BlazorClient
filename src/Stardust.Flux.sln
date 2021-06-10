@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stardust.Flux.WorkflowEngin
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{7EAF3444-633D-4D07-A02A-63D1C92410B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Activities.File", "Library\Elsa.Activities.File\Elsa.Activities.File.csproj", "{8805793F-B3AC-4D97-BCB1-EFB3BE065504}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Activities.File", "Library\Elsa.Activities.File\Elsa.Activities.File.csproj", "{8805793F-B3AC-4D97-BCB1-EFB3BE065504}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Activities.FileTransferProtocol", "Library\Elsa.Activities.FileTransferProtocol\Elsa.Activities.FileTransferProtocol.csproj", "{12456458-E910-4ADC-9894-5BDEB1737889}"
 EndProject

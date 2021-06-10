@@ -1,1 +1,1 @@
-# Stardust.Flux.Client.ServerSide
+# Stardust.Flux.Client
