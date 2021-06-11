@@ -1,0 +1,187 @@
+@page "/records"
+@inject IStringLocalizer<App> local
+@using AntDesign.TableModels
+@using System.ComponentModel
+
+
+
+
+<GridContent>
+    <Row Type="flex" Gutter="24">
+        <Col Xs="24" Sm="12" Lg="12" Xl="6">
+        <Card Actions="@(new[] { obsStatus((IsRecording, "Record Status")), obsStatus((IsStreaming, "Streaming Status")) })" Style="margin-bottom:24px">
+            <Skeleton Loading="loading" Avatar Active>
+                <CardMeta Title="OBS Studio"
+                          Description="@local["YoutubeStatus"]"
+                          Avatar="data:image/png;base64,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" />
+
+            </Skeleton>
+        </Card>
+        </Col>
+        <Col Xs="24" Sm="12" Lg="12" Xl="6">
+        <Card Actions="@(new[] { iconText(("eye",YoutubeView)),iconText(("like",YoutubeSubsciption)),iconText(("folder-view",YoutubeVideoCount)) })" Style="margin-bottom:24px">
+            <Skeleton Loading="loading" Avatar Active>
+                <CardMeta Title="Youtube"
+                          Description="@local["YoutubeStatus"]"
+                          Avatar="data:image/png;base64,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" />
+            </Skeleton>
+        </Card>
+        </Col>
+        <Col Xs="24" Sm="12" Lg="12" Xl="6">
+        <Card Actions="new[] { actionSetting, actionEdit, actionEllipsis }" Style="margin-bottom:24px">
+            <Skeleton Loading="loading" Avatar Active>
+                <CardMeta Title="Events"
+                          Description=""
+                          Avatar="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+            </Skeleton>
+        </Card>
+        </Col>
+    </Row>
+
+    <Card>
+        <CardTabs>
+            <Tabs TabBarStyle="margin-bottom: 24px;">
+                <TabPane Key="1">
+                    <Tab>Event Scheduling</Tab>
+                    <ChildContent>
+                        <Row>
+                            <Col Xs="24" Sm="24" Lg="24" Xl="24">
+                            <Space Style="margin-bottom:24px">
+                                <SpaceItem>
+                                    <Button Type="primary" OnClick="OnRecord">
+                                        <IconFont Type="icon-record" />
+                                        Record
+                                    </Button>
+                                </SpaceItem>
+                                <SpaceItem>
+                                    <Button>
+                                        <Icon Type="schedule" Theme="outline" OnClick="OnAddSchedule" /> Schedule
+                                    </Button>
+                                </SpaceItem>
+                                @if (SelectedEventRows != null && SelectedEventRows.Any())
+                                {
+                                    <SpaceItem>
+                                        <Button Danger OnClick="OnDeleteEvent" Icon="delete">Delete</Button>
+
+                                    </SpaceItem>
+                                }
+
+                            </Space>
+
+                            <Table @ref="table" TItem="ScheduledRecord" DataSource="@RecuringRecord" PageSize="10" ScrollX="1500" ScrollY="300" @bind-SelectedRows="SelectedEventRows">
+                                <Selection Key="@(context.Id)" Width="40" Fixed="left" />
+                                <AntDesign.Column @bind-Field="@context.Title" Width="100" Fixed="left" />
+                                <AntDesign.Column @bind-Field="@context.Description" Width="100" Fixed="left" />
+                                <AntDesign.Column @bind-Field="@context.DayOfWeek" Width="150" Title="Column 1" />
+                                <AntDesign.Column @bind-Field="@context.StartTime" Width="150" Title="Column 2" />
+                                <AntDesign.Column @bind-Field="@context.EndTime" Width="150" Title="Column 3" />
+                                <ActionColumn Title="Action" Width="100" Fixed="right">
+                                    <Icon Type="edite" OnClick="OnEditEvent"></Icon>
+                                </ActionColumn>
+                            </Table>
+                            </Col>
+                        </Row>
+                    </ChildContent>
+                </TabPane>
+                <TabPane Key="2">
+                    <Tab>Workflow</Tab>
+                    <ChildContent>
+
+                    </ChildContent>
+                </TabPane>
+            </Tabs>
+        </CardTabs>
+    </Card>
+
+</GridContent>
+
+
+
+
+@code{
+
+
+    RenderFragment titleTemplate =@<div><Icon Type="obs" Theme="outline" />Obs</div>;
+
+private bool loading = true;
+
+
+public bool IsStreaming { get; set; }
+
+public bool IsRecording { get; set; }
+
+public int YoutubeView { get; set; }
+
+public int YoutubeSubsciption { get; set; }
+
+public int YoutubeVideoCount { get; set; }
+
+
+
+protected override async Task OnInitializedAsync()
+{
+await Task.Delay(1000);
+loading = false;
+}
+
+private RenderFragment<(bool isOnAir, string title)> obsStatus = context => @<Template>
+    <div class="ant-statistic-title">@context.title</div>
+    @if (context.isOnAir)
+    {
+        <AntDesign.Title Level="4" Type="danger">ON AIR</AntDesign.Title>
+    }
+    else
+    {
+        <Title Level="4">STOPPED</Title>
+    }
+</Template>;
+
+RenderFragment<(string icon, int text)> iconText = context =>
+@<Template>
+    <Space>
+        <SpaceItem><Icon Type="@context.icon" /></SpaceItem>
+        <SpaceItem>@context.text</SpaceItem>
+    </Space>
+</Template> ;
+
+
+private RenderFragment actionSetting =@<Template>
+    <Icon Type="settings" />
+</Template>;
+
+private RenderFragment actionEdit =@<Template>
+    <Icon Type="edit" />
+</Template>;
+
+private RenderFragment actionEllipsis =@<Template>
+    <Icon Type="ellipsis" />
+</Template>;
+
+ITable table;
+
+public IEnumerable<ScheduledRecord> SelectedEventRows { get; set; }
+
+public List<ScheduledRecord> RecuringRecord { get; set; } = new List<ScheduledRecord> { new ScheduledRecord { DayOfWeek = DayOfWeek.Monday, Title = "Test", Description = "Description" } };
+
+
+public void OnDeleteEvent()
+{
+SelectedEventRows = null;
+}
+
+public void OnEditEvent()
+{
+
+}
+
+public void OnRecord()
+{
+
+}
+
+public void OnAddSchedule()
+{
+
+}
+
+}

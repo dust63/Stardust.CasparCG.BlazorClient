@@ -291,4 +291,10 @@
   <data name="NoYoutubeAccount" xml:space="preserve">
     <value>You didn't define a Youtube account yet...</value>
   </data>
+  <data name="ObsStatus" xml:space="preserve">
+    <value>Information about your OBS studio instance</value>
+  </data>
+  <data name="YoutubeStatus" xml:space="preserve">
+    <value>Information about your channel</value>
+  </data>
 </root>

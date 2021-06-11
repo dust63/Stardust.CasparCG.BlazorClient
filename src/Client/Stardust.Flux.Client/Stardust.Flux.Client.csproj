@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\Records-Backup.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Records-Backup.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AntDesign.Charts" Version="0.2.0-*" />
     <PackageReference Include="AntDesign.Pro.Layout" Version="0.1.0-*" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
